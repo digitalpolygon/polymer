@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# This script builds documentation.
+
+set -e
+
+./docs/sphinx/sphinx.sh build

@@ -1,0 +1,5 @@
+# Ignore editor files.
+.idea/
+
+# Ignore local scratch space.
+scratch/

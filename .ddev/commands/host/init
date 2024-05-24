@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+# This script initializes the project.
+
+ddev stop -OR
+ddev start
+
+ddev build-docs
+# Open docs in browser.
+ddev launch :444
