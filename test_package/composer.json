@@ -1,0 +1,21 @@
+{
+  "name": "digitalpolygon/test-package",
+  "description": "Test package for composer",
+  "type": "project",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "digitalpolygon/polymer": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "digitalpolygon/polymer": true
+    }
+  }
+}

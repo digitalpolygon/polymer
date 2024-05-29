@@ -1,0 +1,43 @@
+{
+  "name": "digitalpolygon/polymer",
+  "description": "Polymer",
+  "license": "GPL-2.0-only",
+  "type": "composer-plugin",
+  "authors": [
+    {
+      "name": "Les Peabody"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/digitalpolygon/polymer/issues"
+  },
+  "require": {
+    "php": ">=8.1",
+    "composer-plugin-api": "^2.0",
+    "composer-runtime-api": "^2.0",
+    "consolidation/robo": "^4"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "DigitalPolygon\\Polymer\\": "src/"
+    }
+  },
+  "config": {
+    "php": "8",
+    "platform": {
+      "php": "8.1"
+    },
+    "sort-packages": true
+  },
+  "extra": {
+    "class": "DigitalPolygon\\Polymer\\Composer\\Plugin"
+  },
+  "bin": [
+    "bin/polymer"
+  ],
+  "require-dev": {
+    "composer/composer": "^2.7"
+  }
+}
