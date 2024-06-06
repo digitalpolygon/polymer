@@ -1,9 +1,9 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo;
+namespace DigitalPolygon\Polymer;
 
-use DigitalPolygon\Polymer\Commands\Artifact\BuildCommand;
-use DigitalPolygon\Polymer\Commands\Validate\ComposerValidateCommand;
+use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use Composer\InstalledVersions;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
@@ -29,14 +29,21 @@ class Polymer implements ContainerAwareInterface {
   /**
    * The Robo task runner.
    *
-   * @var \Robo\Runner
+   * @var \Runner
    */
   private $runner;
 
   /**
+   * An array of commands available to the application.
+   *
+   * @var string[]
+   */
+  private $commands = [];
+
+  /**
    * Object constructor.
    *
-   * @param \Robo\Config\Config $config
+   * @param \Config\Config $config
    *   The BLT configuration.
    * @param \Symfony\Component\Console\Input\InputInterface $input
    *   The input.
@@ -50,9 +57,11 @@ class Polymer implements ContainerAwareInterface {
     // Create and configure container.
     $container = Robo::createContainer($application, $config);
     Robo::finalizeContainer($container);
+    // Discover commands.
+    $this->discoverCommands();
     // Instantiate Robo Runner.
-    $this->runner = new RoboRunner($this->getCommands());
-    $this->setContainer($container);
+    $this->runner = new RoboRunner();
+    $this->setContainer($container);;
     $this->runner->setContainer($container);
     $this->runner->setSelfUpdateRepository(self::REPOSITORY);
   }
@@ -73,7 +82,7 @@ class Polymer implements ContainerAwareInterface {
    */
   public function run(InputInterface $input, OutputInterface $output): int {
     $application = $this->getContainer()->get('application');
-    $status_code = $this->runner->run($input, $output, $application, $this->getCommands());
+    $status_code = $this->runner->run($input, $output, $application, $this->commands);
     return $status_code;
   }
 
@@ -81,25 +90,41 @@ class Polymer implements ContainerAwareInterface {
    * Gets the application version.
    */
   public static function getVersion(): string {
-    // @todo: Extract the version dynamically from composer \Composer\InstalledVersions.
-    // E.g: InstalledVersions::getPrettyVersion('digitalpolygon/polymer');
-    return 'latest';
+    return InstalledVersions::getPrettyVersion('digitalpolygon/polymer');
   }
 
   /**
-   * Get the list of Available commands classes.
+   * Discovers command classes which are shipped with core Polymer.
+   */
+  private function discoverCommands(): void {
+    $discovery = new CommandFileDiscovery();
+    $discovery->setIncludeFilesAtBase(TRUE);
+    $discovery->setSearchPattern('*Command.php');
+    $discovery->setSearchLocations([]);
+    $discovery->setSearchDepth(3);
+    $this->commands = $discovery->discover($this->getBuiltinCommandFilePaths(), $this->getBuiltinCommandNamespace());
+  }
+
+  /**
+   * Retrieve paths for all built-in command files.
    *
    * @return array
-   *   An array of Command classes
+   *   An array containing paths to built-in command files.
    */
-  private function getCommands(): array {
-    // @todo: Instead of hardcoding the list of command dynamically discovers
-    // command classes using \Consolidation\AnnotatedCommand\CommandFileDiscovery.
+  private function getBuiltinCommandFilePaths(): array {
     return [
-      BuildCommand::class,
-      // Register the command: composer:validate:security.
-      ComposerValidateCommand::class,
+      __DIR__ . '/Commands',
     ];
+  }
+
+  /**
+   * Retrieve base namespace for all built-in commands.
+   *
+   * @return string
+   *   The base namespace for all built-in commands.
+   */
+  private function getBuiltinCommandNamespace(): string {
+    return 'DigitalPolygon\Polymer\Commands';
   }
 
 }

@@ -2,8 +2,8 @@
 
 namespace DigitalPolygon\Polymer\Commands\Validate;
 
-use Robo\Tasks;
 use Robo\Common\ConfigAwareTrait;
+use Robo\Tasks;
 
 /**
  * Defines commands in the "composer:validate" namespace.
