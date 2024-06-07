@@ -2,7 +2,6 @@
 
 namespace DigitalPolygon\Polymer\Commands\Artifact;
 
-use Robo\Common\IO;
 use Robo\Tasks;
 
 class BuildCommand extends Tasks {
