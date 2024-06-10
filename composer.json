@@ -39,10 +39,17 @@
   ],
   "require-dev": {
     "composer/composer": "^2.7",
+    "phpstan/phpstan": "^1.11",
     "squizlabs/php_codesniffer": "^3"
   },
   "scripts": {
     "lint": "find src tests/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
-    "cs": "phpcs"
+    "cs": "phpcs",
+    "sa": "phpstan analyse -l 9 src/",
+    "validations": [
+      "@lint",
+      "@cs",
+      "@sa"
+    ]
   }
 }
