@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+    code_guidelines:
+      name: Code Guidelines
+      runs-on: ubuntu-latest
+      matrix:
+        php_version: [8.1, 8.2]
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Run PHP_CodeSniffer
+        run: composer phpcs
+
+      - name: Lint
+        run: composer lint
