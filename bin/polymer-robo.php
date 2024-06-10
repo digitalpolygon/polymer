@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Bootstrap BLT.
+ * Bootstrap Polymer.
  */
 
 $repo_root = find_repo_root();
@@ -17,9 +17,9 @@ require_once __DIR__ . '/polymer-robo-run.php';
 /**
  * Finds the root directory for the repository.
  *
- * Ordinarily this function is robust, but it can fail if you've symlinked BLT
+ * Ordinarily this function is robust, but it can fail if you've symlinked Polymer
  * into your vendor directory (as with a Composer path repository) and are not
- * running commands from the project root. In this state, BLT has no possible
+ * running commands from the project root. In this state, Polymer has no possible
  * way to identify the root directory.
  *
  * @return bool|string
@@ -63,7 +63,7 @@ function find_repo_root() {
  *   file.
  */
 function find_directory_containing_files($working_directory, array $files, $max_height = 10) {
-    // Find the root directory of the git repository containing BLT.
+    // Find the root directory of the git repository containing Polymer.
     // We traverse the file tree upwards $max_height times until we find $files.
     $file_path = $working_directory;
     for ($i = 0; $i <= $max_height; $i++) {

@@ -6,10 +6,10 @@
  */
 
 use DigitalPolygon\Polymer\Polymer;
+use DigitalPolygon\Polymer\Config\ConfigInitializer;
 use Robo\Common\TimeKeeper;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Robo\Config\Config;
 
 // Start Timer.
 $timer = new TimeKeeper();
@@ -24,7 +24,11 @@ if ($output->isVerbose()) {
     $output->writeln("<comment>Polymer version " . Polymer::getVersion() . "</comment>");
 }
 
-$config = new Config();
+// Initialize configuration.
+$repo_root = find_repo_root();
+$config_initializer = new ConfigInitializer($repo_root, $input);
+$config = $config_initializer->initialize();
+
 // Execute command.
 // phpcs:ignore
 $polymer = new Polymer($config, $input, $output);

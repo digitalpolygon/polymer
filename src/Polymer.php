@@ -44,7 +44,7 @@ class Polymer implements ContainerAwareInterface {
    * Object constructor.
    *
    * @param \Config\Config $config
-   *   The BLT configuration.
+   *   The Polymer configuration.
    * @param \Symfony\Component\Console\Input\InputInterface $input
    *   The input.
    * @param \Symfony\Component\Console\Output\OutputInterface $output
