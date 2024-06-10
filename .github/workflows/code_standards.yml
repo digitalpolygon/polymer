@@ -14,6 +14,7 @@ jobs:
       runs-on: ubuntu-latest
       strategy:
         matrix:
+          fail-fast: false
           php_version: [8.1, 8.2]
       steps:
       - name: Checkout code
@@ -25,10 +26,10 @@ jobs:
           php-version: ${{ matrix.php_version }}
 
       - name: Install Composer dependencies
-        run: composer install
+        run: composer install --no-interaction
 
       - name: Run PHP_CodeSniffer
-        run: composer phpcs
+        run: composer cs
 
       - name: Lint
         run: composer lint
