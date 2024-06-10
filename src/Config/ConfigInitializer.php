@@ -35,7 +35,7 @@ class ConfigInitializer
   /**
    * Processor.
    *
-   * @var \Consolidation\Config\Loader\YamlConfigLoader
+   * @var \Consolidation\Config\Loader\ConfigProcessor
    */
     protected $processor;
 
@@ -108,7 +108,6 @@ class ConfigInitializer
    * Load config.
    *
    * @return $this
-   *   Config.
    */
     public function loadProjectConfig(): static
     {
@@ -132,16 +131,16 @@ class ConfigInitializer
   /**
    * Determine env.
    *
-   * @return string|bool
+   * @return string
    *   The Env.
    */
-    public function determineEnvironment(): mixed
+    public function determineEnvironment(): string
     {
-      // Support --environment=local.
-        if ($this->input->hasParameterOption('--environment')) {
-            return $this->input->getParameterOption('--environment');
+        $default = 'local';
+        $environment = $this->input->getParameterOption('--environment', $default);
+        if (is_string($environment)) {
+            return $environment;
         }
-      // @todo: get the env from an EnvironmentDetector helper class.
-        return 'local';
+        return $default;
     }
 }
