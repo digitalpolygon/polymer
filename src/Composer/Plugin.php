@@ -6,7 +6,8 @@ use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 
-class Plugin implements PluginInterface {
+class Plugin implements PluginInterface
+{
     /**
      * @var Composer
      */

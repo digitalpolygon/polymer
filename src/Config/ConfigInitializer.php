@@ -9,42 +9,42 @@ use Symfony\Component\Console\Input\InputInterface;
 /**
  * Config Initializer.
  */
-class ConfigInitializer {
-
+class ConfigInitializer
+{
   /**
    * Config.
    *
    * @var \DigitalPolygon\Polymer\Config\PolymerConfig
    */
-  protected $config;
+    protected $config;
 
   /**
    * Input.
    *
    * @var \Symfony\Component\Console\Input\InputInterface
    */
-  protected $input;
+    protected $input;
 
   /**
    * Loader.
    *
    * @var \Consolidation\Config\Loader\YamlConfigLoader
    */
-  protected $loader;
+    protected $loader;
 
   /**
    * Processor.
    *
    * @var \Consolidation\Config\Loader\YamlConfigLoader
    */
-  protected $processor;
+    protected $processor;
 
   /**
    * Environment.
    *
    * @var string
    */
-  protected $environment;
+    protected $environment;
 
   /**
    * ConfigInitializer constructor.
@@ -54,12 +54,13 @@ class ConfigInitializer {
    * @param \Symfony\Component\Console\Input\InputInterface $input
    *   Input.
    */
-  public function __construct($repo_root, InputInterface $input) {
-    $this->input = $input;
-    $this->config = new PolymerConfig($repo_root);
-    $this->loader = new YamlConfigLoader();
-    $this->processor = new ConfigProcessor();
-  }
+    public function __construct($repo_root, InputInterface $input)
+    {
+        $this->input = $input;
+        $this->config = new PolymerConfig($repo_root);
+        $this->loader = new YamlConfigLoader();
+        $this->processor = new ConfigProcessor();
+    }
 
   /**
    * Initialize.
@@ -67,14 +68,15 @@ class ConfigInitializer {
    * @return \DigitalPolygon\Polymer\Config\PolymerConfig
    *   The Polymer Config.
    */
-  public function initialize(): PolymerConfig {
-    $environment = $this->determineEnvironment();
-    $this->environment = $environment;
-    $this->config->set('environment', $environment);
-    $this->loadConfigFiles();
-    $this->processConfigFiles();
-    return $this->config;
-  }
+    public function initialize(): PolymerConfig
+    {
+        $environment = $this->determineEnvironment();
+        $this->environment = $environment;
+        $this->config->set('environment', $environment);
+        $this->loadConfigFiles();
+        $this->processConfigFiles();
+        return $this->config;
+    }
 
   /**
    * Load config.
@@ -82,11 +84,12 @@ class ConfigInitializer {
    * @return $this
    *   Config.
    */
-  public function loadConfigFiles(): static {
-    $this->loadDefaultConfig();
-    $this->loadProjectConfig();
-    return $this;
-  }
+    public function loadConfigFiles(): static
+    {
+        $this->loadDefaultConfig();
+        $this->loadProjectConfig();
+        return $this;
+    }
 
   /**
    * Load config.
@@ -94,11 +97,12 @@ class ConfigInitializer {
    * @return $this
    *   Config.
    */
-  public function loadDefaultConfig(): static {
-    $this->processor->add($this->config->export());
-    $this->processor->extend($this->loader->load($this->config->get('polymer.root') . '/config/default.yml'));
-    return $this;
-  }
+    public function loadDefaultConfig(): static
+    {
+        $this->processor->add($this->config->export());
+        $this->processor->extend($this->loader->load($this->config->get('polymer.root') . '/config/default.yml'));
+        return $this;
+    }
 
   /**
    * Load config.
@@ -106,11 +110,12 @@ class ConfigInitializer {
    * @return $this
    *   Config.
    */
-  public function loadProjectConfig(): static {
-    $this->processor->extend($this->loader->load($this->config->get('repo.root') . '/polymer.yml'));
-    $this->processor->extend($this->loader->load($this->config->get('repo.root') . "/{$this->environment}.polymer.yml"));
-    return $this;
-  }
+    public function loadProjectConfig(): static
+    {
+        $this->processor->extend($this->loader->load($this->config->get('repo.root') . '/polymer.yml'));
+        $this->processor->extend($this->loader->load($this->config->get('repo.root') . "/{$this->environment}.polymer.yml"));
+        return $this;
+    }
 
   /**
    * Process config.
@@ -118,10 +123,11 @@ class ConfigInitializer {
    * @return $this
    *   Config.
    */
-  public function processConfigFiles(): static {
-    $this->config->replace($this->processor->export());
-    return $this;
-  }
+    public function processConfigFiles(): static
+    {
+        $this->config->replace($this->processor->export());
+        return $this;
+    }
 
   /**
    * Determine env.
@@ -129,13 +135,13 @@ class ConfigInitializer {
    * @return string|bool
    *   The Env.
    */
-  public function determineEnvironment(): mixed {
-    // Support --environment=local.
-    if ($this->input->hasParameterOption('--environment')) {
-      return $this->input->getParameterOption('--environment');
+    public function determineEnvironment(): mixed
+    {
+      // Support --environment=local.
+        if ($this->input->hasParameterOption('--environment')) {
+            return $this->input->getParameterOption('--environment');
+        }
+      // @todo: get the env from an EnvironmentDetector helper class.
+        return 'local';
     }
-    // @todo: get the env from an EnvironmentDetector helper class.
-    return 'local';
-  }
-
 }

@@ -6,3 +6,6 @@ vendor/
 
 # Ignore local scratch space.
 scratch/
+
+# Ignore local configuration files.
+phpcs.xml
