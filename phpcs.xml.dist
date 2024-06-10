@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="polymer">
+    <description>Default PHP CodeSniffer configuration for Polymer project.</description>
+    <file>src</file>
+    <rule ref="PSR12"/>
+
+    <!--    Keep us sane-->
+<!--    <rule ref="Generic.ControlStructures.InlineControlStructure.NotAllowed"><severity>0</severity></rule>-->
+<!--    <rule ref="PSR2.Methods.MethodDeclaration.Underscore"><severity>0</severity></rule>-->
+<!--    <rule ref="PSR12.Files.FileHeader.IncorrectOrder"><severity>0</severity></rule>-->
+
+    <arg value="n" />
+    <arg value="s" />
+</ruleset>

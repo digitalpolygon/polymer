@@ -17,28 +17,28 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * The Polymer Robo application.
  */
-class Polymer implements ContainerAwareInterface {
+class Polymer implements ContainerAwareInterface
+{
+    use ContainerAwareTrait;
+    use ConfigAwareTrait;
 
-  use ContainerAwareTrait;
-  use ConfigAwareTrait;
+    const APPLICATION_NAME = 'Polymer';
 
-  const APPLICATION_NAME = 'Polymer';
-
-  const REPOSITORY = 'digitalpolygon/polymer';
+    const REPOSITORY = 'digitalpolygon/polymer';
 
   /**
    * The Robo task runner.
    *
    * @var \Runner
    */
-  private $runner;
+    private $runner;
 
   /**
    * An array of commands available to the application.
    *
    * @var string[]
    */
-  private $commands = [];
+    private $commands = [];
 
   /**
    * Object constructor.
@@ -50,21 +50,23 @@ class Polymer implements ContainerAwareInterface {
    * @param \Symfony\Component\Console\Output\OutputInterface $output
    *   The output.
    */
-  public function __construct(Config $config, InputInterface $input, OutputInterface $output) {
-    // Create Application.
-    $this->setConfig($config);
-    $application = new Application(self::APPLICATION_NAME, $this->getVersion());
-    // Create and configure container.
-    $container = Robo::createContainer($application, $config);
-    Robo::finalizeContainer($container);
-    // Discover commands.
-    $this->discoverCommands();
-    // Instantiate Robo Runner.
-    $this->runner = new RoboRunner();
-    $this->setContainer($container);;
-    $this->runner->setContainer($container);
-    $this->runner->setSelfUpdateRepository(self::REPOSITORY);
-  }
+    public function __construct(Config $config, InputInterface $input, OutputInterface $output)
+    {
+      // Create Application.
+        $this->setConfig($config);
+        $application = new Application(self::APPLICATION_NAME, $this->getVersion());
+      // Create and configure container.
+        $container = Robo::createContainer($application, $config);
+        Robo::finalizeContainer($container);
+      // Discover commands.
+        $this->discoverCommands();
+      // Instantiate Robo Runner.
+        $this->runner = new RoboRunner();
+        $this->setContainer($container);
+        ;
+        $this->runner->setContainer($container);
+        $this->runner->setSelfUpdateRepository(self::REPOSITORY);
+    }
 
   /**
    * Runs the instantiated Polymer application.
@@ -80,30 +82,33 @@ class Polymer implements ContainerAwareInterface {
    * @throws \Psr\Container\ContainerExceptionInterface
    * @throws \Psr\Container\NotFoundExceptionInterface
    */
-  public function run(InputInterface $input, OutputInterface $output): int {
-    $application = $this->getContainer()->get('application');
-    $status_code = $this->runner->run($input, $output, $application, $this->commands);
-    return $status_code;
-  }
+    public function run(InputInterface $input, OutputInterface $output): int
+    {
+        $application = $this->getContainer()->get('application');
+        $status_code = $this->runner->run($input, $output, $application, $this->commands);
+        return $status_code;
+    }
 
   /**
    * Gets the application version.
    */
-  public static function getVersion(): string {
-    return InstalledVersions::getPrettyVersion('digitalpolygon/polymer');
-  }
+    public static function getVersion(): string
+    {
+        return InstalledVersions::getPrettyVersion('digitalpolygon/polymer');
+    }
 
   /**
    * Discovers command classes which are shipped with core Polymer.
    */
-  private function discoverCommands(): void {
-    $discovery = new CommandFileDiscovery();
-    $discovery->setIncludeFilesAtBase(TRUE);
-    $discovery->setSearchPattern('*Command.php');
-    $discovery->setSearchLocations([]);
-    $discovery->setSearchDepth(3);
-    $this->commands = $discovery->discover($this->getBuiltinCommandFilePaths(), $this->getBuiltinCommandNamespace());
-  }
+    private function discoverCommands(): void
+    {
+        $discovery = new CommandFileDiscovery();
+        $discovery->setIncludeFilesAtBase(true);
+        $discovery->setSearchPattern('*Command.php');
+        $discovery->setSearchLocations([]);
+        $discovery->setSearchDepth(3);
+        $this->commands = $discovery->discover($this->getBuiltinCommandFilePaths(), $this->getBuiltinCommandNamespace());
+    }
 
   /**
    * Retrieve paths for all built-in command files.
@@ -111,11 +116,12 @@ class Polymer implements ContainerAwareInterface {
    * @return array
    *   An array containing paths to built-in command files.
    */
-  private function getBuiltinCommandFilePaths(): array {
-    return [
-      __DIR__ . '/Commands',
-    ];
-  }
+    private function getBuiltinCommandFilePaths(): array
+    {
+        return [
+        __DIR__ . '/Commands',
+        ];
+    }
 
   /**
    * Retrieve base namespace for all built-in commands.
@@ -123,8 +129,8 @@ class Polymer implements ContainerAwareInterface {
    * @return string
    *   The base namespace for all built-in commands.
    */
-  private function getBuiltinCommandNamespace(): string {
-    return 'DigitalPolygon\Polymer\Commands';
-  }
-
+    private function getBuiltinCommandNamespace(): string
+    {
+        return 'DigitalPolygon\Polymer\Commands';
+    }
 }
