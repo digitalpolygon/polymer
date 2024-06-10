@@ -13,8 +13,8 @@ jobs:
       name: Code Guidelines
       runs-on: ubuntu-latest
       strategy:
+        fail-fast: false
         matrix:
-          fail-fast: false
           php_version: [8.1, 8.2]
       steps:
       - name: Checkout code
