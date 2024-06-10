@@ -4,20 +4,20 @@ namespace DigitalPolygon\Polymer;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use Composer\InstalledVersions;
-use League\Container\ContainerAwareInterface;
+use League\Container\Container;
 use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Config\Config;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
-use Symfony\Component\Console\Application;
+use Robo\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * The Polymer Robo application.
  */
-class Polymer implements ContainerAwareInterface
+class Polymer
 {
     use ContainerAwareTrait;
     use ConfigAwareTrait;
@@ -29,41 +29,41 @@ class Polymer implements ContainerAwareInterface
   /**
    * The Robo task runner.
    *
-   * @var \Runner
+   * @var RoboRunner
    */
     private $runner;
 
   /**
    * An array of commands available to the application.
    *
-   * @var string[]
+   * @var array<mixed>[]
    */
     private $commands = [];
 
-  /**
-   * Object constructor.
-   *
-   * @param \Config\Config $config
-   *   The Polymer configuration.
-   * @param \Symfony\Component\Console\Input\InputInterface $input
-   *   The input.
-   * @param \Symfony\Component\Console\Output\OutputInterface $output
-   *   The output.
-   */
-    public function __construct(Config $config, InputInterface $input, OutputInterface $output)
+    /**
+     * @var \Robo\Application
+     */
+    private Application $application;
+
+    /**
+     * Object constructor.
+     *
+     * @param \Robo\Config\Config $config
+     */
+    public function __construct(Config $config)
     {
       // Create Application.
         $this->setConfig($config);
-        $application = new Application(self::APPLICATION_NAME, $this->getVersion());
+        $this->application = new Application(self::APPLICATION_NAME, $this->getVersion());
       // Create and configure container.
-        $container = Robo::createContainer($application, $config);
+        /** @var Container $container */
+        $container = Robo::createContainer($this->application, $config);
         Robo::finalizeContainer($container);
       // Discover commands.
         $this->discoverCommands();
       // Instantiate Robo Runner.
         $this->runner = new RoboRunner();
         $this->setContainer($container);
-        ;
         $this->runner->setContainer($container);
         $this->runner->setSelfUpdateRepository(self::REPOSITORY);
     }
@@ -84,8 +84,7 @@ class Polymer implements ContainerAwareInterface
    */
     public function run(InputInterface $input, OutputInterface $output): int
     {
-        $application = $this->getContainer()->get('application');
-        $status_code = $this->runner->run($input, $output, $application, $this->commands);
+        $status_code = $this->runner->run($input, $output, $this->application, $this->commands);
         return $status_code;
     }
 
@@ -94,7 +93,7 @@ class Polymer implements ContainerAwareInterface
    */
     public static function getVersion(): string
     {
-        return InstalledVersions::getPrettyVersion('digitalpolygon/polymer');
+        return InstalledVersions::getPrettyVersion('digitalpolygon/polymer') ?? 'latest';
     }
 
   /**
@@ -113,7 +112,7 @@ class Polymer implements ContainerAwareInterface
   /**
    * Retrieve paths for all built-in command files.
    *
-   * @return array
+   * @return string[]
    *   An array containing paths to built-in command files.
    */
     private function getBuiltinCommandFilePaths(): array

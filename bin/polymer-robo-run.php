@@ -31,7 +31,7 @@ $config = $config_initializer->initialize();
 
 // Execute command.
 // phpcs:ignore
-$polymer = new Polymer($config, $input, $output);
+$polymer = new Polymer($config);
 $status_code = (int) $polymer->run($input, $output);
 
 if (!$input->getFirstArgument() || $input->getFirstArgument() == 'list') {
