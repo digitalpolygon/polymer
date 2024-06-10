@@ -1,0 +1,8 @@
+project:
+  human_name: My Polymer site
+  machine_name: my_polymer_site
+  local:
+    hostname: local.${project.machine_name}.com
+    protocol: http
+    uri: ${project.local.protocol}://${project.local.hostname}
+  type: php
