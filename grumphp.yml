@@ -1,3 +1,5 @@
 grumphp:
     hooks_dir: grumphp/hooks
-    tasks: { phpcs: null }
+    tasks:
+        phpcs: null
+        phpstan: null
