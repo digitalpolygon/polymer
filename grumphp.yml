@@ -1,0 +1,3 @@
+grumphp:
+    hooks_dir: grumphp/hooks
+    tasks: { phpcs: null }
