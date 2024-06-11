@@ -32,7 +32,8 @@
     },
     "sort-packages": true,
     "allow-plugins": {
-      "phpstan/extension-installer": true
+      "phpstan/extension-installer": true,
+      "phpro/grumphp-shim": true
     }
   },
   "extra": {
@@ -43,6 +44,7 @@
   ],
   "require-dev": {
     "composer/composer": "^2.7",
+    "phpro/grumphp-shim": "^2.5",
     "phpstan/extension-installer": "^1.4",
     "phpstan/phpstan": "^1.11",
     "squizlabs/php_codesniffer": "^3"
