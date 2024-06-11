@@ -5,6 +5,7 @@ namespace DigitalPolygon\Polymer;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use Composer\InstalledVersions;
 use League\Container\Container;
+use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Config\Config;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * The Polymer Robo application.
  */
-class Polymer
+class Polymer implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
     use ConfigAwareTrait;
