@@ -22,7 +22,7 @@
   "autoload": {
     "psr-4": {
       "DigitalPolygon\\Polymer\\": "src/",
-      "DigitalPolygon\\PolymerTest\\PHPStan\\": "test/phpstan/src/"
+      "DigitalPolygon\\PolymerTest\\": "test/src/"
     }
   },
   "config": {
@@ -48,9 +48,9 @@
     "squizlabs/php_codesniffer": "^3"
   },
   "scripts": {
-    "lint": "find src tests/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
+    "lint": "find src test/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
     "cs": "phpcs",
-    "sa": "phpstan analyse -l 9 src/",
+    "sa": "phpstan analyse -c phpstan.neon",
     "validations": [
       "@lint",
       "@cs",
