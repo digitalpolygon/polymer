@@ -27,18 +27,18 @@ class Polymer implements ContainerAwareInterface
 
     const REPOSITORY = 'digitalpolygon/polymer';
 
-  /**
-   * The Robo task runner.
-   *
-   * @var RoboRunner
-   */
+    /**
+     * The Robo task runner.
+     *
+     * @var RoboRunner
+     */
     private $runner;
 
-  /**
-   * An array of commands available to the application.
-   *
-   * @var array<mixed>[]
-   */
+    /**
+     * An array of commands available to the application.
+     *
+     * @var array<mixed>[]
+     */
     private $commands = [];
 
     /**
@@ -53,53 +53,53 @@ class Polymer implements ContainerAwareInterface
      */
     public function __construct(Config $config)
     {
-      // Create Application.
+        // Create Application.
         $this->setConfig($config);
         $this->application = new Application(self::APPLICATION_NAME, $this->getVersion());
-      // Create and configure container.
+        // Create and configure container.
         /** @var Container $container */
         $container = Robo::createContainer($this->application, $config);
         Robo::finalizeContainer($container);
-      // Discover commands.
+        // Discover commands.
         $this->discoverCommands();
-      // Instantiate Robo Runner.
+        // Instantiate Robo Runner.
         $this->runner = new RoboRunner();
         $this->setContainer($container);
         $this->runner->setContainer($container);
         $this->runner->setSelfUpdateRepository(self::REPOSITORY);
     }
 
-  /**
-   * Runs the instantiated Polymer application.
-   *
-   * @param \Symfony\Component\Console\Input\InputInterface $input
-   *   An input object to run the application with.
-   * @param \Symfony\Component\Console\Output\OutputInterface $output
-   *   An output object to run the application with.
-   *
-   * @return int
-   *   The exiting status code of the application.
-   *
-   * @throws \Psr\Container\ContainerExceptionInterface
-   * @throws \Psr\Container\NotFoundExceptionInterface
-   */
+    /**
+     * Runs the instantiated Polymer application.
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     *   An input object to run the application with.
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *   An output object to run the application with.
+     *
+     * @return int
+     *   The exiting status code of the application.
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     public function run(InputInterface $input, OutputInterface $output): int
     {
         $status_code = $this->runner->run($input, $output, $this->application, $this->commands);
         return $status_code;
     }
 
-  /**
-   * Gets the application version.
-   */
+    /**
+     * Gets the application version.
+     */
     public static function getVersion(): string
     {
         return InstalledVersions::getPrettyVersion('digitalpolygon/polymer') ?? 'latest';
     }
 
-  /**
-   * Discovers command classes which are shipped with core Polymer.
-   */
+    /**
+     * Discovers command classes which are shipped with core Polymer.
+     */
     private function discoverCommands(): void
     {
         $discovery = new CommandFileDiscovery();
@@ -107,28 +107,31 @@ class Polymer implements ContainerAwareInterface
         $discovery->setSearchPattern('*Command.php');
         $discovery->setSearchLocations([]);
         $discovery->setSearchDepth(3);
-        $this->commands = $discovery->discover($this->getBuiltinCommandFilePaths(), $this->getBuiltinCommandNamespace());
+        $this->commands = $discovery->discover(
+            $this->getBuiltinCommandFilePaths(),
+            $this->getBuiltinCommandNamespace()
+        );
     }
 
-  /**
-   * Retrieve paths for all built-in command files.
-   *
-   * @return string[]
-   *   An array containing paths to built-in command files.
-   */
+    /**
+     * Retrieve paths for all built-in command files.
+     *
+     * @return string[]
+     *   An array containing paths to built-in command files.
+     */
     private function getBuiltinCommandFilePaths(): array
     {
         return [
-        __DIR__ . '/Commands',
+            __DIR__ . '/Commands',
         ];
     }
 
-  /**
-   * Retrieve base namespace for all built-in commands.
-   *
-   * @return string
-   *   The base namespace for all built-in commands.
-   */
+    /**
+     * Retrieve base namespace for all built-in commands.
+     *
+     * @return string
+     *   The base namespace for all built-in commands.
+     */
     private function getBuiltinCommandNamespace(): string
     {
         return 'DigitalPolygon\Polymer\Commands';

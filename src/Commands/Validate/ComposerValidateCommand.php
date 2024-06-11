@@ -12,29 +12,29 @@ class ComposerValidateCommand extends Tasks
 {
     use ConfigAwareTrait;
 
-  /**
-   * Check security vulnerability in composer packages.
-   *
-   * @param array<string,mixed> $options
-   *   An associative array of options:
-   *   - no_dev: Disables auditing of require-dev packages.
-   *   - locked: Audit based on the lock file instead of the installed
-   *   packages.
-   *
-   * @option $no_dev Disables auditing of require-dev packages.
-   * @option $locked Audit based on the lock file instead of the installed
-   *   packages.
-   *
-   * @command composer:validate:security
-   *
-   * @usage composer:validate:security
-   * @usage composer:validate:security --no-dev --locked
-   *
-   * @return int
-   *   The exit code from the task result.
-   *
-   * @throws \Robo\Exception\TaskException
-   */
+    /**
+     * Check security vulnerability in composer packages.
+     *
+     * @param array<string,mixed> $options
+     *   An associative array of options:
+     *   - no_dev: Disables auditing of require-dev packages.
+     *   - locked: Audit based on the lock file instead of the installed
+     *   packages.
+     *
+     * @option $no_dev Disables auditing of require-dev packages.
+     * @option $locked Audit based on the lock file instead of the installed
+     *   packages.
+     *
+     * @command composer:validate:security
+     *
+     * @usage composer:validate:security
+     * @usage composer:validate:security --no-dev --locked
+     *
+     * @return int
+     *   The exit code from the task result.
+     *
+     * @throws \Robo\Exception\TaskException
+     */
     public function security(array $options = ['--no_dev' => false, '--locked' => false]): int
     {
         // Show start task message.
@@ -57,22 +57,24 @@ class ComposerValidateCommand extends Tasks
             return $result->getExitCode();
         } else {
             $this->say($result->getMessage());
-            throw new \RuntimeException('One or more composer packages in your project contains security vulnerability, or you might be utilizing abandoned packages.');
+            throw new \RuntimeException(
+                'One or more composer packages in your project contains security vulnerability, or you might be utilizing abandoned packages.'
+            );
         }
     }
 
-  /**
-   * Prepare options for the command.
-   *
-   * @param array<string,mixed> $options
-   *   An associative array of options:
-   *   - no_dev: Disables auditing of require-dev packages.
-   *   - locked: Audit based on the lock file instead of the installed
-   *   packages.
-   *
-   * @return string
-   *   The exit code from the task result.
-   */
+    /**
+     * Prepare options for the command.
+     *
+     * @param array<string,mixed> $options
+     *   An associative array of options:
+     *   - no_dev: Disables auditing of require-dev packages.
+     *   - locked: Audit based on the lock file instead of the installed
+     *   packages.
+     *
+     * @return string
+     *   The exit code from the task result.
+     */
     private function formatCommandOptions(array $options): string
     {
         $cmd_options = '';
@@ -85,17 +87,17 @@ class ComposerValidateCommand extends Tasks
         return $cmd_options;
     }
 
-  /**
-   * Gets a config value for a given key.
-   *
-   * @param string $key
-   *   The config key.
-   * @param string|null $default
-   *   The default value if the key does not exist in config.
-   *
-   * @return mixed
-   *   The config value, or else the default value if they key does not exist.
-   */
+    /**
+     * Gets a config value for a given key.
+     *
+     * @param string $key
+     *   The config key.
+     * @param string|null $default
+     *   The default value if the key does not exist in config.
+     *
+     * @return mixed
+     *   The config value, or else the default value if they key does not exist.
+     */
     private function getConfigValue($key, $default = null)
     {
         // @phpstan-ignore nullsafe.neverNull

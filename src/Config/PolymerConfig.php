@@ -9,12 +9,12 @@ use Robo\Config\Config;
  */
 class PolymerConfig extends Config
 {
-  /**
-   * DefaultConfig constructor.
-   *
-   * @param string $repo_root
-   *   The repository root of the project that depends on Polymer.
-   */
+    /**
+     * DefaultConfig constructor.
+     *
+     * @param string $repo_root
+     *   The repository root of the project that depends on Polymer.
+     */
     public function __construct($repo_root)
     {
         parent::__construct();
