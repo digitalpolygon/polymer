@@ -3,3 +3,4 @@ grumphp:
     tasks:
         phpcs: null
         phpstan: null
+        phplint: null
