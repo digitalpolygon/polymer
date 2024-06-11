@@ -15,7 +15,7 @@ class ComposerValidateCommand extends Tasks
   /**
    * Check security vulnerability in composer packages.
    *
-   * @param array $options
+   * @param array<string,mixed> $options
    *   An associative array of options:
    *   - no_dev: Disables auditing of require-dev packages.
    *   - locked: Audit based on the lock file instead of the installed
@@ -37,19 +37,21 @@ class ComposerValidateCommand extends Tasks
    */
     public function security(array $options = ['--no_dev' => false, '--locked' => false]): int
     {
-      // Show start task message.
+        // Show start task message.
         $this->say("Checking security vulnerability in composer packages...");
-      // Prepare options for the task command.
+        // Prepare options for the task command.
         $cmd_options = $this->formatCommandOptions($options);
-      // Define the task.
+        // Define the task.
         $task = $this->taskExecStack();
         if ($dir = $this->getConfigValue('repo.root')) {
+            // @phpstan-ignore method.notFound
             $task->dir($dir);
         }
-      // Execute the task.
+        // Execute the task.
+        // @phpstan-ignore method.notFound
         $command = $task->exec("composer audit --format=table --ansi $cmd_options");
         $result = $command->run();
-      // Parse the result.
+        // Parse the result.
         if ($result->wasSuccessful()) {
             $this->io()->success('Security check successfully passed!');
             return $result->getExitCode();
@@ -60,9 +62,9 @@ class ComposerValidateCommand extends Tasks
     }
 
   /**
-   * Prepare options for the command..
+   * Prepare options for the command.
    *
-   * @param array $options
+   * @param array<string,mixed> $options
    *   An associative array of options:
    *   - no_dev: Disables auditing of require-dev packages.
    *   - locked: Audit based on the lock file instead of the installed
@@ -88,17 +90,15 @@ class ComposerValidateCommand extends Tasks
    *
    * @param string $key
    *   The config key.
-   * @param mixed|null $default
+   * @param string|null $default
    *   The default value if the key does not exist in config.
    *
-   * @return mixed|null
+   * @return mixed
    *   The config value, or else the default value if they key does not exist.
    */
     private function getConfigValue($key, $default = null)
     {
-        if (!$this->getConfig()) {
-            return $default;
-        }
-        return $this->getConfig()->get($key, $default);
+        // @phpstan-ignore nullsafe.neverNull
+        return $this->getConfig()?->get($key, $default) ?? $default;
     }
 }

@@ -33,3 +33,6 @@ jobs:
 
       - name: Lint
         run: composer lint
+
+      - name: Run PHPStan
+        run: composer sa

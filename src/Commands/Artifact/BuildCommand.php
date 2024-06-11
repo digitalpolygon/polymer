@@ -11,7 +11,7 @@ class BuildCommand extends Tasks
      *
      * @command artifact:build
      */
-    public function buildArtifact()
+    public function buildArtifact(): void
     {
         $this->output()->writeln('Building artifact...');
     }

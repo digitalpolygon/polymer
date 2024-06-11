@@ -21,7 +21,8 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "DigitalPolygon\\Polymer\\": "src/"
+      "DigitalPolygon\\Polymer\\": "src/",
+      "DigitalPolygon\\PolymerTest\\": "test/src/"
     }
   },
   "config": {
@@ -29,7 +30,10 @@
     "platform": {
       "php": "8.1"
     },
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "phpstan/extension-installer": true
+    }
   },
   "extra": {
     "class": "DigitalPolygon\\Polymer\\Composer\\Plugin"
@@ -39,10 +43,18 @@
   ],
   "require-dev": {
     "composer/composer": "^2.7",
+    "phpstan/extension-installer": "^1.4",
+    "phpstan/phpstan": "^1.11",
     "squizlabs/php_codesniffer": "^3"
   },
   "scripts": {
-    "lint": "find src tests/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
-    "cs": "phpcs"
+    "lint": "find src test/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
+    "cs": "phpcs",
+    "sa": "phpstan analyse -c phpstan.neon",
+    "validations": [
+      "@lint",
+      "@cs",
+      "@sa"
+    ]
   }
 }

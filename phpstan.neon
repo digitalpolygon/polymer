@@ -1,0 +1,8 @@
+parameters:
+    level: 9
+    paths:
+        - src
+#services:
+#    -
+#        class: DigitalPolygon\PolymerTest\PHPStan\CollectionBuilderReflectionExtension
+#        tags: [phpstan.broker.methodsClassReflectionExtension]
