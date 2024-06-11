@@ -3,6 +3,7 @@
 namespace DigitalPolygon\Polymer\Commands\Validate;
 
 use Robo\Common\ConfigAwareTrait;
+use Robo\Symfony\ConsoleIO;
 use Robo\Tasks;
 
 /**
@@ -35,7 +36,7 @@ class ComposerValidateCommand extends Tasks
      *
      * @throws \Robo\Exception\TaskException
      */
-    public function security(array $options = ['--no_dev' => false, '--locked' => false]): int
+    public function security(ConsoleIO $io, array $options = ['--no_dev' => false, '--locked' => false]): int
     {
         // Show start task message.
         $this->say("Checking security vulnerability in composer packages...");
@@ -53,7 +54,7 @@ class ComposerValidateCommand extends Tasks
         $result = $command->run();
         // Parse the result.
         if ($result->wasSuccessful()) {
-            $this->io()->success('Security check successfully passed!');
+            $io->success('Security check successfully passed!');
             return $result->getExitCode();
         } else {
             $this->say($result->getMessage());
@@ -98,7 +99,7 @@ class ComposerValidateCommand extends Tasks
      * @return mixed
      *   The config value, or else the default value if they key does not exist.
      */
-    private function getConfigValue($key, $default = null)
+    private function getConfigValue($key, $default = null): mixed
     {
         // @phpstan-ignore nullsafe.neverNull
         return $this->getConfig()?->get($key, $default) ?? $default;
