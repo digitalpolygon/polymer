@@ -2,13 +2,14 @@
 
 namespace DigitalPolygon\Polymer;
 
+use Composer\Autoload\ClassLoader;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use Composer\InstalledVersions;
+use DigitalPolygon\Polymer\Config\PolymerConfig;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
-use Robo\Config\Config;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Robo\Application;
@@ -49,24 +50,35 @@ class Polymer implements ContainerAwareInterface
     /**
      * Object constructor.
      *
-     * @param \Robo\Config\Config $config
+     * @param \DigitalPolygon\Polymer\Config\PolymerConfig $config
+     *   The Polymer configuration.
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     *   The input service.
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *   The output service.
+     * @param \Composer\Autoload\ClassLoader $classLoader
+     *   The Composer classLoader.
      */
-    public function __construct(Config $config)
+    public function __construct(PolymerConfig $config, InputInterface $input, OutputInterface $output, ClassLoader $classLoader)
     {
-        // Create Application.
+        // Set the config.
         $this->setConfig($config);
-        $this->application = new Application(self::APPLICATION_NAME, $this->getVersion());
+        // Create Application.
+        $application = new Application(self::APPLICATION_NAME, $this->getVersion());
         // Create and configure container.
-        /** @var Container $container */
-        $container = Robo::createContainer($this->application, $config);
+        $container = new Container();
+        Robo::configureContainer($container, $application, $config, $input, $output, $classLoader);
         Robo::finalizeContainer($container);
+        $this->setContainer($container);
         // Discover commands.
         $this->discoverCommands();
         // Instantiate Robo Runner.
         $this->runner = new RoboRunner();
-        $this->setContainer($container);
+        $this->runner->setClassLoader($classLoader);
         $this->runner->setContainer($container);
         $this->runner->setSelfUpdateRepository(self::REPOSITORY);
+        // Set the application.
+        $this->application = $application;
     }
 
     /**
@@ -85,8 +97,7 @@ class Polymer implements ContainerAwareInterface
      */
     public function run(InputInterface $input, OutputInterface $output): int
     {
-        $status_code = $this->runner->run($input, $output, $this->application, $this->commands);
-        return $status_code;
+        return $this->runner->run($input, $output, $this->application, $this->commands);
     }
 
     /**

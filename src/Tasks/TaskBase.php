@@ -3,12 +3,13 @@
 namespace DigitalPolygon\Polymer\Tasks;
 
 use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 use Robo\Tasks;
 
 /**
  * Utility base class for Polymer commands.
  */
-abstract class TaskBase extends Tasks
+abstract class TaskBase extends Tasks implements ConfigAwareInterface
 {
     use ConfigAwareTrait;
 
@@ -71,7 +72,6 @@ abstract class TaskBase extends Tasks
      */
     protected function getConfigValue($key, $default = null): mixed
     {
-        // @phpstan-ignore nullsafe.neverNull
-        return $this->getConfig()?->get($key, $default) ?? $default;
+        return $this->getConfig()->get($key, $default) ?? $default;
     }
 }

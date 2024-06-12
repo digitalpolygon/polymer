@@ -25,13 +25,14 @@ if ($output->isVerbose()) {
 }
 
 // Initialize configuration.
+// @phpstan-ignore-next-line
 $repo_root = find_repo_root();
 $config_initializer = new ConfigInitializer($repo_root, $input);
 $config = $config_initializer->initialize();
 
 // Execute command.
-// phpcs:ignore
-$polymer = new Polymer($config);
+// phpcs:ignore @phpstan-ignore-next-line
+$polymer = new Polymer($config, $input, $output, $classLoader);
 $status_code = (int) $polymer->run($input, $output);
 
 if (!$input->getFirstArgument() || $input->getFirstArgument() == 'list') {
@@ -41,8 +42,9 @@ if (!$input->getFirstArgument() || $input->getFirstArgument() == 'list') {
 
 // Stop timer.
 $timer->stop();
-if ($output->isVerbose()) {
-    $output->writeln("<comment>" . $timer->formatDuration($timer->elapsed()) . "</comment> total time elapsed.");
+$elapsed = $timer->elapsed();
+if ($output->isVerbose() && $elapsed != null) {
+    $output->writeln("<comment>" . $timer->formatDuration($elapsed) . "</comment> total time elapsed.");
 }
 
 exit($status_code);

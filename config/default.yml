@@ -6,3 +6,11 @@ project:
     protocol: http
     uri: ${project.local.protocol}://${project.local.hostname}
   type: php
+
+deploy:
+  build-dependencies: true
+  dir: ${tmp.dir}/polymer-deploy
+  docroot: ${deploy.dir}/docroot
+  exclude_file: ${polymer.root}/scripts/polymer/deploy/deploy-exclude.txt
+  exclude_additions_file: ${repo.root}/polymer/deploy-exclude-additions.txt
+  gitignore_file: ${polymer.root}/scripts/polymer/deploy/.gitignore
