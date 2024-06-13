@@ -3,7 +3,6 @@
 namespace DigitalPolygon\Polymer\Commands\Validate;
 
 use DigitalPolygon\Polymer\Tasks\TaskBase;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Symfony\ConsoleIO;
 
 /**
