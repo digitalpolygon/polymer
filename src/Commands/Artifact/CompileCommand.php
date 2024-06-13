@@ -67,7 +67,7 @@ class CompileCommand extends TaskBase
     }
 
     /**
-     * Check security vulnerability in composer packages.
+     * Describe the build artifact command.
      *
      * @command artifact:compile:describe
      *
@@ -77,7 +77,8 @@ class CompileCommand extends TaskBase
     {
         // Collect eh build commands to execute based on the env context and recipe used.
         $commands = $this->collectBuildCommands();
-        // @todo: Display the commands to be executed along with their respective order.
+        $this->say("The 'artifact:compile' command executes the following list of commands in the specified order:");
+        $this->listCommands($commands);
     }
 
     /**

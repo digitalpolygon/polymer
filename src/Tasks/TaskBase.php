@@ -124,4 +124,19 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
     {
         return $this->getConfig()->get($key, $default) ?? $default;
     }
+
+    /**
+     * List the given command sin the order they will be executed.
+     *
+     * @param Command[] $commands
+     *   Array of Polymer commands to list.
+     */
+    protected function listCommands(array $commands): void
+    {
+        foreach ($commands as $delta => $command) {
+            $command_name = $command->getName();
+            $command_args = json_encode($command->getArgs());
+            $this->say(" [$delta] Invoke Command: '$command_name', with args: $command_args.");
+        }
+    }
 }
