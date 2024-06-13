@@ -2,6 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Commands\Validate;
 
+use Consolidation\AnnotatedCommand\Attributes\Command;
+use Consolidation\AnnotatedCommand\Attributes\Option;
+use Consolidation\AnnotatedCommand\Attributes\Usage;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Symfony\ConsoleIO;
 use Robo\Tasks;
@@ -16,28 +19,23 @@ class ComposerValidateCommand extends Tasks
     /**
      * Check security vulnerability in composer packages.
      *
-     * @param array<string,mixed> $options
-     *   An associative array of options:
-     *   - no_dev: Disables auditing of require-dev packages.
-     *   - locked: Audit based on the lock file instead of the installed
-     *   packages.
-     *
-     * @option $no_dev Disables auditing of require-dev packages.
-     * @option $locked Audit based on the lock file instead of the installed
-     *   packages.
-     *
-     * @command composer:validate:security
-     *
-     * @usage composer:validate:security
-     * @usage composer:validate:security --no-dev --locked
-     *
      * @return int
      *   The exit code from the task result.
      *
      * @throws \Robo\Exception\TaskException
      */
-    public function security(ConsoleIO $io, array $options = ['--no_dev' => false, '--locked' => false]): int
+    #[Command(name: 'composer:validate:security')]
+    #[Usage(name: 'polymer composer:validate:security', description: 'Check security vulnerability in composer packages.')]
+    #[Usage(name: 'polymer composer:validate:security --no-dev', description: 'Do not inspect dev dependencies.')]
+    #[Usage(name: 'polymer composer:validate:security --locked', description: 'Only look at what is in the lock file.')]
+    #[Option(name: 'no-dev', description: 'Disables auditing of require-dev packages.')]
+    #[Option(name: 'locked', description: 'Audit based on the lock file instead of the installed packages.')]
+    public function security(ConsoleIO $io, bool $no_dev = false, bool $locked = false): int
     {
+        $options = [
+            'no_dev' => $no_dev,
+            'locked' => $locked,
+        ];
         // Show start task message.
         $this->say("Checking security vulnerability in composer packages...");
         // Prepare options for the task command.
