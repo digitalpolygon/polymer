@@ -1,0 +1,7 @@
+project:
+  human_name: Tes Drupal 10 Site
+  machine_name: test_drupal10
+  type: drupal10
+
+deploy:
+  dir: ${tmp.dir}/polymer-deploy-drupal

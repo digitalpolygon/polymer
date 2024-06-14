@@ -1,5 +1,5 @@
-type: php
-docroot: ""
+type: drupal10
+docroot: test_drupal10/web
 php_version: "8.2"
 webserver_type: nginx-fpm
 xdebug_enabled: false

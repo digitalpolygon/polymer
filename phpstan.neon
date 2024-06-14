@@ -2,6 +2,9 @@ parameters:
     level: 9
     paths:
         - src
+    excludePaths:
+        - 'test_package'
+        - 'test_drupal10'
 #services:
 #    -
 #        class: DigitalPolygon\PolymerTest\PHPStan\CollectionBuilderReflectionExtension
