@@ -4,4 +4,4 @@
 
 set -e
 
-./docs/sphinx/sphinx.sh build
+./scripts/build-docs.sh

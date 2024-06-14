@@ -1,3 +1,4 @@
+# Ignore composer files.
 composer.lock
 vendor/
 
@@ -9,3 +10,6 @@ scratch/
 
 # Ignore local configuration files.
 phpcs.xml
+
+# Ignore docs site.
+docs_site/

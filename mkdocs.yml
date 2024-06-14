@@ -1,0 +1,58 @@
+# This file is augmented with more nav pages by drush mk:docs command.
+site_name: Polymer
+site_author: 'Les Peabody'
+site_description: A tool for facilitating WebOps workflows.
+site_dir: docs_site
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  custom_dir: docs/overrides
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - toc.integrate
+repo_url: https://github.com/digitalpolygon/polymer
+repo_name: digitalpolygon/polymer
+plugins:
+  - search
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition: {  }
+  - meta: { }
+  - pymdownx.magiclink: {  }
+  - pymdownx.keys: { }
+  - pymdownx.snippets: { }
+  - pymdownx.highlight:
+      use_pygments: true
+      # https://github.com/squidfunk/mkdocs-material/issues/506#issuecomment-338007823
+      extend_pygments_lang:
+        - name: php
+          lang: php
+          options:
+            startinline: true
+  - pymdownx.inlinehilite: { }
+  - pymdownx.superfences: { }
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+nav:
+  - Home: index.md
+  - Commands: commands.md
