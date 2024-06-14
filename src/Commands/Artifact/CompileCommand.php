@@ -75,6 +75,8 @@ class CompileCommand extends TaskBase
      */
     public function buildArtifactDescribe(): void
     {
+        // Gather build source and target information.
+        $this->initialize();
         // Collect eh build commands to execute based on the env context and recipe used.
         $commands = $this->collectBuildCommands();
         $this->say("The 'artifact:compile' command executes the following list of commands in the specified order:");
@@ -113,7 +115,7 @@ class CompileCommand extends TaskBase
         // Ensure frontend is build in the artifact directory.
         $commands[] = new Command('source:build:frontend');
         // Copy files from the source repository into the artifact.
-        $commands[] = new Command('source:build:copy');
+        $commands[] = new Command('source:build:copy', ['--deploy-dir' => $this->deployDir]);
         // Install Composer dependencies for the artifact.
         $commands[] = new Command('artifact:composer:install');
         // Remove sensitive files from the artifact directory.

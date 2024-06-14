@@ -17,7 +17,7 @@ final class Command
     /**
      * The list of arguments to be passed to the command.
      *
-     * @var array<int, string>
+     * @var array<string, string>
      */
     protected array $args;
 
@@ -26,7 +26,7 @@ final class Command
      *
      * @param string $name
      *   The command name.
-     * @param array<int, string> $args
+     * @param array<string, string> $args
      *   The list of arguments to be passed to the command.
      */
     public function __construct(string $name, array $args = [])
@@ -49,11 +49,29 @@ final class Command
     /**
      * Gets the list of arguments to be passed to the command.
      *
-     * @return array<int, string>
+     * @return array<string, string>
      *   The list of arguments to be passed to the command.
      */
     public function getArgs(): array
     {
         return $this->args;
+    }
+
+    /**
+     * Implements PHP magic __toString method to convert the command to string.
+     *
+     * @return string
+     *   A string version of the command.
+     */
+    public function __toString(): string
+    {
+        $command_name = $this->getName();
+        $args = [];
+        foreach ($this->getArgs() as $key => $value) {
+            $args[] = "$key=$value";
+        }
+        $args = implode(" ", $args);
+        $args = !empty($args) ? " $args" : null;
+        return "{$command_name}{$args}";
     }
 }

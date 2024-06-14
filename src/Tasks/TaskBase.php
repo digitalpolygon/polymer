@@ -3,12 +3,13 @@
 namespace DigitalPolygon\Polymer\Tasks;
 
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
+use Robo\Exception\TaskException;
 use Robo\Tasks;
+use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * Utility base class for Polymer commands.
@@ -45,25 +46,42 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
     protected function invokeCommands(array $commands): void
     {
         foreach ($commands as $command) {
-            $this->invokeCommand($command->getName(), $command->getArgs());
+            $this->invokeCommand($command);
         }
     }
 
     /**
      * Invokes a single Polymer command.
      *
-     * @param string $command_name
-     *   The name of the command, e.g., 'artifact:composer:install'.
-     * @param array<string> $command_args
-     *   An array of arguments to pass to the command.
+     * @param \DigitalPolygon\Polymer\Tasks\Command $command
+     *   The command, e.g., 'artifact:composer:install'.
      *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Robo\Exception\TaskException
      */
-    protected function invokeCommand(string $command_name, array $command_args = []): void
+    protected function invokeCommand(Command $command): void
     {
         // Show start task message.
-        $this->say("Invoking Command: $command_name...");
-        // @todo; Complete this.
+        $command_string = (string) $command;
+        $this->say("Invoking Command: '$command_string'");
+        // Get the Console Application instance from the container.
+        /** @var \DigitalPolygon\Polymer\ConsoleApplication $application */
+        $application = $this->getContainer()->get('application');
+        // Find the task and format its inputs.
+        $task = $application->find($command->getName());
+        $input = new ArrayInput($command->getArgs());
+        $input->setInteractive($this->input()->isInteractive());
+        // Now run the command.
+        $this->output->writeln("   <comment>$command_string</comment>");
+        $exit_code = $application->runCommand($task, $input, $this->output());
+        // The application will catch any exceptions thrown in the executed
+        // command. We must check the exit code and throw our own exception. This
+        // obviates the need to check the exit code of every invoked command.
+        if ($exit_code) {
+            $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
+            throw new TaskException($this, "Command `$command_string}` exited with code $exit_code.");
+        }
     }
 
     /**
@@ -134,9 +152,8 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
     protected function listCommands(array $commands): void
     {
         foreach ($commands as $delta => $command) {
-            $command_name = $command->getName();
-            $command_args = json_encode($command->getArgs());
-            $this->say(" [$delta] Invoke Command: '$command_name', with args: $command_args.");
+            $command_string = (string) $command;
+            $this->say(" [$delta] Invoke Command: '{$command_string}'.");
         }
     }
 }

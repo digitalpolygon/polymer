@@ -12,7 +12,6 @@ use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
-use Robo\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -40,12 +39,7 @@ class Polymer implements ContainerAwareInterface
      *
      * @var array<mixed>[]
      */
-    private $commands = [];
-
-    /**
-     * @var \Robo\Application
-     */
-    private Application $application;
+    private array $commands = [];
 
     /**
      * Object constructor.
@@ -64,7 +58,7 @@ class Polymer implements ContainerAwareInterface
         // Set the config.
         $this->setConfig($config);
         // Create Application.
-        $application = new Application(self::APPLICATION_NAME, $this->getVersion());
+        $application = new ConsoleApplication(self::APPLICATION_NAME, $this->getVersion());
         // Create and configure container.
         $container = new Container();
         Robo::configureContainer($container, $application, $config, $input, $output, $classLoader);
@@ -77,8 +71,6 @@ class Polymer implements ContainerAwareInterface
         $this->runner->setClassLoader($classLoader);
         $this->runner->setContainer($container);
         $this->runner->setSelfUpdateRepository(self::REPOSITORY);
-        // Set the application.
-        $this->application = $application;
     }
 
     /**
@@ -97,7 +89,9 @@ class Polymer implements ContainerAwareInterface
      */
     public function run(InputInterface $input, OutputInterface $output): int
     {
-        return $this->runner->run($input, $output, $this->application, $this->commands);
+        /** @var \Robo\Application $application */
+        $application = $this->getContainer()->get('application');
+        return $this->runner->run($input, $output, $application, $this->commands);
     }
 
     /**

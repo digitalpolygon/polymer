@@ -6,7 +6,7 @@ use DigitalPolygon\Polymer\Tasks\Command;
 use DigitalPolygon\Polymer\Tasks\TaskBase;
 
 /**
- * Defines commands in the "frontend:" namespace.
+ * Defines commands in the "source:build:frontend" namespace.
  */
 class FrontendCommand extends TaskBase
 {
