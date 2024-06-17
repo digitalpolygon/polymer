@@ -2,7 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Commands\Source;
 
-use DigitalPolygon\Polymer\Tasks\Command;
+use Consolidation\AnnotatedCommand\Attributes\Command;
+use Consolidation\AnnotatedCommand\Attributes\Usage;
+use DigitalPolygon\Polymer\Tasks\Command as PolymerCommand;
 use DigitalPolygon\Polymer\Tasks\TaskBase;
 
 /**
@@ -17,13 +19,15 @@ class FrontendCommand extends TaskBase
      *
      * @throws \Robo\Exception\TaskException
      */
+    #[Command(name: 'source:build:frontend')]
+    #[Usage(name: 'polymer source:build:frontend -v', description: 'Runs and builds all frontend targets.')]
     public function frontend(): void
     {
         $commands = [];
         // Ensure frontend dependencies and requirements are installed.
-        $commands[] = new Command('source:build:frontend-reqs');
+        $commands[] = new PolymerCommand('source:build:frontend-reqs');
         // Built the frontend assets.
-        $commands[] = new Command('source:build:frontend-assets');
+        $commands[] = new PolymerCommand('source:build:frontend-assets');
         // Execute the frontend build process.
         $this->invokeCommands($commands);
     }

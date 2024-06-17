@@ -2,7 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Commands\Artifact;
 
-use DigitalPolygon\Polymer\Tasks\Command;
+use Consolidation\AnnotatedCommand\Attributes\Command;
+use Consolidation\AnnotatedCommand\Attributes\Usage;
+use DigitalPolygon\Polymer\Tasks\Command as PolymerCommand;
 use DigitalPolygon\Polymer\Tasks\TaskBase;
 use Robo\Exception\TaskException;
 
@@ -16,41 +18,22 @@ class CompileCommand extends TaskBase
      *
      * @var string
      */
-    protected $deployDir;
+    protected string $deployDir;
 
     /**
      * Deploy docroot directory.
      *
      * @var string
      */
-    protected $deployDocroot;
-
-    /**
-     * Gather build source and target information.
-     *
-     * @throws \Robo\Exception\TaskException
-     */
-    public function initialize(): void
-    {
-        // @phpstan-ignore-next-line
-        $this->deployDir = $this->getConfigValue('deploy.dir');
-        // @phpstan-ignore-next-line
-        $this->deployDocroot = $this->getConfigValue('deploy.docroot');
-        if (!$this->deployDir || !$this->deployDocroot) {
-            throw new TaskException($this, 'Configuration deploy.dir and deploy.docroot must be set to run this command');
-        }
-    }
+    protected string $deployDocroot;
 
     /**
      * Builds deployment artifact.
      *
-     * @command artifact:compile
-     *
-     * @usage artifact:compile
-     * @usage artifact:compile -v
-     *
-     * @throws \Robo\Exception\TaskException
+     * @throws \Robo\Exception\TaskException|\Robo\Exception\AbortTasksException
      */
+    #[Command(name: 'artifact:compile')]
+    #[Usage(name: 'polymer artifact:compile -v', description: 'Builds deployment artifact.')]
     public function buildArtifact(): void
     {
         // Gather build source and target information.
@@ -67,12 +50,14 @@ class CompileCommand extends TaskBase
     }
 
     /**
-     * Describe the build artifact command.
+     * Describe the tasks associated with the build artifact command.
      *
      * @command artifact:compile:describe
      *
      * @usage artifact:compile:describe
      */
+    #[Command(name: 'artifact:compile:describe')]
+    #[Usage(name: 'polymer artifact:compile:describe', description: 'Describe the tasks associated with the build artifact command.')]
     public function buildArtifactDescribe(): void
     {
         // Gather build source and target information.
@@ -84,9 +69,25 @@ class CompileCommand extends TaskBase
     }
 
     /**
+     * Gather build source and target information.
+     *
+     * @throws \Robo\Exception\TaskException
+     */
+    private function initialize(): void
+    {
+        // @phpstan-ignore-next-line
+        $this->deployDir = $this->getConfigValue('deploy.dir');
+        // @phpstan-ignore-next-line
+        $this->deployDocroot = $this->getConfigValue('deploy.docroot');
+        if (!$this->deployDir || !$this->deployDocroot) {
+            throw new TaskException($this, 'Configuration deploy.dir and deploy.docroot must be set to run this command');
+        }
+    }
+
+    /**
      * Collects the filtered list of commands for the artifact build process.
      *
-     * @return Command[]
+     * @return PolymerCommand[]
      *   The filtered list of commands to be executed during the artifact build.
      */
     private function collectBuildCommands(): array
@@ -106,20 +107,20 @@ class CompileCommand extends TaskBase
     /**
      * Retrieve the default list of commands for the artifact build process.
      *
-     * @return Command[]
+     * @return PolymerCommand[]
      *   The default list of commands to be executed during the artifact build.
      */
     private function getDefaultBuildCommands(): array
     {
         $commands = [];
         // Ensure frontend is build in the artifact directory.
-        $commands[] = new Command('source:build:frontend');
+        $commands[] = new PolymerCommand('source:build:frontend');
         // Copy files from the source repository into the artifact.
-        $commands[] = new Command('source:build:copy', ['--deploy-dir' => $this->deployDir]);
+        $commands[] = new PolymerCommand('source:build:copy', ['--deploy-dir' => $this->deployDir]);
         // Install Composer dependencies for the artifact.
-        $commands[] = new Command('artifact:composer:install');
+        $commands[] = new PolymerCommand('artifact:composer:install');
         // Remove sensitive files from the artifact directory.
-        $commands[] = new Command('artifact:build:sanitize');
+        $commands[] = new PolymerCommand('artifact:build:sanitize');
 
         return $commands;
     }

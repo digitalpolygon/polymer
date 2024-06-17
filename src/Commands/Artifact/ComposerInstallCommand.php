@@ -2,6 +2,8 @@
 
 namespace DigitalPolygon\Polymer\Commands\Artifact;
 
+use Consolidation\AnnotatedCommand\Attributes\Command;
+use Consolidation\AnnotatedCommand\Attributes\Usage;
 use DigitalPolygon\Polymer\Tasks\TaskBase;
 use Robo\Contract\VerbosityThresholdInterface;
 use Robo\Exception\TaskException;
@@ -44,13 +46,10 @@ class ComposerInstallCommand extends TaskBase
     /**
      * Installs composer dependencies for artifact.
      *
-     * @command artifact:composer:install
-     *
-     * @usage artifact:composer:install
-     * @usage artifact:composer:install -v
-     *
      * @throws \Robo\Exception\TaskException
      */
+    #[Command(name: 'artifact:composer:install')]
+    #[Usage(name: 'polymer artifact:composer:install -v', description: 'Installs composer dependencies for artifact.')]
     public function composerInstall(): void
     {
         // Gather build source and target information.

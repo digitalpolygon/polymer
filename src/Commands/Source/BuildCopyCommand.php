@@ -2,6 +2,8 @@
 
 namespace DigitalPolygon\Polymer\Commands\Source;
 
+use Consolidation\AnnotatedCommand\Attributes\Command;
+use Consolidation\AnnotatedCommand\Attributes\Usage;
 use DigitalPolygon\Polymer\Tasks\TaskBase;
 use Robo\Contract\VerbosityThresholdInterface;
 use Robo\Exception\TaskException;
@@ -16,33 +18,33 @@ class BuildCopyCommand extends TaskBase
      *
      * @var string
      */
-    protected $excludeFileTemp;
+    protected string $excludeFileTemp;
 
     /**
      * Deploy directory.
      *
      * @var string
      */
-    protected $deployDir;
+    protected string $deployDir;
 
     /**
      * Source directory.
      *
      * @var string
      */
-    protected $sourceDir;
+    protected string $sourceDir;
 
     /**
      * Copies files from source repo into artifact.
      *
      * @param array<string,mixed> $options
-     * An associative array of options:
-     * - deploy-dir: The target directory to copy the artifact from the source.
-     *
-     * @command source:build:copy
+     *   An associative array of options:
+     *   - deploy-dir: The target directory to copy the artifact from the source.
      *
      * @throws \Robo\Exception\TaskException
      */
+    #[Command(name: 'source:build:copy')]
+    #[Usage(name: 'polymer source:build:copy --deploy-dir=/tmp/polymer-deploy-drupal', description: 'Copies files from source repo into artifact.')]
     public function buildCopy(array $options = ['--deploy-dir' => '']): void
     {
         // Gather build source and target information.
@@ -144,31 +146,5 @@ class BuildCopyCommand extends TaskBase
         $filtered_contents = array_unique($merged);
         file_put_contents($this->excludeFileTemp, $filtered_contents);
         return $this->excludeFileTemp;
-    }
-
-    /**
-     * Executes source:build:frontend-reqs target hook.
-     *
-     * @command source:build:frontend-reqs
-     *
-     * @return int
-     *   The task exit status code.
-     */
-    public function reqs(): int
-    {
-        return $this->invokeHook('frontend-reqs');
-    }
-
-    /**
-     * Executes source:build:frontend-assets target hook.
-     *
-     * @command source:build:frontend-assets
-     *
-     * @return int
-     *   The task exit status code.
-     */
-    public function assets(): int
-    {
-        return $this->invokeHook('frontend-assets');
     }
 }
