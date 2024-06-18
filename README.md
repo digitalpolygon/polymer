@@ -3,7 +3,9 @@
 Polymer is a tool to help enable developers facilitate their responsibilities in the WebOps space. It is a collection of
 tools and scripts that help automate the process of deploying and managing web applications.
 
-## Setup
+## Development
+
+### Setup
 
 Clone the repository and run `ddev init`.
 
@@ -21,6 +23,14 @@ Builds the documentation site for this tool.
 
     Run `ddev launch :444` to open the site in your browser after running `ddev
     build-docs`.
+
+### Environments
+
+#### Pantheon sandbox
+
+Test necessary features against the Pantheon sandbox environment.
+
+https://dashboard.pantheon.io/sites/397bab3d-b410-4bb1-b492-6bc3bdcb79c0#dev/code
 
 ## Testing
 
