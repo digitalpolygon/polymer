@@ -55,4 +55,14 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 nav:
   - Home: index.md
-  - Commands: commands.md
+  - Commands:
+      - artifact:
+          - 'artifact:build': commands/artifact_compile.md
+          - 'artifact:deploy': commands/artifact_deploy.md
+      - build:
+          - 'build:reqs': commands/build_reqs.md
+          - 'build:assets': commands/build_assets.md
+      - composer:
+          - 'composer:validate:security': commands/composer_validate_security.md
+      - filesystem:
+          - 'filesystem:template:copy': commands/filesystem_template_copy.md
