@@ -60,6 +60,7 @@ nav:
           - 'artifact:build': commands/artifact_compile.md
           - 'artifact:deploy': commands/artifact_deploy.md
       - build:
+          - build: commands/build.md
           - 'build:reqs': commands/build_reqs.md
           - 'build:assets': commands/build_assets.md
       - composer:
