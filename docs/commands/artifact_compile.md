@@ -1,4 +1,4 @@
-# artifact:build
+# artifact:compile
 
 ```shell
 polymer artifact:compile [<artifact-id> [<artifact-id> ...]]
