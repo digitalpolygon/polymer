@@ -57,7 +57,7 @@ nav:
   - Home: index.md
   - Commands:
       - artifact:
-          - 'artifact:build': commands/artifact_compile.md
+          - 'artifact:compile': commands/artifact_compile.md
           - 'artifact:deploy': commands/artifact_deploy.md
       - build:
           - build: commands/build.md
