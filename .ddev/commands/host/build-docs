@@ -4,4 +4,4 @@
 
 set -e
 
-./scripts/build-docs.sh
+./scripts/build-docs.sh build --clean

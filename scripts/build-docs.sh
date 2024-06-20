@@ -11,6 +11,8 @@ PROJECT_ROOT="$(dirname "$DIR")"
 
 docker run \
     --rm \
+    -it \
+    -p 8000 \
     --user=`id -u`:`id -g` \
     -v ${PROJECT_ROOT}:/docs squidfunk/mkdocs-material:9.5.26 \
-    build --clean
+    "$@"
