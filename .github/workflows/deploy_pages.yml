@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build docs
-        run: ./scripts/build-docs.sh
+        run: ./scripts/build-docs.sh build --clean
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
