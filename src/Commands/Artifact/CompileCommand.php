@@ -4,6 +4,7 @@ namespace DigitalPolygon\Polymer\Commands\Artifact;
 
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
+use DigitalPolygon\Polymer\Recipes\RecipeInterface;
 use DigitalPolygon\Polymer\Tasks\Command as PolymerCommand;
 use DigitalPolygon\Polymer\Tasks\TaskBase;
 use Robo\Exception\TaskException;
@@ -28,18 +29,28 @@ class CompileCommand extends TaskBase
     protected string $deployDocroot;
 
     /**
+     * The build recipe command to use for the requested artifact.
+     *
+     * @var \DigitalPolygon\Polymer\Recipes\RecipeInterface
+     */
+    protected RecipeInterface $buildRecipe;
+
+    /**
      * Builds deployment artifact.
      *
      * @throws \Robo\Exception\TaskException|\Robo\Exception\AbortTasksException
      */
     #[Command(name: 'artifact:compile')]
     #[Usage(name: 'polymer artifact:compile -v', description: 'Builds deployment artifact.')]
-    public function buildArtifact(): void
+    public function buildArtifact(string $artifact): void
     {
         // Gather build source and target information.
         $this->initialize();
         // Show start task message.
-        $this->say("Generating build artifact...");
+        $recipe_name = $this->getBuildRecipeName($artifact);
+        $this->say("Generating build artifact '{$artifact}' using build recipe: '$recipe_name'...");
+        // Load the build recipe for the requested artifact.
+        $this->loadRecipes($artifact);
         // Collect eh build commands to execute based on the env context and recipe used.
         $commands = $this->collectBuildCommands();
         // Execute the build process.
@@ -58,13 +69,17 @@ class CompileCommand extends TaskBase
      */
     #[Command(name: 'artifact:compile:describe')]
     #[Usage(name: 'polymer artifact:compile:describe', description: 'Describe the tasks associated with the build artifact command.')]
-    public function buildArtifactDescribe(): void
+    public function buildArtifactDescribe(string $artifact): void
     {
         // Gather build source and target information.
         $this->initialize();
+        // Load the build recipe for the requested artifact.
+        $this->loadRecipes($artifact);
+        // Show operation to execute.
+        $recipe_name = $this->getBuildRecipeName($artifact);
+        $this->say("The 'artifact:compile' command for '{$artifact}' using build recipe: '$recipe_name' executes the following list of commands in the specified order:");
         // Collect eh build commands to execute based on the env context and recipe used.
         $commands = $this->collectBuildCommands();
-        $this->say("The 'artifact:compile' command executes the following list of commands in the specified order:");
         $this->listCommands($commands);
     }
 
@@ -92,36 +107,45 @@ class CompileCommand extends TaskBase
      */
     private function collectBuildCommands(): array
     {
-        // Fetch the default build commands.
-        $defaultCommands = $this->getDefaultBuildCommands();
-
         // TODO: Implement a Resolver service to filter commands:
         // 1. Determine if a command has been disabled.
         // 2. Allow users to override commands.
         // 3. Allow users to rearrange commands (change order).
         // 4. Allow users to add new commands to the build workflow.
 
-        return $defaultCommands;
+        return $this->buildRecipe->getCommands();
     }
 
     /**
-     * Retrieve the default list of commands for the artifact build process.
+     * Gather build source and target information.
      *
-     * @return PolymerCommand[]
-     *   The default list of commands to be executed during the artifact build.
+     * @param string $artifact
+     *   The artifact definition to use for the build.
+     *
+     * @throws \Robo\Exception\TaskException
      */
-    private function getDefaultBuildCommands(): array
+    private function loadRecipes(string $artifact): void
     {
-        $commands = [];
-        // Ensure frontend is build in the artifact directory.
-        $commands[] = new PolymerCommand('source:build:frontend');
-        // Copy files from the source repository into the artifact.
-        $commands[] = new PolymerCommand('source:build:copy', ['--deploy-dir' => $this->deployDir]);
-        // Install Composer dependencies for the artifact.
-        $commands[] = new PolymerCommand('artifact:composer:install');
-        // Remove sensitive files from the artifact directory.
-        $commands[] = new PolymerCommand('artifact:build:sanitize');
+        $recipe_name = $this->getBuildRecipeName($artifact);
+        $recipe = $this->getBuildRecipe($recipe_name);
+        if ($recipe == null) {
+            throw new TaskException($this, "Recipe '{$recipe_name}' does not exist for the artifact '{$artifact}'.");
+        }
+        $this->buildRecipe = $recipe;
+    }
 
-        return $commands;
+    /**
+     * Get the build recipe name for the given artifact.
+     *
+     * @param string $artifact
+     *   The artifact definition to use for the build.
+     *
+     * @return string
+     *   The build recipe.
+     */
+    private function getBuildRecipeName($artifact): string
+    {
+        // @phpstan-ignore-next-line
+        return $this->getConfigValue("artifacts.$artifact.build-recipe");
     }
 }

@@ -2,6 +2,7 @@
 
 namespace DigitalPolygon\Polymer\Tasks;
 
+use DigitalPolygon\Polymer\Recipes\RecipeInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Robo\Common\ConfigAwareTrait;
@@ -82,6 +83,38 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
             $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
             throw new TaskException($this, "Command `$command_string}` exited with code $exit_code.");
         }
+    }
+
+    /**
+     * Load the given build recipe from the container by name.
+     *
+     * @param string $recipe_id
+     *   The recipe ID.
+     *
+     * @return \DigitalPolygon\Polymer\Recipes\RecipeInterface|null
+     *   The build recipe object.
+     */
+    protected function getBuildRecipe(string $recipe_id): ?RecipeInterface
+    {
+        $id = "recipe:build:$recipe_id";
+        // @phpstan-ignore-next-line
+        return $this->getContainer()->get($id);
+    }
+
+    /**
+     * Load the given push recipe from the container by name.
+     *
+     * @param string $recipe_id
+     *   The recipe ID.
+     *
+     * @return \DigitalPolygon\Polymer\Recipes\RecipeInterface|null
+     *   The push recipe object.
+     */
+    protected function getPushRecipe(string $recipe_id)
+    {
+        $id = "recipe:push:$recipe_id";
+        // @phpstan-ignore-next-line
+        return $this->getContainer()->get($id);
     }
 
     /**

@@ -6,6 +6,7 @@ project:
     protocol: http
     uri: ${project.local.protocol}://${project.local.hostname}
   type: php
+  recipe: common
 
 deploy:
   build-dependencies: true
