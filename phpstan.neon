@@ -2,6 +2,7 @@ parameters:
     level: 9
     paths:
         - src
+        - bin
     excludePaths:
         - 'test_package'
         - 'test_drupal10'

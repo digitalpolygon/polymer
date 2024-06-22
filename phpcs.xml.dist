@@ -3,6 +3,7 @@
     <description>Default PHP CodeSniffer configuration for Polymer project.</description>
     <file>src</file>
     <exclude-pattern type="relative">/var/www/html/test_drupal10/*\.php</exclude-pattern>
+    <file>bin</file>
     <rule ref="PSR12"/>
 
     <!--    Keep us sane-->

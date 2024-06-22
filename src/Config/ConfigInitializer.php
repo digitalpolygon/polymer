@@ -2,8 +2,8 @@
 
 namespace DigitalPolygon\Polymer\Config;
 
-use Consolidation\Config\Loader\YamlConfigLoader;
 use Consolidation\Config\Loader\ConfigProcessor;
+use Consolidation\Config\Loader\YamlConfigLoader;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**

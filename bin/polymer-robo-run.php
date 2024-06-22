@@ -5,8 +5,8 @@
  * Execute Polymer commands via Robo.
  */
 
-use DigitalPolygon\Polymer\Polymer;
 use DigitalPolygon\Polymer\Config\ConfigInitializer;
+use DigitalPolygon\Polymer\Polymer;
 use Robo\Common\TimeKeeper;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -25,7 +25,7 @@ if ($output->isVerbose()) {
 }
 
 // Initialize configuration.
-// @phpstan-ignore-next-line
+/** @var string $repo_root */
 $repo_root = find_repo_root();
 $config_initializer = new ConfigInitializer($repo_root, $input);
 $config = $config_initializer->initialize();
