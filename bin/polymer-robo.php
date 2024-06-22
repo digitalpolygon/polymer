@@ -6,6 +6,10 @@
  */
 
 $repo_root = find_repo_root();
+if (!is_string($repo_root)) {
+    print "Unable to determine the Polymer root directory.\n";
+    exit(1);
+}
 $classLoader = require_once $repo_root . '/vendor/autoload.php';
 if (!isset($classLoader)) {
     print "Unable to find autoloader for Polymer\n";
@@ -25,7 +29,8 @@ require_once __DIR__ . '/polymer-robo-run.php';
  * @return bool|string
  *   Root.
  */
-function find_repo_root() {
+function find_repo_root()
+{
     $possible_repo_roots = [
         getcwd(),
         dirname(__DIR__) . '/',
@@ -36,13 +41,13 @@ function find_repo_root() {
     if (getenv('PWD')) {
         array_unshift($possible_repo_roots, getenv('PWD'));
     }
+    $possible_repo_roots = array_filter($possible_repo_roots);
     foreach ($possible_repo_roots as $possible_repo_root) {
         if ($repo_root = find_directory_containing_files($possible_repo_root, $blt_files)) {
             return $repo_root;
         }
     }
-    print "Unable to determine the Polymer root directory.\n";
-    exit(1);
+    return false;
 }
 
 /**
@@ -53,7 +58,7 @@ function find_repo_root() {
  *
  * @param string $working_directory
  *   Working directory.
- * @param array $files
+ * @param array<string> $files
  *   Files.
  * @param int $max_height
  *   Max Height.
@@ -62,20 +67,24 @@ function find_repo_root() {
  *   FALSE if file was not found. Otherwise, the directory path containing the
  *   file.
  */
-function find_directory_containing_files($working_directory, array $files, $max_height = 10) {
+function find_directory_containing_files(string $working_directory, array $files, $max_height = 10)
+{
     // Find the root directory of the git repository containing Polymer.
     // We traverse the file tree upwards $max_height times until we find $files.
     $file_path = $working_directory;
     for ($i = 0; $i <= $max_height; $i++) {
         if (files_exist($file_path, $files)) {
             return $file_path;
-        }
-        else {
+        } else {
             $file_path = realpath($file_path . '/..');
+            if (!$file_path) {
+                // realpath() returns false if the directory does not exist.
+                break;
+            }
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 /**
@@ -83,17 +92,18 @@ function find_directory_containing_files($working_directory, array $files, $max_
  *
  * @param string $dir
  *   Dir.
- * @param array $files
+ * @param array<string> $files
  *   Files.
  *
  * @return bool
  *   Exists.
  */
-function files_exist($dir, array $files) {
+function files_exist(string $dir, array $files)
+{
     foreach ($files as $file) {
         if (!file_exists($dir . '/' . $file)) {
-            return FALSE;
+            return false;
         }
     }
-    return TRUE;
+    return true;
 }

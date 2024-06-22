@@ -53,7 +53,7 @@
   "scripts": {
     "lint": "find src test/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
     "cs": "phpcs",
-    "sa": "phpstan analyse -c phpstan.neon",
+    "sa": "phpstan analyse -v -c phpstan.neon",
     "validations": [
       "@lint",
       "@cs",

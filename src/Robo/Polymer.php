@@ -1,7 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer;
+namespace DigitalPolygon\Polymer\Robo;
 
+use Composer\Autoload\ClassLoader;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use Composer\InstalledVersions;
 use League\Container\Container;
@@ -51,14 +52,20 @@ class Polymer implements ContainerAwareInterface
      *
      * @param \Robo\Config\Config $config
      */
-    public function __construct(Config $config)
-    {
+    public function __construct(
+        Config $config,
+        InputInterface $input = null,
+        OutputInterface $output = null,
+        ClassLoader $classLoader = null,
+    ) {
         // Create Application.
         $this->setConfig($config);
         $this->application = new Application(self::APPLICATION_NAME, $this->getVersion());
         // Create and configure container.
         /** @var Container $container */
-        $container = Robo::createContainer($this->application, $config);
+//        $container = Robo::createContainer($this->application, $config);
+        $container = new Container();
+        Robo::configureContainer($container, $this->application, $config, $input, $output, $classLoader);
         Robo::finalizeContainer($container);
         // Discover commands.
         $this->discoverCommands();
@@ -134,6 +141,6 @@ class Polymer implements ContainerAwareInterface
      */
     private function getBuiltinCommandNamespace(): string
     {
-        return 'DigitalPolygon\Polymer\Commands';
+        return 'DigitalPolygon\Polymer\Robo\Commands';
     }
 }
