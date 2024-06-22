@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Commands\Artifact;
+namespace DigitalPolygon\Polymer\Robo\Commands\Artifact;
 
-use Robo\Tasks;
+use DigitalPolygon\Polymer\Robo\PolymerTasks;
 
-class BuildCommand extends Tasks
+class BuildCommand extends PolymerTasks
 {
     /**
      * Build an artifact.

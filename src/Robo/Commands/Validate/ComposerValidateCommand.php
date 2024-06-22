@@ -1,10 +1,11 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Commands\Validate;
+namespace DigitalPolygon\Polymer\Robo\Commands\Validate;
 
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
+use DigitalPolygon\Polymer\Robo\PolymerTasks;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Symfony\ConsoleIO;
 use Robo\Tasks;
@@ -12,10 +13,8 @@ use Robo\Tasks;
 /**
  * Defines commands in the "composer:validate" namespace.
  */
-class ComposerValidateCommand extends Tasks
+class ComposerValidateCommand extends PolymerTasks
 {
-    use ConfigAwareTrait;
-
     /**
      * Check security vulnerability in composer packages.
      *
@@ -84,22 +83,5 @@ class ComposerValidateCommand extends Tasks
             $cmd_options .= '--locked ';
         }
         return $cmd_options;
-    }
-
-    /**
-     * Gets a config value for a given key.
-     *
-     * @param string $key
-     *   The config key.
-     * @param string|null $default
-     *   The default value if the key does not exist in config.
-     *
-     * @return mixed
-     *   The config value, or else the default value if they key does not exist.
-     */
-    private function getConfigValue($key, $default = null): mixed
-    {
-        // @phpstan-ignore nullsafe.neverNull
-        return $this->getConfig()?->get($key, $default) ?? $default;
     }
 }

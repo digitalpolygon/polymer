@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DigitalPolygon\Polymer\Config;
+namespace DigitalPolygon\Polymer\Robo\Config;
 
 use Consolidation\Config\Loader\YamlConfigLoader;
 use Consolidation\Config\Loader\ConfigProcessor;
@@ -16,7 +16,7 @@ class ConfigInitializer
     /**
      * Config.
      *
-     * @var \DigitalPolygon\Polymer\Config\PolymerConfig
+     * @var \DigitalPolygon\Polymer\Robo\Config\DefaultConfig
      */
     protected $config;
 
@@ -59,7 +59,7 @@ class ConfigInitializer
     public function __construct($repo_root, InputInterface $input)
     {
         $this->input = $input;
-        $this->config = new PolymerConfig($repo_root);
+        $this->config = new DefaultConfig($repo_root);
         $this->loader = new YamlConfigLoader();
         $this->processor = new ConfigProcessor();
     }
@@ -67,7 +67,7 @@ class ConfigInitializer
     /**
      * Initialize.
      *
-     * @return \DigitalPolygon\Polymer\Config\PolymerConfig
+     * @return \DigitalPolygon\Polymer\Robo\Config\PolymerConfig
      *   The Polymer Config.
      */
     public function initialize(): PolymerConfig

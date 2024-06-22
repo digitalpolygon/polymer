@@ -2,6 +2,7 @@
 <ruleset name="polymer">
     <description>Default PHP CodeSniffer configuration for Polymer project.</description>
     <file>src</file>
+    <file>bin</file>
     <rule ref="PSR12"/>
 
     <!--    Keep us sane-->

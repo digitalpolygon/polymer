@@ -65,5 +65,5 @@ nav:
           - 'build:assets': commands/build_assets.md
       - composer:
           - 'composer:validate:security': commands/composer_validate_security.md
-      - filesystem:
-          - 'filesystem:template:copy': commands/filesystem_template_copy.md
+      - drupal:
+          - 'drupal:multisite:create': commands/drupal_multisite_create.md
