@@ -30,6 +30,7 @@ repo_url: https://github.com/digitalpolygon/polymer
 repo_name: digitalpolygon/polymer
 plugins:
   - search
+  - git-revision-date-localized
 markdown_extensions:
   - toc:
       permalink: true
