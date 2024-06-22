@@ -19,7 +19,6 @@ class PolymerConfig extends Config
     {
         parent::__construct();
         $this->set('repo.root', $repo_root);
-        $this->set('docroot', $repo_root . '/docroot');
         $this->set('polymer.root', $this->getPolymerRoot());
         $this->set('composer.bin', $repo_root . '/vendor/bin');
         $this->set('tmp.dir', sys_get_temp_dir());
