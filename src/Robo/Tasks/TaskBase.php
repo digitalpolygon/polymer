@@ -110,11 +110,46 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
      * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
      *   The push recipe object.
      */
-    protected function getPushRecipe(string $recipe_id)
+    protected function getPushRecipe(string $recipe_id): ?RecipeInterface
     {
         $id = "recipe:push:$recipe_id";
         // @phpstan-ignore-next-line
         return $this->getContainer()->get($id);
+    }
+
+    /**
+     * Executed a given command or a script, typically defined in polymer.yml.
+     *
+     * @param string $command
+     *   The command or script to execute.
+     * @param string|null $dir
+     *   The directory where to execute the command or script.
+     *
+     * @return int
+     *   The task exit status code.
+     *
+     * @throws \Robo\Exception\AbortTasksException
+     * @throws \Robo\Exception\TaskException
+     */
+    protected function execCommand(string $command, string $dir = null): int
+    {
+        // Define the task.
+        /** @var \Robo\Task\CommandStack $task */
+        $task = $this->taskExecStack();
+        $task = $task->exec($command);
+        if ($dir != null) {
+            $task->dir($dir);
+        }
+        $task->interactive($this->input()->isInteractive());
+        $task->printOutput(true);
+        $task->printMetadata(true);
+        $task->stopOnFail();
+        // Execute the task.
+        $result = $task->run();
+        if (!$result->wasSuccessful()) {
+            throw new AbortTasksException("Executing command '$command' failed.", $result->getExitCode());
+        }
+        return $result->getExitCode();
     }
 
     /**

@@ -7,8 +7,8 @@ project:
 builds:
   theme_build_admin:
     dir: '${repo.root}'
-    setup: yarn install
-    assets: yarn build
+    setup: yarn install && yarn init --yes
+    assets: yarn exec echo "Building admin theme assets."
   theme_build_front:
     dir: '${repo.root}'
     setup: './scripts/frontend-reqs.sh'

@@ -38,6 +38,9 @@ class CompileCommand extends TaskBase
     /**
      * Builds deployment artifact.
      *
+     * @param string $artifact
+     *   The name of the artifact to compile.
+     *
      * @throws \Robo\Exception\TaskException|\Robo\Exception\AbortTasksException
      */
     #[Command(name: 'artifact:compile')]
