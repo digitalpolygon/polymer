@@ -55,7 +55,7 @@ class CompileCommand extends TaskBase
         // Load the build recipe for the requested artifact.
         $this->loadRecipes($artifact);
         // Collect eh build commands to execute based on the env context and recipe used.
-        $commands = $this->collectBuildCommands();
+        $commands = $this->collectBuildCommands($artifact);
         // Execute the build process.
         $this->invokeHook("pre-deploy-build");
         $this->invokeCommands($commands);
@@ -81,8 +81,9 @@ class CompileCommand extends TaskBase
         // Show operation to execute.
         $recipe_name = $this->getBuildRecipeName($artifact);
         $this->say("The 'artifact:compile' command for '{$artifact}' using build recipe: '$recipe_name' executes the following list of commands in the specified order:");
+
         // Collect eh build commands to execute based on the env context and recipe used.
-        $commands = $this->collectBuildCommands();
+        $commands = $this->collectBuildCommands($artifact);
         $this->listCommands($commands);
     }
 
@@ -105,18 +106,32 @@ class CompileCommand extends TaskBase
     /**
      * Collects the filtered list of commands for the artifact build process.
      *
+     * @param string $artifact
+     *   The artifact definition to use for the build.
+     *
      * @return PolymerCommand[]
      *   The filtered list of commands to be executed during the artifact build.
      */
-    private function collectBuildCommands(): array
+    private function collectBuildCommands(string $artifact): array
     {
-        // TODO: Implement a Resolver service to filter commands:
-        // 1. Determine if a command has been disabled.
-        // 2. Allow users to override commands.
-        // 3. Allow users to rearrange commands (change order).
-        // 4. Allow users to add new commands to the build workflow.
-
-        return $this->buildRecipe->getCommands();
+        $commands = $this->buildRecipe->getCommands();
+        // Check if the artifact contains dependent-builds and add them.
+        $dependent_builds = $this->getDependentBuilds($artifact);
+        if (!empty($dependent_builds)) {
+            // Replace the 'build' command from the build-recipe for the dependent builds specified in the artifact.
+            foreach ($commands as $key => $command) {
+                if (str_starts_with($command->getName(), 'build')) {
+                    unset($commands[$key]);
+                }
+            }
+            // Add the dependent build commands.
+            $dependent_build_commands = [];
+            foreach ($dependent_builds as $target) {
+                $dependent_build_commands[] = new PolymerCommand("build", ['target' => $target]);
+            }
+            $commands = array_merge($dependent_build_commands, $commands);
+        }
+        return $commands;
     }
 
     /**
@@ -146,9 +161,24 @@ class CompileCommand extends TaskBase
      * @return string
      *   The build recipe.
      */
-    private function getBuildRecipeName($artifact): string
+    private function getBuildRecipeName(string $artifact): string
     {
         // @phpstan-ignore-next-line
         return $this->getConfigValue("artifacts.$artifact.build-recipe");
+    }
+
+    /**
+     * Get the list of dependent builds for the given artifact.
+     *
+     * @param string $artifact
+     *   The artifact definition to use for the build.
+     *
+     * @return array<string, string>
+     *   The list of dependent builds to use.
+     */
+    private function getDependentBuilds(string $artifact): array
+    {
+        // @phpstan-ignore-next-line
+        return $this->getConfigValue("artifacts.$artifact.dependent-builds");
     }
 }

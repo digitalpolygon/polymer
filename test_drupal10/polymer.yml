@@ -22,7 +22,6 @@ artifacts:
     push-recipe: git
   main-application-b:
     dependent-builds:
-      - theme_build_admin
       - theme_build_front
     build-recipe: common
     push-recipe: pantheon
