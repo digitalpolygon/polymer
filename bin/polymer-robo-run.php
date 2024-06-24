@@ -5,8 +5,8 @@
  * Execute Polymer commands via Robo.
  */
 
-use DigitalPolygon\Polymer\Config\ConfigInitializer;
-use DigitalPolygon\Polymer\Polymer;
+use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
+use DigitalPolygon\Polymer\Robo\Polymer;
 use Robo\Common\TimeKeeper;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
