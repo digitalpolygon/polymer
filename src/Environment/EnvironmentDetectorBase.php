@@ -3,26 +3,30 @@
 namespace DigitalPolygon\Polymer\Environment;
 
 /**
- * Class Environment
+ * Class EnvironmentDetectorBase
  */
-abstract class EnvironmentDetector
+abstract class EnvironmentDetectorBase implements EnvironemntDetectorInterface
 {
     /**
-     * Is this a ddev environment.
-     *
-     * @return bool
+     * @inheritDoc
      */
-    public static function isDdevEnv(): bool
+    public function isDdevEnv(): bool
     {
-        return getenv('IS_DDEV_PROJECT');
+        return getenv('IS_DDEV_PROJECT') == true;
     }
 
     /**
-     * Undocumented function
-     *
-     * @return bool
+     * @inheritDoc
      */
-    public static function isCiEnv(): bool
+    public function isLandoEnv(): bool
+    {
+        return getenv('LANDO') === 'ON';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isCiEnv(): bool
     {
         $ci_env_variables = [
         'GITHUB_ACTIONS',
@@ -33,25 +37,4 @@ abstract class EnvironmentDetector
         ];
         return (bool) array_filter($ci_env_variables, 'getenv');
     }
-
-    /**
-     * Is this a dev environment.
-     *
-     * @return bool
-     */
-    abstract public function isDevEnv(): bool;
-
-    /**
-     * Is this a test environment.
-     *
-     * @return bool
-     */
-    abstract public function isTestEnv(): bool;
-
-    /**
-     * Is this a prod environment.
-     *
-     * @return bool
-     */
-    abstract public function isProdEnv(): bool;
 }
