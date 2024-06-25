@@ -31,7 +31,7 @@ $config_initializer = new ConfigInitializer($repo_root, $input);
 $config = $config_initializer->initialize();
 
 // Execute command.
-// phpcs:ignore @phpstan-ignore-next-line
+// @phpstan-ignore variable.undefined
 $polymer = new Polymer($config, $input, $output, $classLoader);
 $status_code = (int) $polymer->run($input, $output);
 
