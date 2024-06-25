@@ -35,11 +35,6 @@ $config = $config_initializer->initialize();
 $polymer = new Polymer($config, $input, $output, $classLoader);
 $status_code = (int) $polymer->run($input, $output);
 
-if (!$input->getFirstArgument() || $input->getFirstArgument() == 'list') {
-    $output->writeln("<comment>To create custom BLT commands, see https://docs.acquia.com/blt/extending-blt/#adding-a-custom-robo-hook-or-command.</comment>");
-    $output->writeln("<comment>To add BLT commands via community plugins, see https://support.acquia.com/hc/en-us/articles/360046918614-Acquia-BLT-Plugins</comment>");
-}
-
 // Stop timer.
 $timer->stop();
 $elapsed = $timer->elapsed();
