@@ -13,8 +13,8 @@ class PolymerException extends \Exception
    * Report exception.
    */
     public function __construct(
-        $message = "",
-        $code = 0,
+        string $message = "",
+        int $code = 0,
         \Throwable $previous = null
     ) {
 
