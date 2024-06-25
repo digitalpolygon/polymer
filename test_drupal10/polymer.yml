@@ -12,7 +12,7 @@ builds:
   theme_build_front:
     dir: '${repo.root}'
     setup: './scripts/frontend-reqs.sh'
-    build: './scripts/frontend-build.sh'
+    assets: './scripts/frontend-build.sh'
 artifacts:
   main-application-a:
     dependent-builds:
