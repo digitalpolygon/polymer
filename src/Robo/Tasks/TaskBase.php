@@ -2,10 +2,10 @@
 
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
+use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
 use Robo\Exception\TaskException;
@@ -193,22 +193,6 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
             throw new AbortTasksException("Executing target-hook $hook failed.", $result->getExitCode());
         }
         return $result->getExitCode();
-    }
-
-    /**
-     * Gets a config value for a given key.
-     *
-     * @param string $key
-     *   The config key.
-     * @param string|null $default
-     *   The default value if the key does not exist in config.
-     *
-     * @return mixed
-     *   The config value, or else the default value if they key does not exist.
-     */
-    protected function getConfigValue($key, $default = null): mixed
-    {
-        return $this->getConfig()->get($key, $default) ?? $default;
     }
 
     /**

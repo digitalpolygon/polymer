@@ -2,8 +2,8 @@
 
 namespace DigitalPolygon\Polymer\Robo\Recipes\Push;
 
+use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**

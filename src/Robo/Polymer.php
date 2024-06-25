@@ -4,6 +4,7 @@ namespace DigitalPolygon\Polymer\Robo;
 
 use Composer\Autoload\ClassLoader;
 use Composer\InstalledVersions;
+use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
 use DigitalPolygon\Polymer\Robo\Discovery\BuildRecipesDiscovery;
 use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
@@ -11,7 +12,6 @@ use DigitalPolygon\Polymer\Robo\Discovery\PushRecipesDiscovery;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
