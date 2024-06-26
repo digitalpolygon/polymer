@@ -14,7 +14,7 @@ class PantheonEnvironmentDetector extends EnvironmentDetectorBase
      */
     public static function getEnvironmentId(): string
     {
-        return getenv('PANTHEON_ENVIRONMENT');
+        return (string) getenv('PANTHEON_ENVIRONMENT');
     }
 
     /**

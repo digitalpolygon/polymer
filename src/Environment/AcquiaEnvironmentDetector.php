@@ -14,7 +14,7 @@ class AcquiaEnvironmentDetector extends EnvironmentDetectorBase
      */
     public static function getEnvironmentId(): string
     {
-        return getenv('AH_SITE_ENVIRONMENT');
+        return (string) getenv('AH_SITE_ENVIRONMENT');
     }
 
     /**
