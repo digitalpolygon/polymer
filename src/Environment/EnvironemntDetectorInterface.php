@@ -11,48 +11,49 @@ interface EnvironemntDetectorInterface
      *
      * @return bool
      */
-    public function isCiEnv(): bool;
+    public static function isCiEnv(): bool;
 
     /**
      * Is this a local environment.
      *
      * @return bool
      */
-    public function isLocalEnv(): bool;
+    public static function isLocalEnv(): bool;
+
     /**
      * Is this a dev environment.
      *
      * @return bool
      */
-    public function isDevEnv(): bool;
+    public static function isDevEnv(): bool;
 
     /**
      * Is this a test environment.
      *
      * @return bool
      */
-    public function isTestEnv(): bool;
+    public static function isTestEnv(): bool;
 
     /**
      * Is this a prod environment.
      *
      * @return bool
      */
-    public function isProdEnv(): bool;
+    public static function isProdEnv(): bool;
 
     /**
      * Is this a ddev environment.
      *
      * @return bool
      */
-    public function isDdevEnv(): bool;
+    public static function isDdevEnv(): bool;
 
     /**
      * Is this a lando environment.
      *
      * @return bool
      */
-    public function isLandoEnv(): bool;
+    public static function isLandoEnv(): bool;
 
   /**
    * Returns a string identifier for the current environment.
@@ -61,5 +62,5 @@ interface EnvironemntDetectorInterface
    *
    * @throws PolymerException;
    */
-    public function getEnvironmentId(): string;
+    public static function getEnvironmentId(): string;
 }
