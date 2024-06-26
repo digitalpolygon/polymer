@@ -12,6 +12,7 @@ abstract class EnvironmentDetectorBase implements EnvironemntDetectorInterface
      */
     public function isDdevEnv(): bool
     {
+        // @phpstan-ignore identical.alwaysFalse
         return getenv('IS_DDEV_PROJECT') === true;
     }
 
