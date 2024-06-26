@@ -1,0 +1,36 @@
+# These files and their children will not be copied to the deployment artifact.
+# If these files already exist in the upstream artifact, they will be removed.
+/.drush-use
+/.github
+/.idea
+/.travis.yml
+/.vagrant
+/acquia-pipelines.yaml
+/polymer.sh
+/box
+/build
+/deploy
+/web/core
+/web/libraries/contrib
+/web/modules/contrib
+/web/sites/*/files
+/files-private
+/web/sites/*/private
+/web/themes/contrib
+/drush/Commands/contrib
+/README.md
+/readme
+/sites/development.services.yml
+/sites/polymer.development.services.yml
+/tests
+/tmp
+/Vagrantfile
+/.gitignore
+.git
+example.*
+local.settings.php
+local.drush.yml
+local.site.yml
+node_modules
+/vendor
+local.polymer.yml

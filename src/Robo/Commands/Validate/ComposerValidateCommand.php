@@ -5,15 +5,13 @@ namespace DigitalPolygon\Polymer\Robo\Commands\Validate;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
-use DigitalPolygon\Polymer\Robo\PolymerTasks;
-use Robo\Common\ConfigAwareTrait;
+use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Symfony\ConsoleIO;
-use Robo\Tasks;
 
 /**
  * Defines commands in the "composer:validate" namespace.
  */
-class ComposerValidateCommand extends PolymerTasks
+class ComposerValidateCommand extends TaskBase
 {
     /**
      * Check security vulnerability in composer packages.

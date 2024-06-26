@@ -1,0 +1,27 @@
+project:
+  human_name: Tes Drupal 10 Site
+  machine_name: test_drupal10
+  type: php
+  recipe: drupal10
+
+builds:
+  theme_build_admin:
+    dir: '${repo.root}'
+    setup: yarn install && yarn init --yes
+    assets: yarn exec echo "Building admin theme assets."
+  theme_build_front:
+    dir: '${repo.root}'
+    setup: './scripts/frontend-reqs.sh'
+    assets: './scripts/frontend-build.sh'
+artifacts:
+  main-application-a:
+    dependent-builds:
+      - theme_build_admin
+      - theme_build_front
+    build-recipe: drupal10
+    push-recipe: git
+  main-application-b:
+    dependent-builds:
+      - theme_build_front
+    build-recipe: common
+    push-recipe: pantheon

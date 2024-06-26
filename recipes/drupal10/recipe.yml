@@ -1,0 +1,11 @@
+project:
+  human_name: Drupal 10 Project
+  machine_name: drupal10
+  type: drupal10
+
+deploy:
+  build-dependencies: true
+  dir: ${tmp.dir}/polymer-deploy-drupal-10
+  docroot: ${deploy.dir}/web
+  exclude_file: ${polymer.root}/recipes/drupal10/deploy-exclude.txt
+  gitignore_file: ${polymer.root}/recipes/drupal10/.gitignore

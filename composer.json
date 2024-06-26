@@ -3,6 +3,7 @@
   "description": "Polymer",
   "license": "GPL-2.0-only",
   "type": "composer-plugin",
+  "version": "1.0-dev",
   "authors": [
     {
       "name": "Les Peabody"

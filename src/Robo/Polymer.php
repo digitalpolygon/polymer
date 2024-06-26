@@ -3,16 +3,17 @@
 namespace DigitalPolygon\Polymer\Robo;
 
 use Composer\Autoload\ClassLoader;
-use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use Composer\InstalledVersions;
+use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
+use DigitalPolygon\Polymer\Robo\Config\DefaultConfig;
+use DigitalPolygon\Polymer\Robo\Discovery\BuildRecipesDiscovery;
+use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
+use DigitalPolygon\Polymer\Robo\Discovery\PushRecipesDiscovery;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Config\Config;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
-use Robo\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -40,38 +41,52 @@ class Polymer implements ContainerAwareInterface
      *
      * @var array<mixed>[]
      */
-    private $commands = [];
+    private array $commands = [];
 
     /**
-     * @var \Robo\Application
+     * An array of build recipes available to the application.
+     *
+     * @var array<string, string>[]
      */
-    private Application $application;
+    private array $buildRecipes = [];
+
+    /**
+     * An array of push recipes available to the application.
+     *
+     * @var array<string, string>[]
+     */
+    private array $pushRecipes = [];
 
     /**
      * Object constructor.
      *
-     * @param \Robo\Config\Config $config
+     * @param \DigitalPolygon\Polymer\Robo\Config\DefaultConfig $config
+     *   The Polymer configuration.
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     *   The input service.
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *   The output service.
+     * @param \Composer\Autoload\ClassLoader $classLoader
+     *   The Composer classLoader.
      */
-    public function __construct(
-        Config $config,
-        InputInterface $input = null,
-        OutputInterface $output = null,
-        ClassLoader $classLoader = null,
-    ) {
-        // Create Application.
+    public function __construct(DefaultConfig $config, InputInterface $input, OutputInterface $output, ClassLoader $classLoader)
+    {
+        // Set the config.
         $this->setConfig($config);
-        $this->application = new Application(self::APPLICATION_NAME, $this->getVersion());
+        // Discover commands, build, and push recipes classes.
+        $this->discoverExtensions();
+        // Create Application.
+        $application = new ConsoleApplication(self::APPLICATION_NAME, $this->getVersion());
         // Create and configure container.
-        /** @var Container $container */
-//        $container = Robo::createContainer($this->application, $config);
         $container = new Container();
-        Robo::configureContainer($container, $this->application, $config, $input, $output, $classLoader);
+        Robo::configureContainer($container, $application, $config, $input, $output, $classLoader);
+        $this->configureContainer($container);
+        $this->registerRecipes($container);
         Robo::finalizeContainer($container);
-        // Discover commands.
-        $this->discoverCommands();
+        $this->setContainer($container);
         // Instantiate Robo Runner.
         $this->runner = new RoboRunner();
-        $this->setContainer($container);
+        $this->runner->setClassLoader($classLoader);
         $this->runner->setContainer($container);
         $this->runner->setSelfUpdateRepository(self::REPOSITORY);
     }
@@ -92,8 +107,9 @@ class Polymer implements ContainerAwareInterface
      */
     public function run(InputInterface $input, OutputInterface $output): int
     {
-        $status_code = $this->runner->run($input, $output, $this->application, $this->commands);
-        return $status_code;
+        /** @var \Robo\Application $application */
+        $application = $this->getContainer()->get('application');
+        return $this->runner->run($input, $output, $application, $this->commands);
     }
 
     /**
@@ -105,42 +121,57 @@ class Polymer implements ContainerAwareInterface
     }
 
     /**
-     * Discovers command classes which are shipped with core Polymer.
+     * Discovers commands, build, and push recipes classes which are shipped with core Polymer.
      */
-    private function discoverCommands(): void
+    private function discoverExtensions(): void
     {
-        $discovery = new CommandFileDiscovery();
-        $discovery->setIncludeFilesAtBase(true);
-        $discovery->setSearchPattern('*Command.php');
-        $discovery->setSearchLocations([]);
-        $discovery->setSearchDepth(3);
-        $this->commands = $discovery->discover(
-            $this->getBuiltinCommandFilePaths(),
-            $this->getBuiltinCommandNamespace()
-        );
+        // 1. Discovers command classes which are shipped with core Polymer.
+        $commands_discovery = new CommandsDiscovery();
+        $this->commands = $commands_discovery->getDefinitions();
+        // 2. Discovers Build Recipes classes which are shipped with core Polymer.
+        $build_recipes_discovery = new BuildRecipesDiscovery();
+        $this->buildRecipes = $build_recipes_discovery->getDefinitions();
+        // 3. Discovers Build Recipes classes which are shipped with core Polymer.
+        $push_recipes_discovery = new PushRecipesDiscovery();
+        $this->pushRecipes = $push_recipes_discovery->getDefinitions();
     }
 
     /**
-     * Retrieve paths for all built-in command files.
+     * Register the list of build and push recipes available.
      *
-     * @return string[]
-     *   An array containing paths to built-in command files.
+     * @param \League\Container\Container $container
+     *   The container used to register the recipes classes.
      */
-    private function getBuiltinCommandFilePaths(): array
+    private function registerRecipes(Container $container): void
     {
-        return [
-            __DIR__ . '/Commands',
-        ];
+        // Register build recipes.
+        foreach ($this->buildRecipes as $recipe) {
+            // @phpstan-ignore-next-line
+            $id = call_user_func([$recipe, "getId"]);
+            $recipe_id = 'recipe:build:' . $id;
+            $container->add($recipe_id, $recipe);
+        }
+        // Register push recipes.
+        foreach ($this->pushRecipes as $recipe) {
+            // @phpstan-ignore-next-line
+            $id = call_user_func([$recipe, "getId"]);
+            $recipe_id = 'recipe:build:' . $id;
+            $container->add($recipe_id, $recipe);
+        }
     }
 
     /**
-     * Retrieve base namespace for all built-in commands.
+     * Configure the necessary classes for Polymer.
      *
-     * @return string
-     *   The base namespace for all built-in commands.
+     * @param \League\Container\Container $container
+     *   The container used to register the recipes classes.
      */
-    private function getBuiltinCommandNamespace(): string
+    public function configureContainer(Container $container): void
     {
-        return 'DigitalPolygon\Polymer\Robo\Commands';
+        /** @var \Consolidation\AnnotatedCommand\AnnotatedCommandFactory $factory */
+        $factory = $container->get('commandFactory');
+        // Tell the command loader to only allow command functions that have a
+        // name/alias.
+        $factory->setIncludeAllPublicMethods(false);
     }
 }

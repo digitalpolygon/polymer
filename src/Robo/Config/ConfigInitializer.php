@@ -1,11 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace DigitalPolygon\Polymer\Robo\Config;
 
-use Consolidation\Config\Loader\YamlConfigLoader;
 use Consolidation\Config\Loader\ConfigProcessor;
+use Consolidation\Config\Loader\YamlConfigLoader;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -18,35 +16,35 @@ class ConfigInitializer
      *
      * @var \DigitalPolygon\Polymer\Robo\Config\DefaultConfig
      */
-    protected $config;
+    protected DefaultConfig $config;
 
     /**
      * Input.
      *
      * @var \Symfony\Component\Console\Input\InputInterface
      */
-    protected $input;
+    protected InputInterface $input;
 
     /**
      * Loader.
      *
      * @var \Consolidation\Config\Loader\YamlConfigLoader
      */
-    protected $loader;
+    protected YamlConfigLoader $loader;
 
     /**
      * Processor.
      *
      * @var \Consolidation\Config\Loader\ConfigProcessor
      */
-    protected $processor;
+    protected ConfigProcessor $processor;
 
     /**
      * Environment.
      *
      * @var string
      */
-    protected $environment;
+    protected string $environment;
 
     /**
      * ConfigInitializer constructor.
@@ -56,7 +54,7 @@ class ConfigInitializer
      * @param \Symfony\Component\Console\Input\InputInterface $input
      *   Input.
      */
-    public function __construct($repo_root, InputInterface $input)
+    public function __construct(string $repo_root, InputInterface $input)
     {
         $this->input = $input;
         $this->config = new DefaultConfig($repo_root);
@@ -67,15 +65,17 @@ class ConfigInitializer
     /**
      * Initialize.
      *
-     * @return \DigitalPolygon\Polymer\Robo\Config\PolymerConfig
+     * @return \DigitalPolygon\Polymer\Robo\Config\DefaultConfig
      *   The Polymer Config.
      */
-    public function initialize(): PolymerConfig
+    public function initialize(): DefaultConfig
     {
         $environment = $this->determineEnvironment();
         $this->environment = $environment;
         $this->config->set('environment', $environment);
         $this->loadConfigFiles();
+        $this->processConfigFiles();
+        $this->loadRecipeConfig();
         $this->processConfigFiles();
         return $this->config;
     }
@@ -117,6 +117,21 @@ class ConfigInitializer
         $this->processor->extend(
             $this->loader->load($this->config->get('repo.root') . "/{$this->environment}.polymer.yml")
         );
+        return $this;
+    }
+
+    /**
+     * Load Recipe config.
+     *
+     * @return $this
+     */
+    public function loadRecipeConfig(): static
+    {
+        $recipe = $this->config->get('project.recipe');
+        if (!empty($recipe)) {
+            $recipe_path = $this->config->get('polymer.root') . '/recipes/' . $recipe . '/recipe.yml';
+            $this->processor->extend($this->loader->load($recipe_path));
+        }
         return $this;
     }
 

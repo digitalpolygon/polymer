@@ -4,12 +4,11 @@ namespace DigitalPolygon\Polymer\Robo\Commands\Copy;
 
 use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
-use DigitalPolygon\Polymer\Robo\PolymerTasks;
+use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Contract\VerbosityThresholdInterface;
 use Robo\Symfony\ConsoleIO;
-use Symfony\Component\Console\Input\InputOption;
 
-class DrupalMultisiteCommand extends PolymerTasks
+class DrupalMultisiteCommand extends TaskBase
 {
     /**
      * Copy Drupal multi-site configuration.

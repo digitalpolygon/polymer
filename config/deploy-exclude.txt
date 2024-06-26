@@ -1,0 +1,24 @@
+# These files and their children will not be copied to the deployment artifact.
+# If these files already exist in the upstream artifact, they will be removed.
+/.github
+/.idea
+/.travis.yml
+/.vagrant
+/polymer.sh
+/box
+/build
+/deploy
+/README.md
+/readme
+/tests
+/tmp
+/Vagrantfile
+/.gitignore
+.git
+example.*
+local.settings.php
+local.drush.yml
+local.site.yml
+node_modules
+/vendor
+local.polymer.yml
