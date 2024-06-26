@@ -18,7 +18,7 @@ class PolymerException extends \Exception
         \Throwable $previous = null
     ) {
 
-        $message .= "\nFor troubleshooting guidance and support, see https://github.com/digitalpolygon/polymer";
+        $message .= "\nFor troubleshooting guidance and support, see https://digitalpolygon.github.io/polymer";
         parent::__construct($message, $code, $previous);
     }
 }

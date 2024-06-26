@@ -12,7 +12,7 @@ abstract class EnvironmentDetectorBase implements EnvironemntDetectorInterface
      */
     public function isDdevEnv(): bool
     {
-        return getenv('IS_DDEV_PROJECT') == true;
+        return getenv('IS_DDEV_PROJECT') === true;
     }
 
     /**
