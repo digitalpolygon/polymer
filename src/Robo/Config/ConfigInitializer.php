@@ -14,9 +14,9 @@ class ConfigInitializer
     /**
      * Config.
      *
-     * @var \DigitalPolygon\Polymer\Robo\Config\PolymerConfig
+     * @var \DigitalPolygon\Polymer\Robo\Config\DefaultConfig
      */
-    protected PolymerConfig $config;
+    protected DefaultConfig $config;
 
     /**
      * Input.
@@ -57,7 +57,7 @@ class ConfigInitializer
     public function __construct(string $repo_root, InputInterface $input)
     {
         $this->input = $input;
-        $this->config = new PolymerConfig($repo_root);
+        $this->config = new DefaultConfig($repo_root);
         $this->loader = new YamlConfigLoader();
         $this->processor = new ConfigProcessor();
     }
@@ -65,10 +65,10 @@ class ConfigInitializer
     /**
      * Initialize.
      *
-     * @return \DigitalPolygon\Polymer\Robo\Config\PolymerConfig
+     * @return \DigitalPolygon\Polymer\Robo\Config\DefaultConfig
      *   The Polymer Config.
      */
-    public function initialize(): PolymerConfig
+    public function initialize(): DefaultConfig
     {
         $environment = $this->determineEnvironment();
         $this->environment = $environment;

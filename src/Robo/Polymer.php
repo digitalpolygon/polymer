@@ -5,7 +5,7 @@ namespace DigitalPolygon\Polymer\Robo;
 use Composer\Autoload\ClassLoader;
 use Composer\InstalledVersions;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
+use DigitalPolygon\Polymer\Robo\Config\DefaultConfig;
 use DigitalPolygon\Polymer\Robo\Discovery\BuildRecipesDiscovery;
 use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
 use DigitalPolygon\Polymer\Robo\Discovery\PushRecipesDiscovery;
@@ -60,7 +60,7 @@ class Polymer implements ContainerAwareInterface
     /**
      * Object constructor.
      *
-     * @param \DigitalPolygon\Polymer\Robo\Config\PolymerConfig $config
+     * @param \DigitalPolygon\Polymer\Robo\Config\DefaultConfig $config
      *   The Polymer configuration.
      * @param \Symfony\Component\Console\Input\InputInterface $input
      *   The input service.
@@ -69,7 +69,7 @@ class Polymer implements ContainerAwareInterface
      * @param \Composer\Autoload\ClassLoader $classLoader
      *   The Composer classLoader.
      */
-    public function __construct(PolymerConfig $config, InputInterface $input, OutputInterface $output, ClassLoader $classLoader)
+    public function __construct(DefaultConfig $config, InputInterface $input, OutputInterface $output, ClassLoader $classLoader)
     {
         // Set the config.
         $this->setConfig($config);
