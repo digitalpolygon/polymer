@@ -22,17 +22,27 @@ final class Command
     protected array $args;
 
     /**
+     * Indicates whether the command should be invoked rather than executed directly.
+     *
+     * @var bool
+     */
+    protected bool $invokable = true;
+
+    /**
      * Constructs a new Command object.
      *
      * @param string $name
      *   The command name.
      * @param array<string, string> $args
      *   The list of arguments to be passed to the command.
+     * @param bool $invokable
+     *   Indicates whether the command should be invoked rather than executed directly.
      */
-    public function __construct(string $name, array $args = [])
+    public function __construct(string $name, array $args = [], bool $invokable = true)
     {
         $this->name = $name;
         $this->args = $args;
+        $this->invokable = $invokable;
     }
 
     /**
@@ -55,6 +65,17 @@ final class Command
     public function getArgs(): array
     {
         return $this->args;
+    }
+
+    /**
+     * Check if the command is invokable.
+     *
+     * @return bool
+     *   TRUE if the command is invokable, otherwise false.
+     */
+    public function isInvokable(): bool
+    {
+        return $this->invokable;
     }
 
     /**

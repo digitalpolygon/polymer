@@ -6,7 +6,9 @@ use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
+use Robo\Contract\IOAwareInterface;
 use Robo\Exception\AbortTasksException;
 use Robo\Exception\TaskException;
 use Robo\Tasks;
@@ -15,9 +17,10 @@ use Symfony\Component\Console\Input\ArrayInput;
 /**
  * Utility base class for Polymer commands.
  */
-abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwareInterface
+abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwareInterface, IOAwareInterface
 {
     use ConfigAwareTrait;
+    use IO;
 
     /**
      * The logger instance.
@@ -47,7 +50,11 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
     protected function invokeCommands(array $commands): void
     {
         foreach ($commands as $command) {
-            $this->invokeCommand($command);
+            if ($command->isInvokable()) {
+                $this->invokeCommand($command);
+            } else {
+                $this->execCommand($command->getName(), $command->getArgs());
+            }
         }
     }
 
@@ -122,8 +129,8 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
      *
      * @param string $command
      *   The command or script to execute.
-     * @param string|null $dir
-     *   The directory where to execute the command or script.
+     * @param array<string, string> $options
+     *   The command or script options.
      *
      * @return int
      *   The task exit status code.
@@ -131,19 +138,23 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
      * @throws \Robo\Exception\AbortTasksException
      * @throws \Robo\Exception\TaskException
      */
-    protected function execCommand(string $command, string $dir = null): int
+    protected function execCommand(string $command, array $options = []): int
     {
         // Define the task.
         /** @var \Robo\Task\CommandStack $task */
         $task = $this->taskExecStack();
         $task = $task->exec($command);
+        // Get the directory where to execute the command or script.
+        $dir = $options['dir'] ?? null;
         if ($dir != null) {
             $task->dir($dir);
         }
         $task->interactive($this->input()->isInteractive());
-        $task->printOutput(true);
-        $task->printMetadata(true);
         $task->stopOnFail();
+        // Ser verbosity output.
+        $is_verbose = $this->output()->isVerbose();
+        $task->printOutput($is_verbose);
+        $task->printMetadata($is_verbose);
         // Execute the task.
         $result = $task->run();
         if (!$result->wasSuccessful()) {
