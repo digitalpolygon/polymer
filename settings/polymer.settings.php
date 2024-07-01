@@ -32,10 +32,6 @@ if ($polymer_settings_files) {
 $settings_files[] = DRUPAL_ROOT . '/sites/settings/global.settings.php';
 $settings_files[] = DRUPAL_ROOT . "/sites/$site_name/settings/includes.settings.php";
 
-// Custom global and site-specific settings.
-$settings_files[] = DRUPAL_ROOT . '/sites/settings/global.settings.php';
-$settings_files[] = DRUPAL_ROOT . "/sites/$site_name/settings/includes.settings.php";
-
 if (EnvironmentDetectorBase::isCiEnv()) {
     // Custom global and site-specific CI settings.
     $settings_files[] = DRUPAL_ROOT . "/sites/settings/ci.settings.php";
