@@ -92,7 +92,7 @@ class CompileCommand extends TaskBase
      *
      * @throws \Robo\Exception\TaskException
      */
-    private function initialize(): void
+    protected function initialize(): void
     {
         // @phpstan-ignore-next-line
         $this->deployDir = $this->getConfigValue('deploy.dir');
@@ -161,7 +161,7 @@ class CompileCommand extends TaskBase
      * @return string
      *   The build recipe.
      */
-    private function getBuildRecipeName(string $artifact): string
+    protected function getBuildRecipeName(string $artifact): string
     {
         // @phpstan-ignore-next-line
         return $this->getConfigValue("artifacts.$artifact.build-recipe");

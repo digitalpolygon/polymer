@@ -69,7 +69,11 @@ class FrontendCommand extends TaskBase
             return 0;
         }
         $dir = $target_info['dir'] ?? null;
-        return $this->execCommand($setup, $dir);
+        $options = [];
+        if ($dir) {
+            $options['dir'] = $dir;
+        }
+        return $this->execCommand($setup, $options);
     }
 
     /**
@@ -98,7 +102,11 @@ class FrontendCommand extends TaskBase
             return 0;
         }
         $dir = $target_info['dir'] ?? null;
-        return $this->execCommand($assets, $dir);
+        $options = [];
+        if ($dir) {
+            $options['dir'] = $dir;
+        }
+        return $this->execCommand($assets, $options);
     }
 
     /**

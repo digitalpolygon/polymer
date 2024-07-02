@@ -155,7 +155,7 @@ class Polymer implements ContainerAwareInterface
         foreach ($this->pushRecipes as $recipe) {
             // @phpstan-ignore-next-line
             $id = call_user_func([$recipe, "getId"]);
-            $recipe_id = 'recipe:build:' . $id;
+            $recipe_id = 'recipe:push:' . $id;
             $container->add($recipe_id, $recipe);
         }
     }

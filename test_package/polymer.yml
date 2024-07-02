@@ -6,3 +6,16 @@ project:
     protocol: http
     uri: ${project.local.protocol}://${project.local.hostname}
   type: php
+
+git:
+  commit-msg:
+    pattern: '/(^(awesome-project)-[0-9]+(: )[^ ].{15,}\.)|(Merge branch(.)+)/'
+    example: "awesome-project-PWT-62: Update module configuration."
+  default_branch: master
+  remotes:
+    origin: 'git@awasome-repository-service/repo.git'
+  user:
+    # Name and email to use for the purposes of Git commits if you don't want to
+    # use global Git configuration.
+    name: 'John Doe'
+    email: 'john-doe@awasome-email.com'
