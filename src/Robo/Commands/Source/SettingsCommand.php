@@ -118,39 +118,21 @@ class SettingsCommand extends TaskBase
      */
     private function placeSettingsDatabaseFileOnMultiSite(string $db_name, string $db_user, string $db_pass): void
     {
-        $settings_db_content = $this->getSettingsDBContent($db_name, $db_user, $db_pass);
+        // Read the default 'settings.db.php' template content.
+        /** @var string $settings_db_content */
+        $settings_db_content = file_get_contents($this->dbSettingsFileTemplate);
         /** @var \Robo\Task\File\Write $task */
         $task = $this->taskWriteToFile($this->dbSettingsFile);
         $task->text($settings_db_content);
+        // Replace database credentials.
+        $task->place('db_name', $db_name);
+        $task->place('db_user', $db_user);
+        $task->place('db_pass', $db_pass);
         $task->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE);
         $result = $task->run();
         if (!$result->wasSuccessful()) {
             throw new AbortTasksException("Unable to copy database settings file 'settings.db.php' into multisite directory.", $result->getExitCode());
         }
-    }
-
-    /**
-     * Retrieves the content of 'settings.db.php' template with replaced placeholders.
-     *
-     * @param string $db_name
-     *   The name of the database.
-     * @param string $db_user
-     *   The database username.
-     * @param string $db_pass
-     *   The database password.
-     *
-     * @return string
-     *   The formatted content of 'settings.db.php'.
-     */
-    private function getSettingsDBContent(string $db_name, string $db_user, string $db_pass): string
-    {
-        // Read the default 'settings.db.php' template content.
-        /** @var string $settings_db_content */
-        $settings_db_content = file_get_contents($this->dbSettingsFileTemplate);
-        // Replace database credentials.
-        str_replace(['db_name', 'db_user', 'db_pass'], [$db_name, $db_user, $db_pass], $settings_db_content);
-        // Return the formated settings db content.
-        return $settings_db_content;
     }
 
     /**
@@ -180,7 +162,7 @@ class SettingsCommand extends TaskBase
     }
 
     /**
-     * Executes a MySQL query using ddev command.
+     * Executes a MySQL query using 'ddev mysql' command.
      *
      * @todo: MVP support is for DDEV. During multisite creation, assume this runs in DDEV.
      *
@@ -195,7 +177,7 @@ class SettingsCommand extends TaskBase
      */
     private function execMySqlQuery(string $query): int
     {
-        $command = 'ddev mysql -uroot -proot -e "' . $query . ';"';
+        $command = 'mysql -uroot -proot -e "' . $query . '"';
         return $this->execCommand($command);
     }
 }
