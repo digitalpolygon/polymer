@@ -80,7 +80,7 @@ class SettingsCommand extends TaskBase
      * @throws \Robo\Exception\AbortTasksException|\Robo\Exception\TaskException
      *   When unable to create or require settings files.
      */
-    #[Command(name: 'drupal:init:database')]
+    #[Command(name: 'drupal:init:settings')]
     public function generateDatabaseSettingsFiles(array $options = ['site_name' => 'default']): void
     {
         $site_name = $options['site_name'];
