@@ -2,10 +2,10 @@
 
 namespace DigitalPolygon\Polymer\Robo\Commands\Source;
 
-use Robo\Exception\AbortTasksException;
-use Robo\Contract\VerbosityThresholdInterface;
-use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Consolidation\AnnotatedCommand\Attributes\Command;
+use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use Robo\Contract\VerbosityThresholdInterface;
+use Robo\Exception\AbortTasksException;
 
 /**
  * Defines commands in the "drupal:settings" namespace.
