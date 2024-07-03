@@ -107,7 +107,7 @@ class SettingsCommand extends TaskBase
         $this->placeSettingsDatabaseFileOnMultiSite($db_name, $db_user, $db_pass);
 
         // Require the new 'settings.db.php' in multisite 'settings.php' file.
-        $this->requireSettingsDatabaseFileOnMultiSite();
+        $this->requireSettingsDatabaseFileOnMultiSite($site_name);
         // Adds polymer.settings.php at the end of settings.php in all Drupal sites.
         $this->generatePolymerSettingsFile($site_name);
     }
@@ -115,12 +115,15 @@ class SettingsCommand extends TaskBase
     /**
      * Requires 'settings.db.php' file in multisite settings.php file.
      *
+     * @param string $site_name
+     *   The name of the site.
+     *
      * @throws \Robo\Exception\AbortTasksException
      *   When unable to write or require settings file.
      */
-    private function requireSettingsDatabaseFileOnMultiSite(): void
+    private function requireSettingsDatabaseFileOnMultiSite(string $site_name): void
     {
-        $require_content = "$this->defaultSettingsText";
+        $require_content = ($site_name !== 'default') ? $this->defaultSettingsText : "\n";
         $require_content .= 'require __DIR__ . "/settings.db.php";' . "\n";
 
         /** @var \Robo\Task\File\Write $task */
