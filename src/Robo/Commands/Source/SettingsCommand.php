@@ -47,7 +47,7 @@ class SettingsCommand extends TaskBase
      *
      * @var string
      */
-    private $defaultSettingsText = <<<DEFAULT
+    private string $defaultSettingsText = <<<DEFAULT
         <?php
 
         /**
@@ -120,10 +120,11 @@ class SettingsCommand extends TaskBase
      */
     private function requireSettingsDatabaseFileOnMultiSite(): void
     {
-        /** @var \Robo\Task\File\Write $task */
-        $task = $this->taskWriteToFile($this->multiSiteSettingsFile);
         $require_content = "$this->defaultSettingsText";
         $require_content .= 'require __DIR__ . "/settings.db.php";' . "\n";
+
+        /** @var \Robo\Task\File\Write $task */
+        $task = $this->taskWriteToFile($this->multiSiteSettingsFile);
         $task->appendUnlessMatches('#settings.db.php#', $require_content);
         $task->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE);
         $task->append(true);
@@ -221,14 +222,14 @@ class SettingsCommand extends TaskBase
     {
         /** @var string $docroot */
         $docroot = $this->getConfigValue('docroot');
-
         $settings_file = "$docroot/sites/$site_name/settings.php";
 
-        $result = $this->taskWriteToFile($settings_file)
-        ->appendUnlessMatches('#vendor/digitalpolygon/polymer/settings/polymer.settings.php#', 'require DRUPAL_ROOT . "/../vendor/digitalpolygon/polymer/settings/polymer.settings.php";' . "\n")
-        ->append(true)
-        ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
-        ->run();
+        /** @var \Robo\Task\File\Write $task */
+        $task = $this->taskWriteToFile($settings_file);
+        $task->appendUnlessMatches('#vendor/digitalpolygon/polymer/settings/polymer.settings.php#', 'require DRUPAL_ROOT . "/../vendor/digitalpolygon/polymer/settings/polymer.settings.php";' . "\n");
+        $task->append(true);
+        $task->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE);
+        $result = $task->run();
 
         if (!$result->wasSuccessful()) {
             throw new AbortTasksException("Unable to modify $settings_file.", $result->getExitCode());
