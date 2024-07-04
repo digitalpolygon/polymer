@@ -47,6 +47,13 @@ class ConfigInitializer
     protected string $environment;
 
     /**
+   * Site.
+   *
+   * @var string
+   */
+    protected $site;
+
+    /**
      * ConfigInitializer constructor.
      *
      * @param string $repo_root
@@ -161,5 +168,17 @@ class ConfigInitializer
             return $environment;
         }
         return $default;
+    }
+
+    /**
+     * Set site.
+     *
+     * @param string $site
+     *   Site.
+     */
+    public function setSite($site): void
+    {
+        $this->site = $site;
+        $this->config->setSite($site);
     }
 }

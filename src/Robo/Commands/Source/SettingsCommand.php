@@ -41,29 +41,13 @@ class SettingsCommand extends TaskBase
      * @param string $site_name
      *   The name of the site.
      */
-
-     /**
-     * Default settings text.
-     *
-     * @var string
-     */
-    private string $defaultSettingsText = <<<DEFAULT
-        <?php
-
-        /**
-         * @file
-         * Drupal site-specific configuration file.
-         */
-
-
-        DEFAULT;
-
-    private function initialize(string $site_name): void
+    private function initialize($site_name): void
     {
         /** @var string $docroot */
         $docroot = $this->getConfigValue('docroot');
         /** @var string $polymer_root */
         $polymer_root = $this->getConfigValue('polymer.root');
+
         $multisite_dir = "$docroot/sites/$site_name";
         $this->multiSiteSettingsFile = "$multisite_dir/settings.php";
         $this->dbSettingsFile =  "$multisite_dir/settings.db.php";
@@ -74,42 +58,49 @@ class SettingsCommand extends TaskBase
      * Initialize Drupal sites. Generates database settings into settings.db.php and
      * adds polymer.settings.php at the end of settings.php file for a Drupal site.
      *
-     * @param array<string, string> $options
-     *   The drupal init command options.
-     *
      * @throws \Robo\Exception\AbortTasksException|\Robo\Exception\TaskException
      *   When unable to create or require settings files.
      */
     #[Command(name: 'drupal:init:settings')]
-    public function generateDatabaseSettingsFiles(array $options = ['site_name' => 'default']): void
+    public function generateDatabaseSettingsFiles(): void
     {
-        $site_name = $options['site_name'];
-        // Initializes paths for settings files based on the site name.
-        $this->initialize($site_name);
+        /** @var array<string> $all_sites */
+        $all_sites = $this->getConfigValue('polymer.multisites');
+        foreach ($all_sites as $site) {
+            $is_settings_exist = false;
+            $this->switchSiteContext($site);
 
-        // Check if 'settings.db.php' file already exists in target site.
-        if (file_exists($this->dbSettingsFile)) {
-            $this->say("Settings database file already exists. Skipping.");
-            return;
+            // Initializes paths for settings files based on the site name.
+            $this->initialize($site);
+
+            // Check if 'settings.db.php' file already exists in target site.
+            if (file_exists($this->dbSettingsFile)) {
+                $this->say("Polymer settings database file already exists for $site site. Skipping.");
+                $is_settings_exist = true;
+            }
+
+            // Proceed if settings not added for a site.
+            if (!$is_settings_exist) {
+                // Use the site name as the user/pass/name for the database.
+                $db_name = $site;
+                $db_user = $site;
+                $db_pass = $site;
+
+                if ($site !== 'default') {
+                    // Ensure the database exists.
+                    $this->createDatabaseIfNotExists($db_name, $db_user, $db_pass);
+                }
+
+                // Place 'settings.db.php' in multisite directory.
+                $this->placeSettingsDatabaseFileOnMultiSite($db_name, $db_user, $db_pass);
+                // Require the new 'settings.db.php' in multisite 'settings.php' file.
+                $this->requireSettingsDatabaseFileOnMultiSite($site);
+                // Adds polymer.settings.php at the end of settings.php in all Drupal sites.
+                $this->generatePolymerSettingsFile($site);
+
+                $this->say("Polymer settings added for $site site.");
+            }
         }
-
-        // Use the site name as the user/pass/name for the database.
-        $db_name = $site_name;
-        $db_user = $site_name;
-        $db_pass = $site_name;
-
-        if ($site_name !== 'default') {
-            // Ensure the database exists.
-            $this->createDatabaseIfNotExists($db_name, $db_user, $db_pass);
-        }
-
-        // Place 'settings.db.php' in multisite directory.
-        $this->placeSettingsDatabaseFileOnMultiSite($db_name, $db_user, $db_pass);
-
-        // Require the new 'settings.db.php' in multisite 'settings.php' file.
-        $this->requireSettingsDatabaseFileOnMultiSite($site_name);
-        // Adds polymer.settings.php at the end of settings.php in all Drupal sites.
-        $this->generatePolymerSettingsFile($site_name);
     }
 
     /**
@@ -123,8 +114,7 @@ class SettingsCommand extends TaskBase
      */
     private function requireSettingsDatabaseFileOnMultiSite(string $site_name): void
     {
-        $require_content = ($site_name !== 'default') ? $this->defaultSettingsText : "\n";
-        $require_content .= 'require __DIR__ . "/settings.db.php";' . "\n";
+        $require_content = 'require __DIR__ . "/settings.db.php";' . "\n";
 
         /** @var \Robo\Task\File\Write $task */
         $task = $this->taskWriteToFile($this->multiSiteSettingsFile);
