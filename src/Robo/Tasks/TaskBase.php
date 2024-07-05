@@ -2,17 +2,18 @@
 
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
+use Robo\Tasks;
+use Robo\Common\IO;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Robo\Exception\TaskException;
+use Robo\Contract\IOAwareInterface;
+use Robo\Contract\ConfigAwareInterface;
+use Robo\Exception\AbortTasksException;
+use Symfony\Component\Console\Input\ArrayInput;
+use DigitalPolygon\Polymer\Robo\Tasks\LoadTasks;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Robo\Common\IO;
-use Robo\Contract\ConfigAwareInterface;
-use Robo\Contract\IOAwareInterface;
-use Robo\Exception\AbortTasksException;
-use Robo\Exception\TaskException;
-use Robo\Tasks;
-use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * Utility base class for Polymer commands.
@@ -21,6 +22,7 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
 {
     use ConfigAwareTrait;
     use IO;
+    use LoadTasks;
 
     /**
      * The logger instance.
