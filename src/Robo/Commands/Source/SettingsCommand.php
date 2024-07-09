@@ -2,7 +2,6 @@
 
 namespace DigitalPolygon\Polymer\Robo\Commands\Source;
 
-use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Contract\VerbosityThresholdInterface;
@@ -42,12 +41,13 @@ class SettingsCommand extends TaskBase
      * @param string $site_name
      *   The name of the site.
      */
-    private function initialize(string $site_name): void
+    private function initialize($site_name): void
     {
         /** @var string $docroot */
         $docroot = $this->getConfigValue('docroot');
         /** @var string $polymer_root */
         $polymer_root = $this->getConfigValue('polymer.root');
+
         $multisite_dir = "$docroot/sites/$site_name";
         $this->multiSiteSettingsFile = "$multisite_dir/settings.php";
         $this->dbSettingsFile =  "$multisite_dir/settings.db.php";
@@ -55,45 +55,69 @@ class SettingsCommand extends TaskBase
     }
 
     /**
-     * Generates database settings into settings.db.php file for a Drupal site.
+     * Initialize Drupal sites. Generates database settings into settings.db.php and
+     * adds polymer.settings.php at the end of settings.php file for a Drupal site.
      *
      * @throws \Robo\Exception\AbortTasksException|\Robo\Exception\TaskException
      *   When unable to create or require settings files.
      */
-    #[Command(name: 'drupal:settings:database')]
-    #[Argument(name: 'site_name', description: 'The name of the new site. Used as the user/pass/name for the database.')]
-    public function generateDatabaseSettingsFiles(string $site_name): void
+    #[Command(name: 'drupal:init:settings')]
+    public function generateDatabaseSettingsFiles(): void
     {
-        // Initializes paths for settings files based on the site name.
-        $this->initialize($site_name);
-        // Check if 'settings.db.php' file already exists in target site.
-        if (file_exists($this->dbSettingsFile)) {
-            $this->say("Settings database file already exists. Skipping.");
-            return;
+        /** @var array<string> $all_sites */
+        $all_sites = $this->getConfigValue('polymer.multisites');
+        foreach ($all_sites as $site) {
+            $is_settings_exist = false;
+            $this->switchSiteContext($site);
+
+            // Initializes paths for settings files based on the site name.
+            $this->initialize($site);
+
+            // Check if 'settings.db.php' file already exists in target site.
+            if (file_exists($this->dbSettingsFile)) {
+                $this->say("Polymer settings database file already exists for $site site. Skipping.");
+                $is_settings_exist = true;
+            }
+
+            // Proceed if settings not added for a site.
+            if (!$is_settings_exist) {
+                // Use the site name as the user/pass/name for the database.
+                $db_name = $site;
+                $db_user = $site;
+                $db_pass = $site;
+
+                if ($site !== 'default') {
+                    // Ensure the database exists.
+                    $this->createDatabaseIfNotExists($db_name, $db_user, $db_pass);
+                }
+
+                // Place 'settings.db.php' in multisite directory.
+                $this->placeSettingsDatabaseFileOnMultiSite($db_name, $db_user, $db_pass);
+                // Require the new 'settings.db.php' in multisite 'settings.php' file.
+                $this->requireSettingsDatabaseFileOnMultiSite($site);
+                // Adds polymer.settings.php at the end of settings.php in all Drupal sites.
+                $this->generatePolymerSettingsFile($site);
+
+                $this->say("Polymer settings added for $site site.");
+            }
         }
-        // Use the site name as the user/pass/name for the database.
-        $db_name = $site_name;
-        $db_user = $site_name;
-        $db_pass = $site_name;
-        // Ensure the database exists.
-        $this->createDatabaseIfNotExists($db_name, $db_user, $db_pass);
-        // Place 'settings.db.php' in multisite directory.
-        $this->placeSettingsDatabaseFileOnMultiSite($db_name, $db_user, $db_pass);
-        // Require the new 'settings.db.php' in multisite 'settings.php' file.
-        $this->requireSettingsDatabaseFileOnMultiSite();
     }
 
     /**
      * Requires 'settings.db.php' file in multisite settings.php file.
      *
+     * @param string $site_name
+     *   The name of the site.
+     *
      * @throws \Robo\Exception\AbortTasksException
      *   When unable to write or require settings file.
      */
-    private function requireSettingsDatabaseFileOnMultiSite(): void
+    private function requireSettingsDatabaseFileOnMultiSite(string $site_name): void
     {
+        $require_content = 'require __DIR__ . "/settings.db.php";' . "\n";
+
         /** @var \Robo\Task\File\Write $task */
         $task = $this->taskWriteToFile($this->multiSiteSettingsFile);
-        $require_content = 'require __DIR__ . "/settings.db.php";' . "\n";
         $task->appendUnlessMatches('#settings.db.php#', $require_content);
         $task->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE);
         $task->append(true);
@@ -179,5 +203,29 @@ class SettingsCommand extends TaskBase
     {
         $command = 'mysql -uroot -proot -e "' . $query . '"';
         return $this->execCommand($command);
+    }
+
+    /**
+     * Adds polymer.settings.php at the end of settings.php in a site.
+     *
+     * @throws \Robo\Exception\AbortTasksException
+     *   When unable to modify settings file.
+     */
+    public function generatePolymerSettingsFile(string $site_name): void
+    {
+        /** @var string $docroot */
+        $docroot = $this->getConfigValue('docroot');
+        $settings_file = "$docroot/sites/$site_name/settings.php";
+
+        /** @var \Robo\Task\File\Write $task */
+        $task = $this->taskWriteToFile($settings_file);
+        $task->appendUnlessMatches('#vendor/digitalpolygon/polymer/settings/polymer.settings.php#', 'require DRUPAL_ROOT . "/../vendor/digitalpolygon/polymer/settings/polymer.settings.php";' . "\n");
+        $task->append(true);
+        $task->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE);
+        $result = $task->run();
+
+        if (!$result->wasSuccessful()) {
+            throw new AbortTasksException("Unable to modify $settings_file.", $result->getExitCode());
+        }
     }
 }

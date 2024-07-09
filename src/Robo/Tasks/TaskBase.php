@@ -2,17 +2,18 @@
 
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
+use Robo\Tasks;
+use Robo\Common\IO;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Robo\Exception\TaskException;
+use Robo\Contract\IOAwareInterface;
+use Robo\Contract\ConfigAwareInterface;
+use Robo\Exception\AbortTasksException;
+use Symfony\Component\Console\Input\ArrayInput;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Robo\Common\IO;
-use Robo\Contract\ConfigAwareInterface;
-use Robo\Contract\IOAwareInterface;
-use Robo\Exception\AbortTasksException;
-use Robo\Exception\TaskException;
-use Robo\Tasks;
-use Symfony\Component\Console\Input\ArrayInput;
+use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
 
 /**
  * Utility base class for Polymer commands.
@@ -218,5 +219,26 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
             $command_string = (string) $command;
             $this->say(" [$delta] Invoke Command: '{$command_string}'.");
         }
+    }
+
+    /**
+     * Sets multisite context by settings site-specific config values.
+     *
+     * @param string $site_name
+     *   The name of a multisite, e.g., if docroot/sites/example.com is the site,
+     *   $site_name would be example.com.
+     */
+    public function switchSiteContext($site_name): void
+    {
+        $this->logger->debug("Switching site context to <comment>$site_name</comment>.");
+        /** @var string $repo_root */
+        $repo_root = $this->getConfigValue('repo.root');
+        $config_initializer = new ConfigInitializer($repo_root, $this->input());
+        $config_initializer->setSite($site_name);
+        $new_config = $config_initializer->initialize();
+
+        // Replaces config.
+        // @phpstan-ignore-next-line
+        $this->getConfig()->replace($new_config->export());
     }
 }

@@ -4,6 +4,7 @@ vendor/
 
 # Ignore editor files.
 .idea/
+.vscode/
 
 # Ignore local scratch space.
 scratch/
