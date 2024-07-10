@@ -1,17 +1,14 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Commands\Sync;
+namespace DigitalPolygon\Polymer\Robo\Commands\Drupal;
 
 use Robo\Exception\TaskException;
-use Robo\Exception\AbortTasksException;
-use Robo\Contract\VerbosityThresholdInterface;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Consolidation\AnnotatedCommand\Attributes\Command;
-use Consolidation\AnnotatedCommand\Attributes\Argument;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use Robo\Result;
 
-class DrupalSyncCommand extends TaskBase
+class SyncCommand extends TaskBase
 {
     /**
      * Copies remote db to local db for default site.
