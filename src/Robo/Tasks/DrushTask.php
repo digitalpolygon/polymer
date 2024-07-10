@@ -50,7 +50,7 @@ class DrushTask extends CommandStack
      *
      * @var string|null
      */
-    protected string|null $uri = '';
+    protected ?string $uri = '';
 
     /**
      * Indicates if the command output should be verbose.
@@ -92,21 +92,29 @@ class DrushTask extends CommandStack
      *
      * @var bool
      */
-    protected bool $ansi;
+    protected bool $ansi = false;
 
     /**
      * Drush commands to execute when task is run.
      *
-     * @var array <string>[]
+     * @var array<mixed>
      */
-    protected array $commands;
+    protected array $commands = [];
 
     /**
      * Options for each drush command.
      *
      * @var array<mixed>
      */
-    protected array $options;
+    protected array $options = [];
+
+    /**
+     * DrushTask constructor.
+     */
+    public function __construct()
+    {
+        $this->interactive = false;
+    }
 
     /**
      * Adds the given drush command to a stack.
@@ -129,8 +137,10 @@ class DrushTask extends CommandStack
             $command = implode(' ', array_filter($command));
         }
 
-        // @phpstan-ignore-next-line
-        $this->commands[] = trim($command);
+        if (is_string($command)) {
+            $this->commands[] = trim($command);
+        }
+
         return $this;
     }
 
@@ -278,8 +288,8 @@ class DrushTask extends CommandStack
             $drush_alias = $this->getConfig()->get('drush.alias');
             $this->alias($drush_alias);
         }
-        // @phpstan-ignore-next-line
-        if (!isset($this->interactive)) {
+
+        if (!$this->interactive) {
             $this->interactive(false);
         }
 
@@ -450,14 +460,12 @@ class DrushTask extends CommandStack
 
         foreach ($this->commands as $commandNumber => $command) {
             if ($this->alias) {
-                // @phpstan-ignore-next-line
-                $command = "@{$this->alias} {$command}";
+                $command = "@{$this->alias} " . $command;
             }
 
             $options = $this->options[$commandNumber] ?? '';
 
             // Add in global options, as well as those set via option method.
-            // @phpstan-ignore-next-line
             $command = $command . $options . $globalOptions;
 
             $this->exec($command)
