@@ -87,7 +87,7 @@ class SyncCommand extends TaskBase
     */
     protected function printSyncMap(array $multisites): void
     {
-        $this->say("Sync operations be performed for the following drush aliases:");
+        $this->say("Sync operations will be performed for the following drush aliases:");
         $sync_map = [];
         foreach ($multisites as $multisite) {
             $this->switchSiteContext($multisite);
