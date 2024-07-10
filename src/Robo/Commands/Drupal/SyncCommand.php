@@ -13,12 +13,61 @@ use DigitalPolygon\Polymer\Robo\Tasks\DrushTask;
 class SyncCommand extends TaskBase
 {
     /**
+     * Iteratively copies remote db to local db for each multisite.
+     */
+    #[Command(name: 'drupal:site:sync:db:all-sites', aliases: ['dsba', 'drupal:sync:all-db'])]
+    public function syncDbAllSites(): int
+    {
+        $exit_code = 0;
+
+        /** @var array<string> $multisites */
+        $multisites = $this->getConfigValue('polymer.multisites');
+
+        $this->printSyncMap($multisites);
+        $continue = $this->confirm("Continue?");
+        if (!$continue) {
+            return $exit_code;
+        }
+
+        foreach ($multisites as $multisite) {
+            $this->say("Refreshing site <comment>$multisite</comment>...");
+            $this->switchSiteContext($multisite);
+            $result = $this->syncDb();
+            if (!$result->wasSuccessful()) {
+                $this->logger->error("Could not sync database for site <comment>$multisite</comment>.");
+                throw new PolymerException("Could not sync database.");
+            }
+        }
+
+        return $exit_code;
+    }
+
+    /**
+    * print sync map .
+    *
+    * @param array<string> $multisites
+    *   Array of multisites .
+    */
+    protected function printSyncMap(array $multisites): void
+    {
+        $this->say("Sync operations be performed for the following drush aliases:");
+        $sync_map = [];
+        foreach ($multisites as $multisite) {
+            $this->switchSiteContext($multisite);
+            $sync_map[$multisite]['local'] = '@' . $this->getConfigValue('drush.aliases.local');
+            $sync_map[$multisite]['remote'] = '@' . $this->getConfigValue('drush.aliases.remote');
+            $this->say("  * <comment>" . $sync_map[$multisite]['remote'] . "</comment> => <comment>" . $sync_map[$multisite]['local'] . "</comment>");
+        }
+        $this->say("To modify the set of aliases for syncing, set the values for drush.aliases.local and drush.aliases.remote in docroot/sites/[site]/blt.yml");
+    }
+
+    /**
      * Copies remote db to local db for default site.
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:site:sync', aliases: ['dss', 'drupal:ss'])]
-    public function siteSync(): Result
+    #[Command(name: 'drupal:site:sync:database', aliases: ['dsb', 'drupal:sync:db'])]
+    public function syncDb(): Result
     {
         $local_alias = '@' . $this->getConfigValue('drush.aliases.local');
         $remote_alias = '@' . $this->getConfigValue('drush.aliases.remote');
