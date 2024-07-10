@@ -7,13 +7,28 @@ use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use Robo\Result;
-use Symfony\Component\Yaml\Yaml;
-use DigitalPolygon\Polymer\Robo\Tasks\DrushTask;
+use DigitalPolygon\Polymer\Robo\Tasks\Command as PolymerCommand;
 
 class SyncCommand extends TaskBase
 {
     /**
+     * Synchronize local env from remote (remote -> local).
+     * Copies remote db to local db, re-imports config, and executes db updates fro default site.
+     *
+     * @throws \Robo\Exception\AbortTasksException|TaskException
+     */
+    #[Command(name: 'drupal:site:sync', aliases: ['dss', 'drupal:ss'])]
+    public function sync(): void
+    {
+        /** @var array<PolymerCommand> $commands */
+        $commands = $this->getConfigValue('sync.commands');
+        $this->invokeCommands($commands);
+    }
+
+    /**
      * Iteratively copies remote db to local db for each multisite.
+     *
+     * @throws \Robo\Exception\AbortTasksException|TaskException
      */
     #[Command(name: 'drupal:site:sync:db:all-sites', aliases: ['dsba', 'drupal:sync:all-db'])]
     public function syncDbAllSites(): int

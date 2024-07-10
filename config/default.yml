@@ -69,7 +69,8 @@ sync:
     - css
     - js
   commands:
-  # @todo update the commands.
-    - source:build:composer
     - polymer:init:settings
+    - drupal:site:sync:database
     - drupal:update
+    - drupal:site:sync:files
+    - drupal:site:sync:private-files
