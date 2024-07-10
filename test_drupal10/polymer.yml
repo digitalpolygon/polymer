@@ -38,3 +38,15 @@ git:
     # use global Git configuration.
     name: 'John Doe'
     email: 'john-doe@awasome-email.com'
+
+drush:
+  alias-dir: ${repo.root}/drush/sites
+  aliases:
+    local: self
+    ci: self
+  ansi: true
+  bin: ${composer.bin}/drush
+  default_alias: ${drush.aliases.local}
+  dir: ${docroot}
+  sanitize: true
+  alias: ${drush.default_alias}
