@@ -12,6 +12,28 @@ use DigitalPolygon\Polymer\Robo\Tasks\Command as PolymerCommand;
 class SyncCommand extends TaskBase
 {
     /**
+     * Synchronize each multisite.
+     *
+     * @throws \Robo\Exception\AbortTasksException|TaskException
+     */
+    #[Command(name: 'drupal:site:sync:all-sites', aliases: ['dss:all', 'drupal:ss:all'])]
+    public function allSites(): void
+    {
+        /** @var array<string> $multisites */
+        $multisites = $this->getConfigValue('polymer.multisites');
+        $this->printSyncMap($multisites);
+        $continue = $this->confirm("Continue?", true);
+        if (!$continue) {
+            return;
+        }
+        foreach ($multisites as $multisite) {
+            $this->say("Refreshing site <comment>$multisite</comment>...");
+            $this->switchSiteContext($multisite);
+            $this->sync();
+        }
+    }
+
+    /**
      * Synchronize local env from remote (remote -> local).
      * Copies remote db to local db, re-imports config, and executes db updates fro default site.
      *
