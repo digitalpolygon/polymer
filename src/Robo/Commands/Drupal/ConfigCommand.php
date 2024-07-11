@@ -9,6 +9,7 @@ use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use DigitalPolygon\Polymer\Robo\Tasks\DrushTask;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Robo\Tasks\Command as PolymerCommand;
 
 class ConfigCommand extends TaskBase
 {
@@ -32,13 +33,11 @@ class ConfigCommand extends TaskBase
             throw new PolymerException("Failed to execute database updates!");
         }
 
-        /** @var \DigitalPolygon\Polymer\Robo\Tasks\Command $config_import_command */
-        $config_import_command = 'drupal:config:import';
-        $this->invokeCommand($config_import_command);
-
-        /** @var \DigitalPolygon\Polymer\Robo\Tasks\Command $deploy_hook_command */
-        $deploy_hook_command = 'drupal:deploy:hook';
-        $this->invokeCommand($deploy_hook_command);
+        /** @var PolymerCommand[] $commands */
+        $commands = [];
+        $commands[] = new PolymerCommand('drupal:config:import');
+        $commands[] = new PolymerCommand('drupal:deploy:hook');
+        $this->invokeCommands($commands);
     }
 
     /**
@@ -49,15 +48,15 @@ class ConfigCommand extends TaskBase
     #[Command(name: 'drupal:config:import', aliases: ['dcim'])]
     public function import(): mixed
     {
-        $strategy = $this->getConfigValue('cm.strategy');
+        /** @var DrushTask $task */
+        $task = $this->taskDrush();
 
+        $strategy = $this->getConfigValue('cm.strategy');
         if ($strategy === 'none') {
             $this->logger->warning("CM strategy set to none in polymer.yml. Polymer will NOT import configuration.");
             // Still clear caches to regenerate frontend assets and such.
-            return $this->taskDrush()->drush("cache-rebuild")->run();
+            return $task->drush("cache-rebuild")->run();
         }
-
-        $task = $this->taskDrush();
 
         $this->invokeHook('pre-config-import');
 

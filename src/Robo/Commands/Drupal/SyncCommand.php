@@ -42,9 +42,16 @@ class SyncCommand extends TaskBase
     #[Command(name: 'drupal:site:sync', aliases: ['dss', 'drupal:ss'])]
     public function sync(): void
     {
-        /** @var array<PolymerCommand> $commands */
+        /** @var array<string> $commands */
         $commands = $this->getConfigValue('sync.commands');
-        $this->invokeCommands($commands);
+
+        /** @var PolymerCommand[] $polymer_commands */
+        $polymer_commands = [];
+        foreach ($commands as $command) {
+            $polymer_commands[] = new PolymerCommand($command);
+        }
+
+        $this->invokeCommands($polymer_commands);
     }
 
     /**

@@ -11,7 +11,7 @@ use Robo\Contract\IOAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
 use Symfony\Component\Console\Input\ArrayInput;
-use DigitalPolygon\Polymer\Robo\Tasks\LoadTasks;
+use DigitalPolygon\Polymer\Robo\Tasks\LoadTasksTrait;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
@@ -23,7 +23,7 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
 {
     use ConfigAwareTrait;
     use IO;
-    use LoadTasks;
+    use LoadTasksTrait;
 
     /**
      * The logger instance.

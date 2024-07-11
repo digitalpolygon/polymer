@@ -5,7 +5,7 @@ namespace DigitalPolygon\Polymer\Robo\Tasks;
 /**
  * Load Polymer's custom Robo tasks.
  */
-trait LoadTasks
+trait LoadTasksTrait
 {
     /**
      * Task drush.
