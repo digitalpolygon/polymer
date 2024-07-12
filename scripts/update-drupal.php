@@ -12,6 +12,8 @@
  *    drupal/core-recommended, drupal/core-composer-scaffold, and drupal/core-dev.
  * 4. Sets the version constraints for all other required and required-dev packages to '*'.
  * 5. Runs 'composer update --minimal-changes' to update the packages with minimal changes.
+ * 6. Replaces wildcard versions in composer.json with caret versions from composer.lock.
+ * 7. Updates composer.lock hashes.
  *
  * Requirements:
  * - PHP CLI must be installed on your system.
@@ -45,6 +47,103 @@ function is_stable_version(string $version): bool
 {
     // Regular expression to match stable versions (not alpha, beta, RC, etc.).
     return !preg_match('/(alpha|beta|rc)/i', $version);
+}
+
+/**
+ * Reads and decodes a JSON file.
+ *
+ * @param string $path
+ *   The path to the JSON file.
+ *
+ * @return array<string, array<string, string>>
+ *   The decoded JSON data as an associative array.
+ */
+function read_json_file(string $path): array
+{
+    /** @var string $raw_content */
+    $raw_content = file_get_contents($path);
+    /** @var array<string, array<string, string>> $data */
+    $data = json_decode($raw_content, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        echo "Error reading $path file\n";
+        return [];
+    }
+    return $data;
+}
+
+/**
+ * Writes data to a JSON file.
+ *
+ * @param string $path
+ *   The path to the JSON file.
+ * @param array<string, array<string, string>> $data
+ *   The data to write to the file.
+ *
+ * @return bool
+ *   TRUE if the data was successfully written to the file, otherwise FALSE.
+ */
+function write_json_file(string $path, array $data): bool
+{
+    $modified_content = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    $result = file_put_contents($path, $modified_content);
+    if ($result === false) {
+        echo "Error writing to $path file\n";
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Extracts locked versions from composer.lock.
+ *
+ * @param array<string, array<string, string>> $lock_data
+ *   The decoded 'composer.lock' data.
+ *
+ * @return array<string, string>
+ *   An associative array where keys are package names and values are versions.
+ */
+function extract_locked_versions(array $lock_data): array
+{
+    $locked_versions = [];
+    /** @var array<string, array<string, string>> $packages */
+    $packages = $lock_data['packages'];
+    foreach ($packages as $package) {
+        $locked_versions[$package['name']] = $package['version'];
+    }
+    return $locked_versions;
+}
+
+/**
+ * Checks if a version string contains a wildcard (*).
+ *
+ * @param string $version
+ *   The version string to check.
+ *
+ * @return bool
+ *   TRUE if the version contains a wildcard, otherwise FALSE.
+ */
+function has_wildcard_version(string $version): bool
+{
+    return strpos($version, '*') !== false;
+}
+
+/**
+ * Generates a caret version constraint based on the exact version.
+ *
+ * @param string $version
+ *   The exact version string.
+ *
+ * @return string
+ *   The caret version constraint string.
+ */
+function generate_caret_version(string $version): string
+{
+    // Extract major and minor version parts.
+    $parts = explode('.', $version);
+    if (count($parts) >= 2) {
+        return '^' . $parts[0] . '.' . $parts[1];
+    }
+    return '^' . $version;
 }
 
 /**
@@ -110,15 +209,14 @@ function get_current_version(): string
  *
  * @param string $next_stable_version
  *   The next stable version of Drupal to set in composer.json.
+ * @param string $composer_json_path
+ *   The path to the composer.json file.
  */
-function update_composer_json(string $next_stable_version): void
+function update_composer_json_with_wildcards(string $next_stable_version, string $composer_json_path): void
 {
     // Read composer.json content.
-    $filename = 'composer.json';
-    /** @var string $raw_content */
-    $raw_content = file_get_contents($filename);
     /** @var array<string, string> $composer_json */
-    $composer_json = json_decode($raw_content, true);
+    $composer_json = read_json_file($composer_json_path);
 
     // Define core packages to update with specific version.
     $core_packages = ['drupal/core-recommended', 'drupal/core-composer-scaffold', 'drupal/core-dev'];
@@ -145,8 +243,57 @@ function update_composer_json(string $next_stable_version): void
     }
 
     // Save updated composer.json content.
-    $modified_content = json_encode($composer_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-    file_put_contents($filename, $modified_content);
+    write_json_file($composer_json_path, $composer_json);
+}
+
+/**
+ * Replaces wildcard versions in composer.json with caret versions from composer.lock.
+ *
+ * This function reads the composer.lock file to get the exact versions of the packages
+ * and then updates the composer.json file to replace wildcard version constraints with
+ * caret version constraints based on those exact versions.
+ *
+ * @param string $composer_json_path
+ *   The path to the composer.json file.
+ * @param string $composer_lock_path
+ *   The path to the composer.lock file.
+ */
+function replace_wildcard_versions_in_composer_json(string $composer_json_path, string $composer_lock_path): void
+{
+    // Read composer.lock and composer.json files.
+    $lock_data = read_json_file($composer_lock_path);
+    $json_data = read_json_file($composer_json_path);
+    if (empty($lock_data) || empty($json_data)) {
+        return;
+    }
+
+    // Extract locked versions from composer.lock.
+    $locked_versions = extract_locked_versions($lock_data);
+
+    // Update wildcard versions for all other required packages in composer.json.
+    foreach ($json_data['require'] as $package => $version) {
+        if (has_wildcard_version($version) && isset($locked_versions[$package])) {
+            $exact_version = $locked_versions[$package];
+            $caret_version = generate_caret_version($exact_version);
+            $json_data['require'][$package] = $caret_version;
+        }
+    }
+
+    // Update wildcard versions for all other required-dev packages in composer.json.
+    if (isset($json_data['require-dev'])) {
+        foreach ($json_data['require-dev'] as $package => $version) {
+            if (has_wildcard_version($version) && isset($locked_versions[$package])) {
+                $exact_version = $locked_versions[$package];
+                $caret_version = generate_caret_version($exact_version);
+                $json_data['require-dev'][$package] = $caret_version;
+            }
+        }
+    }
+
+    // Write back the updated composer.json.
+    if (write_json_file($composer_json_path, $json_data)) {
+        echo "composer.json has been updated with caret versions from composer.lock\n";
+    }
 }
 
 /**
@@ -190,12 +337,20 @@ if (!confirm_upgrade($current_version, $next_stable_version)) {
     echo "Operation cancelled by user.\n";
     exit(0);
 }
+// Define the path to the composer files.
+$composer_json_path = 'composer.json';
+$composer_lock_path = 'composer.lock';
 
 // Update composer.json with the next stable version.
-update_composer_json($next_stable_version);
+update_composer_json_with_wildcards($next_stable_version, $composer_json_path);
 
 // Perform composer update with minimal changes.
 echo "Updating Drupal core to version $next_stable_version...\n";
 shell_exec('composer update --minimal-changes');
+
+// Replaces wildcard versions in composer.json with caret versions from composer.lock.
+replace_wildcard_versions_in_composer_json($composer_json_path, $composer_lock_path);
+// Update composer.lock hashed.
+shell_exec('composer update --lock');
 
 echo "Drupal core has been successfully updated to version $next_stable_version.\n";
