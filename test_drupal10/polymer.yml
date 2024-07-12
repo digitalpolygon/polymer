@@ -38,3 +38,32 @@ git:
     # use global Git configuration.
     name: 'John Doe'
     email: 'john-doe@awasome-email.com'
+
+drush:
+  alias-dir: ${repo.root}/drush/sites
+  aliases:
+    local: self
+    ci: self
+  ansi: true
+  bin: ${composer.bin}/drush
+  default_alias: ${drush.aliases.local}
+  dir: ${docroot}
+  sanitize: true
+  alias: ${drush.default_alias}
+
+sync:
+  # By default, files are not synced during sync:refresh.
+  # Set this value to 'true' or pass -D sync.public-files=true
+  # to override this behavior.
+  public-files: false
+  private-files: false
+  # Paths to exclude during file syncing operations.
+  exclude-paths:
+    - styles
+    - css
+    - js
+  commands:
+    - drupal:site:sync:database
+    - drupal:site:sync:files
+    - drupal:site:sync:private-files
+    - drupal:update
