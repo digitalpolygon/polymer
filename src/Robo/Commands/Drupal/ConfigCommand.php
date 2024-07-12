@@ -123,7 +123,7 @@ class ConfigCommand extends TaskBase
     protected function importCoreOnly($task): void
     {
         // @phpstan-ignore method.nonObject
-        $task->drush("config-import");
+        $task->drush('config:import');
     }
 
   /**
@@ -135,11 +135,11 @@ class ConfigCommand extends TaskBase
     protected function importConfigSplit($task): void
     {
         // @phpstan-ignore method.nonObject
-        $task->drush("config-import");
+        $task->drush('config:import');
         // Runs a second import to ensure splits are
         // both defined and imported.
         // @phpstan-ignore method.nonObject
-        $task->drush("config-import");
+        $task->drush('config:import');
     }
 
     /**
