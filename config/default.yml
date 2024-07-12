@@ -70,6 +70,9 @@ sync:
     - js
   commands:
     - drupal:site:sync:database
-    - drupal:update
     - drupal:site:sync:files
     - drupal:site:sync:private-files
+    # To make sure that the states between local and remote are as close to identical as possible before running an update operation.
+    # That's why files needs to be synchronized locally first.
+    # Command order can be changed as per the need in custom polymer.config file.
+    - drupal:update

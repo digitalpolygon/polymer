@@ -96,6 +96,7 @@ class ConfigCommand extends TaskBase
                     $this->importCoreOnly($task);
                     break;
                 }
+
                 $this->importConfigSplit($task);
                 break;
         }
@@ -114,27 +115,30 @@ class ConfigCommand extends TaskBase
     }
 
     /**
-     * Import configuration using core config management only.
-     *
-     * @param DrushTask $task
-     *   Drush task.
-     */
-    protected function importCoreOnly(DrushTask $task): void
+   * Import configuration using core config management only.
+   *
+   * @param mixed $task
+   *   Drush task.
+   */
+    protected function importCoreOnly($task): void
     {
+        // @phpstan-ignore method.nonObject
         $task->drush("config-import");
     }
 
-    /**
-     * Import configuration using config_split module.
-     *
-     * @param DrushTask $task
-     *   Drush task.
-     */
-    protected function importConfigSplit(DrushTask $task): void
+  /**
+   * Import configuration using config_split module.
+   *
+   * @param mixed $task
+   *   Drush task.
+   */
+    protected function importConfigSplit($task): void
     {
+        // @phpstan-ignore method.nonObject
         $task->drush("config-import");
         // Runs a second import to ensure splits are
         // both defined and imported.
+        // @phpstan-ignore method.nonObject
         $task->drush("config-import");
     }
 
@@ -206,7 +210,7 @@ class ConfigCommand extends TaskBase
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:deploy:hook')]
+    #[Command(name: 'drupal:deploy:hook', aliases: ['ddh'])]
     public function deployHook(): void
     {
         $task = $this->taskDrush()

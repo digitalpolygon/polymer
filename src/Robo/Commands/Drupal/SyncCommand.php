@@ -16,7 +16,7 @@ class SyncCommand extends TaskBase
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:site:sync:all-sites', aliases: ['dss:all', 'drupal:ss:all'])]
+    #[Command(name: 'drupal:site:sync:all-sites', aliases: ['dsas'])]
     public function allSites(): void
     {
         /** @var array<string> $multisites */
@@ -39,7 +39,7 @@ class SyncCommand extends TaskBase
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:site:sync', aliases: ['dss', 'drupal:ss'])]
+    #[Command(name: 'drupal:site:sync', aliases: ['dss'])]
     public function sync(): void
     {
         /** @var array<string> $commands */
@@ -59,7 +59,7 @@ class SyncCommand extends TaskBase
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:site:sync:db:all-sites', aliases: ['dsba', 'drupal:sync:all-db'])]
+    #[Command(name: 'drupal:site:sync:db:all-sites', aliases: ['dsadb'])]
     public function syncDbAllSites(): int
     {
         $exit_code = 0;
@@ -110,7 +110,7 @@ class SyncCommand extends TaskBase
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:site:sync:database', aliases: ['dsb', 'drupal:sync:db'])]
+    #[Command(name: 'drupal:site:sync:database', aliases: ['dsdb'])]
     public function syncDb(): Result
     {
         $local_alias = '@' . $this->getConfigValue('drush.aliases.local');
@@ -145,7 +145,7 @@ class SyncCommand extends TaskBase
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:site:sync:files', aliases: ['dsf', 'drupal:sf'])]
+    #[Command(name: 'drupal:site:sync:files', aliases: ['dsf'])]
     public function syncPublicFiles(): Result
     {
         $remote_alias = '@' . $this->getConfigValue('drush.aliases.remote');
@@ -173,7 +173,7 @@ class SyncCommand extends TaskBase
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:site:sync:private-files', aliases: ['dspf', 'drupal:spf'])]
+    #[Command(name: 'drupal:site:sync:private-files', aliases: ['dspf'])]
     public function syncPrivateFiles(): Result
     {
         $remote_alias = '@' . $this->getConfigValue('drush.aliases.remote');

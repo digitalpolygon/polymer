@@ -64,6 +64,6 @@ sync:
     - js
   commands:
     - drupal:site:sync:database
-    - drupal:update
     - drupal:site:sync:files
     - drupal:site:sync:private-files
+    - drupal:update
