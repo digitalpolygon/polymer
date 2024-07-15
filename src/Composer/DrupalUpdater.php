@@ -455,5 +455,6 @@ final class DrupalUpdater
         file_put_contents($this->composerJson->getPath(), $this->composerJsonBackup);
         file_put_contents($this->composerLock->getPath(), $this->composerLockBackup);
         $this->io->write("Composer files reverted successfully.");
+        $this->io->write("To restore the vendor folder to its previous state, please run <info>composer install</info>.");
     }
 }
