@@ -4,9 +4,17 @@ namespace DigitalPolygon\Polymer\Composer;
 
 use Composer\Composer;
 use Composer\IO\IOInterface;
+use Composer\Plugin\Capable;
 use Composer\Plugin\PluginInterface;
+use Composer\Plugin\Capability\CommandProvider;
+use DigitalPolygon\Polymer\Composer\CommandProvider as UpdateDrupalCommandProvider;
 
-class Plugin implements PluginInterface
+/**
+ * Composer plugin for handling drupal upgrades.
+ *
+ * @internal
+ */
+class Plugin implements PluginInterface, Capable
 {
     /**
      * @var Composer
@@ -42,5 +50,13 @@ class Plugin implements PluginInterface
     {
         // TODO: Implement uninstall() method.
         $x = 5;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCapabilities()
+    {
+        return [CommandProvider::class => UpdateDrupalCommandProvider::class];
     }
 }
