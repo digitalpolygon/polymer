@@ -149,7 +149,7 @@ final class DrupalUpdater
        // Try to upgrade.
         try {
             // Start Drupal core update process.
-            $this->io->write("<info>Updating Drupal core from version $current_version version $next_stable_version.</info>");
+            $this->io->write("<info>Updating Drupal core from version $current_version to version $next_stable_version.</info>");
             // Step 1: Update composer.json with next stable versions and wildcards.
             $this->updateComposerJsonWithWildcards($next_stable_version);
             // Step 2: Run 'composer update --minimal-changes' to update with minimal changes.
@@ -205,9 +205,9 @@ final class DrupalUpdater
         $json_raw_content = file_get_contents($this->composerJson->getPath());
         $this->composerJsonBackup = $json_raw_content;
         // Backup composer.lock.
-        /** @var string $json_lock_content */
-        $json_lock_content = file_get_contents($this->composerLock->getPath());
-        $this->composerLockBackup = $json_lock_content;
+        /** @var string $lock_raw_content */
+        $lock_raw_content = file_get_contents($this->composerLock->getPath());
+        $this->composerLockBackup = $lock_raw_content;
     }
 
     /**
