@@ -16,12 +16,12 @@ class ConfigCommand extends TaskBase
     use IO;
 
     /**
-     * Multisite deployment mechanism to deploy updates for all multisites.
+     * Deploy updates for all multisites.
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
      */
-    #[Command(name: 'drupal:update:all:sites', aliases: ['duas'])]
-    public function updateAllSite(): void
+    #[Command(name: 'drupal:multisite:update-all', aliases: ['dmua'])]
+    public function multisiteUpdateAllCommand(): void
     {
         /** @var array<string> $multisites */
         $multisites = $this->getConfigValue('polymer.multisites');
