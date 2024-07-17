@@ -57,7 +57,7 @@ class DrushTask extends CommandStack
      *
      * @var bool
      */
-    protected bool $verbose = true;
+    protected bool $verbose = false;
 
     /**
      * Indicates if the command output should be very verbose.

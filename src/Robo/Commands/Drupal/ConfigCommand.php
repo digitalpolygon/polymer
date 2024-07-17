@@ -16,6 +16,25 @@ class ConfigCommand extends TaskBase
     use IO;
 
     /**
+     * Deploy updates for all multisites.
+     *
+     * @throws \Robo\Exception\AbortTasksException|TaskException
+     */
+    #[Command(name: 'drupal:multisite:update-all', aliases: ['dmua'])]
+    public function multisiteUpdateAllCommand(): void
+    {
+        /** @var array<string> $multisites */
+        $multisites = $this->getConfigValue('polymer.multisites');
+
+        /** @var PolymerCommand $command */
+        $command = new PolymerCommand('drupal:update');
+        foreach ($multisites as $multisite) {
+            $this->switchSiteContext($multisite);
+            $this->invokeCommand($command);
+        }
+    }
+
+    /**
      * Update the current Drupal site configs.
      *
      * @throws \Robo\Exception\AbortTasksException|TaskException
