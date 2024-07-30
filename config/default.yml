@@ -7,6 +7,8 @@ project:
     uri: ${project.local.protocol}://${project.local.hostname}
   type: php
   recipe: common
+  profile:
+    name: minimal
 
 deploy:
   build-dependencies: true
@@ -76,3 +78,30 @@ sync:
     # That's why files needs to be synchronized locally first.
     # Command order can be changed as per the need in custom polymer.config file.
     - drupal:update
+
+# Settings for installing Drupal.
+drupal:
+  account:
+    # Admin account name and password will be randomly generated unless set here.
+    #name: admin
+    #pass:
+    mail: no-reply@example.com
+  site.mail: ${drupal.account.mail}
+  locale: en
+  local_settings_file: ${docroot}/sites/${site}/settings/local.settings.php
+  settings_file: ${docroot}/sites/${site}/settings.php
+  db:
+    database: drupal
+    username: drupal
+    password: drupal
+    host: localhost
+    port: 3306
+
+setup:
+  # Valid values are install, sync, import.
+  strategy: install
+  # If setup.strategy is import, this file will be imported. File path is
+  # relative to drupal docroot directory.
+  dump-file: null
+  # Arguments to pass to drush si.
+  install-args: 'install_configure_form.enable_update_status_module=NULL'
