@@ -88,6 +88,7 @@ class Polymer implements ContainerAwareInterface
         $this->runner = new RoboRunner();
         $this->runner->setClassLoader($classLoader);
         $this->runner->setContainer($container);
+        $this->runner->setRelativePluginNamespace('Polymer\Plugin');
         $this->runner->setSelfUpdateRepository(self::REPOSITORY);
     }
 
