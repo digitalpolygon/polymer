@@ -200,7 +200,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $this->io->write('<info>Creating Polymer template files...</info>');
             print_r(['vendorpath' => $this->getVendorPath()]);
             /** @var string $command */
-            $command = $this->getVendorPath() . '/bin/polymer polymer:init --ansi -n';
+            $command = $this->getVendorPath() . '/bin/polymer polymer:init';
             print_r(['command' => $command]);
             $this->io->write('<comment> > ' . $command . '</comment>');
             $success = $this->executor->execute($command);
