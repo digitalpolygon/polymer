@@ -120,9 +120,9 @@ class ConfigInitializer
      */
     public function loadProjectConfig(): static
     {
-        $this->processor->extend($this->loader->load($this->config->get('repo.root') . '/polymer.yml'));
+        $this->processor->extend($this->loader->load($this->config->get('repo.root') . '/polymer/polymer.yml'));
         $this->processor->extend(
-            $this->loader->load($this->config->get('repo.root') . "/{$this->environment}.polymer.yml")
+            $this->loader->load($this->config->get('repo.root') . "/{$this->environment}./polymer/polymer.yml")
         );
         return $this;
     }
