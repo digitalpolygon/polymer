@@ -44,11 +44,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function activate(Composer $composer, IOInterface $io, ProcessExecutor $execeutor)
+    public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
         $this->io = $io;
-        $this->executor = $execeutor;
+        $this->executor = new ProcessExecutor($this->io);
     }
 
     /**
@@ -200,7 +200,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if ($this->isInitialInstall()) {
             $this->io->write('<info>Creating Polymer template files...</info>');
             /** @var string $command */
-            $command = $this->getVendorPath() . '/bin/polymer polymer:init';
+            $command = $this->getVendorPath() . '/bin/polymer polymer:init --ansi -n';
             $this->io->write('<comment> > ' . $command . '</comment>');
             $success = $this->executor->execute($command);
             if (!$success) {
