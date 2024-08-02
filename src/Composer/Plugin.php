@@ -200,13 +200,50 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if ($this->isInitialInstall()) {
             $this->io->write('<info>Creating Polymer template files...</info>');
             /** @var string $command */
-            $command = $this->getVendorPath() . '/bin/polymer polymer:init --ansi -n';
-            $this->io->write('<comment> > ' . $command . '</comment>');
-            $success = ($this->executor->execute($command, $output) == 0);
+            $command = $this->getVendorPath() . '/bin/polymer polymer:init';
+            $success = $this->executeCommand($command, [], true);
             if (!$success) {
                 $this->io->writeError("<error>Polymer installation failed! Please execute <comment>$command --verbose</comment> to debug the issue.</error>");
                 throw new \Exception('Installation aborted due to error');
             }
         }
+    }
+
+    /**
+     * Executes a shell command with escaping.
+     *
+     * Example usage: $this->executeCommand("test command %s", [ $value ]).
+     *
+     * @param string $cmd
+     *   Cmd.
+     * @param array<int, string> $args
+     *   Args.
+     * @param bool $display_output
+     *   Optional. Defaults to FALSE. If TRUE, command output will be displayed
+     *   on screen.
+     *
+     * @return bool
+     *   TRUE if command returns successfully with a 0 exit code.
+     */
+    protected function executeCommand(string $cmd, array $args = [], $display_output = false): bool
+    {
+        // Shell-escape all arguments.
+        foreach ($args as $index => $arg) {
+            $args[$index] = escapeshellarg($arg);
+        }
+        // Add command as first arg.
+        array_unshift($args, $cmd);
+        // And replace the arguments.
+        /** @var string $command */
+        $command = call_user_func_array('sprintf', $args);
+        $output = '';
+        if ($this->io->isVerbose() || $display_output) {
+            $this->io->write('<comment> > ' . $command . '</comment>');
+            $io = $this->io;
+            $output = function ($type, $buffer) use ($io) {
+                $io->write($buffer, false);
+            };
+        }
+        return ($this->executor->execute($command, $output) == 0);
     }
 }
