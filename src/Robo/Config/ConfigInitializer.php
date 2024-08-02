@@ -122,7 +122,7 @@ class ConfigInitializer
     {
         $this->processor->extend($this->loader->load($this->config->get('repo.root') . '/polymer/polymer.yml'));
         $this->processor->extend(
-            $this->loader->load($this->config->get('repo.root') . "/{$this->environment}.polymer.yml")
+            $this->loader->load($this->config->get('repo.root') . "/polymer/{$this->environment}.polymer.yml")
         );
         return $this;
     }
