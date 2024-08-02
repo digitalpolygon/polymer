@@ -23,12 +23,16 @@ class InstallCommand extends TaskBase
     public function initPolymer(): void
     {
         if ($this->isInitialInstall()) {
-            // Creates the polymer/polymer.yml file.
-            $this->copyPolymerConfigs();
-            $this->displayArt();
-            $this->yell("Polymer has been added to your project.");
-            $this->say("Please continue by following the \"Adding Polymer to an existing project\" instructions:");
-            $this->say("<comment>https://digitalpolygon.github.io/polymer/</comment>");
+            try {
+                // Creates the polymer/polymer.yml file.
+                $this->copyPolymerConfigs();
+                $this->displayArt();
+                $this->yell("Polymer has been added to your project.");
+                $this->say("Please continue by following the \"Adding Polymer to an existing project\" instructions:");
+                $this->say("<comment>https://digitalpolygon.github.io/polymer/</comment>");
+            } catch (\Exception $e) {
+                $this->say("<error>Failed to initialize Polymer: {$e->getMessage()}</error>");
+            }
         } else {
             $this->say("Polymer is already installed.");
         }
@@ -40,10 +44,15 @@ class InstallCommand extends TaskBase
     public function displayArt(): void
     {
         $ascii_art_path = $this->getConfigValue('polymer.root') . '/scripts/asciiart.txt';
-        if (file_get_contents($ascii_art_path)) {
-            /** @var string $ascii_text */
+        try {
             $ascii_text = file_get_contents($ascii_art_path);
-            $this->say($ascii_text);
+            if ($ascii_text !== false) {
+                $this->say($ascii_text);
+            } else {
+                $this->say("<error>Failed to read ASCII art from {$ascii_art_path}</error>");
+            }
+        } catch (\Exception $e) {
+            $this->say("<error>Failed to read ASCII art: {$e->getMessage()}</error>");
         }
     }
 
@@ -57,11 +66,7 @@ class InstallCommand extends TaskBase
     {
         /** @var string $existing_configs */
         $existing_configs = $this->getConfigValue('repo.root') . '/polymer/polymer.yml';
-        if (!file_exists($existing_configs)) {
-            return true;
-        }
-
-        return false;
+        return !file_exists($existing_configs);
     }
 
     /**

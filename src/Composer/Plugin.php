@@ -70,14 +70,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-   * Returns an array of event names this subscriber wants to listen to.
-   */
+     * Returns an array of event names this subscriber wants to listen to.
+     *
+     */
     public static function getSubscribedEvents()
     {
         return [
             PackageEvents::POST_PACKAGE_INSTALL => "onPostPackageEvent",
-            PackageEvents::POST_PACKAGE_UPDATE => "onPostPackageEvent",
-            ScriptEvents::POST_UPDATE_CMD => "onPostCmdEvent",
             ScriptEvents::POST_INSTALL_CMD => "onPostCmdEvent",
         ];
     }
@@ -153,7 +152,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @return string
      *   The file path of the repository root.
      */
-    public function getRepoRoot()
+    public function getRepoRoot(): string
     {
         return dirname($this->getVendorPath());
     }
@@ -164,7 +163,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @return string
      *   String.
      */
-    public function getVendorPath()
+    public function getVendorPath(): string
     {
         $config = $this->composer->getConfig();
         $filesystem = new Filesystem();
