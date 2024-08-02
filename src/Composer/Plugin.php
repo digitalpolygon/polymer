@@ -202,8 +202,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             /** @var string $command */
             $command = $this->getVendorPath() . '/bin/polymer polymer:init --ansi -n';
             $this->io->write('<comment> > ' . $command . '</comment>');
-            print_r(['$success' => $this->executor->execute($command)]);
-            if ($this->executor->execute($command)) {
+            $success = ($this->executor->execute($command, $output) == 0);
+            if (!$success) {
                 $this->io->writeError("<error>Polymer installation failed! Please execute <comment>$command --verbose</comment> to debug the issue.</error>");
                 throw new \Exception('Installation aborted due to error');
             }
