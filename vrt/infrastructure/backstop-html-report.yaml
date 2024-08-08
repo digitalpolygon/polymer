@@ -1,0 +1,163 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  AccountId:
+    Type: String
+    Description: "The AWS account ID."
+  Region:
+    Type: String
+    Default: us-east-2
+  SharedFunctionId:
+    Type: String
+    Default: polymer-backstopjs-html-report-auth-fn
+
+Outputs:
+  DistributionId:
+    Value: !Ref HtmlReportDistribution
+  DistributionDomainName:
+    Value: !GetAtt HtmlReportDistribution.DomainName
+  S3BucketName:
+    Value: !Ref S3BucketHtmlReport
+  S3BucketDomainName:
+    Value: !GetAtt S3BucketHtmlReport.RegionalDomainName
+
+
+Resources:
+  # CloudFront distribution that serves the HTML report stored in the bucket.
+  HtmlReportDistribution:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::CloudFront::Distribution"
+    DeletionPolicy: "Delete"
+    Properties:
+      DistributionConfig:
+        Logging:
+          IncludeCookies: false
+          Bucket: ""
+          Prefix: ""
+        Comment: ""
+        DefaultRootObject: ""
+        Origins:
+          - ConnectionTimeout: 10
+            OriginAccessControlId:
+              Ref: "BucketOriginAccessControl"
+            ConnectionAttempts: 3
+            OriginCustomHeaders: [ ]
+            DomainName: !GetAtt S3BucketHtmlReport.RegionalDomainName
+            OriginShield:
+              Enabled: false
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginPath: ""
+            Id: !GetAtt S3BucketHtmlReport.RegionalDomainName
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+        PriceClass: "PriceClass_100"
+        DefaultCacheBehavior:
+          Compress: true
+          TrustedKeyGroups: [ ]
+          FunctionAssociations:
+            - FunctionARN:
+                !Join
+                  - ""
+                  - - 'arn:aws:cloudfront::'
+                    - !Ref AccountId
+                    - ':function/'
+                    - !Ref SharedFunctionId
+              EventType: "viewer-request"
+          AllowedMethods:
+            - "HEAD"
+            - "GET"
+          CachedMethods:
+            - "HEAD"
+            - "GET"
+          LambdaFunctionAssociations: [ ]
+          SmoothStreaming: false
+          TargetOriginId:
+            !Join
+              - ""
+              - - !Sub 'polymer-backstopjs-html-report-${AWS::StackName}.s3.${Region}.amazonaws.com'
+          ViewerProtocolPolicy: "redirect-to-https"
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+          TrustedSigners: [ ]
+          FieldLevelEncryptionId: ""
+        Staging: false
+        CustomErrorResponses: [ ]
+        ContinuousDeploymentPolicyId: ""
+        OriginGroups:
+          Quantity: 0
+          Items: [ ]
+        Enabled: true
+        Aliases: [ ]
+        IPV6Enabled: true
+        WebACLId: ""
+        HttpVersion: "http2"
+        Restrictions:
+          GeoRestriction:
+            Locations: [ ]
+            RestrictionType: "none"
+        CacheBehaviors: [ ]
+  # S3 bucket that stores the HTML report.
+  S3BucketHtmlReport:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::S3::Bucket"
+    DeletionPolicy: "Delete"
+    Properties:
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: !Sub 'polymer-backstopjs-html-report-${AWS::StackName}'
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: false
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+  # Origin access control for the S3 bucket. Not sure if this can be a shared resource amongst multiple buckets. If it
+  # can be then it should be moved to a shared stack.
+  BucketOriginAccessControl:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::CloudFront::OriginAccessControl"
+    DeletionPolicy: "Delete"
+    Properties:
+      OriginAccessControlConfig:
+        SigningBehavior: "always"
+        Description: ""
+        SigningProtocol: "sigv4"
+        OriginAccessControlOriginType: "s3"
+        Name: !Sub 'polymer-backstopjs-html-report-oac-${AWS::StackName}'
+  # Policy that allows the CloudFront distribution to access the S3 bucket.
+  S3BucketHtmlReportPolicy:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::S3::BucketPolicy"
+    DeletionPolicy: "Delete"
+    Properties:
+      Bucket:
+        Ref: "S3BucketHtmlReport"
+      PolicyDocument:
+        Version: "2008-10-17"
+        Statement:
+          - Condition:
+              StringEquals:
+                AWS:SourceArn:
+                  - !Join
+                    - ""
+                    - - 'arn:aws:cloudfront::'
+                      - !Ref AccountId
+                      - ':distribution/'
+                      - !Ref HtmlReportDistribution
+            Resource:
+              - !Join
+                - ""
+                - - 'arn:aws:s3:::'
+                  - !Ref S3BucketHtmlReport
+                  - '/*'
+            Action: "s3:GetObject"
+            Effect: "Allow"
+            Principal:
+              Service: "cloudfront.amazonaws.com"
+            Sid: "AllowCloudFrontServicePrincipal"
+        Id: "PolicyForCloudFrontPrivateContent"

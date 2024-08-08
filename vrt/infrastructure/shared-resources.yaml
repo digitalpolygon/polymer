@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  AccountId:
+    Type: String
+    Description: "The AWS account ID."
+  Repository:
+    Type: String
+    Description: "The GitHub repository name which this infrastructure is associated."
+  ProvisionStacksRoleName:
+    Type: String
+    Description: "The name of the role that provisions stacks."
+    Default: polymer-provision-stacks
+
+Resources:
+  BackstopBasicAuthFunction:
+    Type: AWS::CloudFront::Function
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      Name: polymer-backstopjs-html-report-auth-fn
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Function to enforce basic authentication when accessing BackstopJS HTML reports.
+        Runtime: cloudfront-js-2.0
+        KeyValueStoreAssociations:
+          - KeyValueStoreARN: !Sub '${BackstopReportBasicAuthKeyValueStore.Arn}'
+      FunctionCode: !Sub |
+        import cf from 'cloudfront';
+
+        const kvsId = '${BackstopReportBasicAuthKeyValueStore.Id}';
+
+        // This fails if the key value store is not associated with the function.
+        const kvsHandle = cf.kvs(kvsId);
+
+        // Response when auth is not valid.
+        var response401 = {
+            statusCode: 401,
+            statusDescription: 'Unauthorized',
+            headers: {
+                'www-authenticate': {value:'Basic'},
+            },
+        };
+
+        async function handler(event) {
+            let username, password;
+            try {
+                username = await kvsHandle.get('report-username');
+                password = await kvsHandle.get('report-password');
+            }
+            catch (err) {
+                console.log('Failed to look up credentials');
+            }
+
+
+            var request = event.request;
+            var headers = request.headers;
+
+            var auth = request.headers.authorization && request.headers.authorization.value;
+
+            if(!auth || !auth.startsWith('Basic ')) {
+                return response401;
+            }
+
+            var base64 = Buffer.from(username + ':' + password).toString('base64');
+            var authString = 'Basic ' + base64;
+
+            if (authString === auth) {
+                return request;
+            }
+
+            return response401;
+        }
+  BackstopReportBasicAuthKeyValueStore:
+    Type: AWS::CloudFront::KeyValueStore
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      Name: polymer-backstopjs-html-report-auth-kv
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      ClientIdList:
+        - sts.amazonaws.com
+#      ThumbprintList:
+#        - d89e3bd43d5d909b47a18977aa9d5ce36cee184c
+      Url: https://token.actions.githubusercontent.com
+  # Roles
+  ProvisionStacksRole:
+    Type: AWS::IAM::Role
+    DeletionPolicy: Delete
+    Properties:
+      AssumeRolePolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Federated": "arn:aws:iam::${AccountId}:oidc-provider/token.actions.githubusercontent.com"
+                    },
+                    "Action": "sts:AssumeRoleWithWebIdentity",
+                    "Condition": {
+                        "StringEquals": {
+                            "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                        },
+                        "StringLike": {
+                            "token.actions.githubusercontent.com:sub": "repo:${Repository}:*"
+                        }
+                    }
+                }
+            ]
+        }
+      Description: Allow updates to stacks via GitHub Actions from project repository.
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+        - arn:aws:iam::aws:policy/CloudFrontFullAccess
+      RoleName: !Ref ProvisionStacksRoleName
+  PolymerS3ReportBucket:
+    Type: AWS::IAM::Role
+    DeletionPolicy: Delete
+    Properties:
+      AssumeRolePolicyDocument: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Principal": {
+                      "Federated": "arn:aws:iam::${AccountId}:oidc-provider/token.actions.githubusercontent.com"
+                  },
+                  "Action": "sts:AssumeRoleWithWebIdentity",
+                  "Condition": {
+                      "StringEquals": {
+                          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                      },
+                      "StringLike": {
+                          "token.actions.githubusercontent.com:sub": "repo:${Repository}:*"
+                      }
+                  }
+              }
+          ]
+        }
+      Description: Manage HTML report bucket data.
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      RoleName: polymer-report-s3-management
+
+Outputs:
+    BackstopReportBasicAuthKeyValueStoreArn:
+        Description: The ARN of the BackstopReportBasicAuthKeyValueStore.
+        Value: !GetAtt BackstopReportBasicAuthKeyValueStore.Arn

@@ -19,6 +19,7 @@ deploy:
 docroot: ${repo.root}/web
 
 git:
+  github-repository: ~
   commit-msg:
     pattern: '/(^(awesome-project)-[0-9]+(: )[^ ].{15,}\.)|(Merge branch(.)+)/'
     example: "awesome-project-PWT-62: Update module configuration."
@@ -76,3 +77,16 @@ sync:
     # That's why files needs to be synchronized locally first.
     # Command order can be changed as per the need in custom polymer.config file.
     - drupal:update
+
+vrt:
+  aws:
+    region: us-east-2
+    shared-stack-id: 'polymer-vrt'
+    shared-stack-formation-file: ${polymer.root}/vrt/infrastructure/shared-resources.yaml
+    test-report-formation-file: ${polymer.root}/vrt/infrastructure/backstop-html-report.yaml
+    function-id: polymer-backstopjs-html-report-auth-fn
+    account-id: ~
+  ci:
+    github-workflow-source: ${polymer.root}/vrt/github_workflows/reference-images.yml
+    github-workflow-destination: ${repo.root}/.github/workflows/reference-images.yml
+

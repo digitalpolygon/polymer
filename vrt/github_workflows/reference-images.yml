@@ -1,0 +1,47 @@
+name: Visual Regression Reference Images
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+env:
+  AWS_REGION: us-east-1
+  # For interfacing with this account, Ken Butler.
+  AWS_ACCOUNT_ID: 319056943625
+  S3_BUCKET_NAME: mcc-central-backstopjs-references-main
+
+jobs:
+  backstop-reference-images:
+    name: Update BackstopJS reference images
+    runs-on: ubuntu-latest
+    concurrency:
+      group: backstop-references-${{ github.head_ref || github.ref_name }}
+      cancel-in-progress: true
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/backstop-s3-management
+          role-session-name: update-reference-images-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Checkout Target
+        uses: actions/checkout@v4
+      - name: Setup the site
+        run: |
+          echo "Setting up the site..."
+      - name: Generate BackstopJS reference images
+        run: |
+          backstop reference --config=backstop.config.js
+      - name: Upload BackstopJS reference images
+        run: ./tests/backstop/scripts/put-reference-images.sh "${S3_BUCKET_NAME}"
+      - name: Reference images artifact on workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: backstop-reference-images
+          path: tests/backstop/backstop_data/bitmaps_reference
+          if-no-files-found: ignore
