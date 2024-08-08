@@ -223,7 +223,7 @@ class ConfigInitializer
             ->exclude(['polymer'])
             ->sortByName();
             foreach ($dirs->getIterator() as $dir) {
-                $polymer_extension_packages[] = $dir->getRelativePathname();
+                $polymer_extension_packages[] = $dir->getPathname();
             }
         }
         return $polymer_extension_packages;
