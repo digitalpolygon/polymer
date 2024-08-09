@@ -2,6 +2,7 @@
 
 namespace DigitalPolygon\Polymer\Robo\Config;
 
+use Symfony\Component\Finder\Finder;
 use Consolidation\Config\Loader\ConfigProcessor;
 use Consolidation\Config\Loader\YamlConfigLoader;
 use Symfony\Component\Console\Input\InputInterface;
@@ -96,6 +97,7 @@ class ConfigInitializer
     public function loadConfigFiles(): static
     {
         $this->loadDefaultConfig();
+        $this->loadDefaultPolymerExtensionConfigs();
         $this->loadProjectConfig();
         return $this;
     }
@@ -180,5 +182,50 @@ class ConfigInitializer
     {
         $this->site = $site;
         $this->config->setSite($site);
+    }
+
+    /**
+     * Load the default polymer extension configs.
+     *
+     * @return $this
+     *   Config.
+     */
+    public function loadDefaultPolymerExtensionConfigs(): static
+    {
+        $polymer_extension_packages = $this->getPolymerExtensionPackages();
+        if ($polymer_extension_packages) {
+            foreach ($polymer_extension_packages as $polymer_extension_package) {
+                $this->processor->extend($this->loader->load($polymer_extension_package . '/config/default.yml'));
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Get the list of Polymer extension packages.
+     *
+     * @return array<string>
+     *   The list of Polymer extension packages.
+     */
+    private function getPolymerExtensionPackages(): array
+    {
+        $polymer_extension_packages = [];
+        $digitalpolygon_root = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
+
+        // Check if the directory exists and ends with 'digitalpolygon'.
+        if (file_exists($digitalpolygon_root) && str_ends_with($digitalpolygon_root, 'digitalpolygon')) {
+            /** @var \Symfony\Component\Finder\Finder $finder */
+            $finder = new Finder();
+            $dirs = $finder
+            ->in($digitalpolygon_root)
+            ->directories()
+            ->depth('== 0')
+            ->exclude(['polymer'])
+            ->sortByName();
+            foreach ($dirs->getIterator() as $dir) {
+                $polymer_extension_packages[] = $dir->getPathname();
+            }
+        }
+        return $polymer_extension_packages;
     }
 }
