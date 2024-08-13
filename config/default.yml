@@ -16,8 +16,6 @@ deploy:
   exclude_additions_file: ${repo.root}/polymer/deploy-exclude-additions.txt
   gitignore_file: ${polymer.root}/config/.gitignore
 
-docroot: ${repo.root}/web
-
 git:
   github-repository: ~
   commit-msg:
@@ -25,58 +23,12 @@ git:
     example: "awesome-project-PWT-62: Update module configuration."
   default_branch: master
   remotes:
-    origin: 'git@awasome-repository-service/repo.git'
+    origin: "git@awasome-repository-service/repo.git"
   user:
     # Name and email to use for the purposes of Git commits if you don't want to
     # use global Git configuration.
     name: 'John Doe'
     email: 'john-doe@awasome-email.com'
-
-drush:
-  alias-dir: ${repo.root}/drush/sites
-  aliases:
-    local: self
-    ci: self
-  ansi: true
-  bin: ${composer.bin}/drush
-  default_alias: ${drush.aliases.local}
-  dir: ${docroot}
-  sanitize: true
-  alias: ${drush.default_alias}
-
-cm:
-  # Possible values: core-only, config-split, none.
-  strategy: config-split
-  core:
-    # The parent directory for configuration directories, relative to the docroot.
-    path: ../config
-    dirs:
-      # Corresponding value is defined in config.settings.php.
-      sync:
-        path: ${cm.core.path}/default
-    # Install site directly from existing config.
-    # This cannot be used if your install profile implements hook_install.
-    install_from_config: false
-
-sync:
-  # By default, files are not synced during sync:refresh.
-  # Set this value to 'true' or pass -D sync.public-files=true
-  # to override this behavior.
-  public-files: false
-  private-files: false
-  # Paths to exclude during file syncing operations.
-  exclude-paths:
-    - styles
-    - css
-    - js
-  commands:
-    - drupal:site:sync:database
-    - drupal:site:sync:files
-    - drupal:site:sync:private-files
-    # To make sure that the states between local and remote are as close to identical as possible before running an update operation.
-    # That's why files needs to be synchronized locally first.
-    # Command order can be changed as per the need in custom polymer.config file.
-    - drupal:update
 
 vrt:
   aws:
@@ -89,4 +41,3 @@ vrt:
   ci:
     github-workflow-source: ${polymer.root}/vrt/github_workflows/reference-images.yml
     github-workflow-destination: ${repo.root}/.github/workflows/reference-images.yml
-
