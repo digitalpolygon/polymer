@@ -6,6 +6,7 @@ use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Option;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use Drush\Attributes\Usage;
 use Robo\Symfony\ConsoleIO;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,6 +15,13 @@ class ProvisionInfrastructureCommand extends TaskBase
 {
     protected $stackInfo = null;
 
+    /**
+     * Create shared infrastructure used by workflow processes.
+     *
+     * @param ConsoleIO $io
+     * @return void
+     * @throws \Robo\Exception\TaskException
+     */
     #[Command(name: 'vrt:provision:deploy-static-infrastructure')]
     public function updateStaticInfrastructure(ConsoleIO $io)
     {
@@ -41,6 +49,13 @@ class ProvisionInfrastructureCommand extends TaskBase
         }
     }
 
+    /**
+     * Tear down shared infrastructure.
+     *
+     * @param ConsoleIO $io
+     * @return void
+     * @throws \Robo\Exception\TaskException
+     */
     #[Command(name: 'vrt:provision:destroy-static-infrastructure')]
     public function destroySharedInfrastructure(ConsoleIO $io)
     {
@@ -65,6 +80,11 @@ class ProvisionInfrastructureCommand extends TaskBase
         }
     }
 
+    /**
+     * Initialize project to use visual regression testing.
+     *
+     * @return void
+     */
     #[Command(name: 'vrt:backstop:init')]
     public function initVrtFiles()
     {
@@ -84,6 +104,11 @@ class ProvisionInfrastructureCommand extends TaskBase
             ->run();
     }
 
+    /**
+     * Retrieve latest valid reference images.
+     *
+     * @return void
+     */
     #[Command(name: 'vrt:backstop:get-reference-images')]
     public function getReferenceImages()
     {
@@ -115,6 +140,14 @@ class ProvisionInfrastructureCommand extends TaskBase
             ->run();
     }
 
+    /**
+     * Upload HTML report to S3 bucket.
+     *
+     * @param string $stack_id
+     *   The ID of the CloudFormation stack that contains the S3 bucket to store the HTML report in.
+     *
+     * @return void
+     */
     #[Command(name: 'vrt:backstop:put-test-report')]
     #[Argument(name: 'stack_id', description: 'The stack ID of the shared infrastructure.')]
     public function putTestReport(string $stack_id)
@@ -129,6 +162,13 @@ class ProvisionInfrastructureCommand extends TaskBase
         $task->run();
     }
 
+    /**
+     * Set the username and password for accessing HTML reports.
+     *
+     * @param string $username
+     * @param string $password
+     * @return void
+     */
     #[Command(name: 'vrt:provision:set-basic-auth-credentials')]
     public function setBasicAuthCredentials(string $username, string $password)
     {
@@ -214,6 +254,14 @@ class ProvisionInfrastructureCommand extends TaskBase
         return false;
     }
 
+    /**
+     * Configure AWS credentials.
+     *
+     * @param string $access_key
+     * @param string $secret_key
+     * @return void
+     * @throws \Robo\Exception\TaskException
+     */
     #[Command(name: 'aws:configure:credentials')]
     #[Argument(name: 'access_key', description: 'The AWS access key.')]
     #[Argument(name: 'secret_key', description: 'The AWS secret key.')]
