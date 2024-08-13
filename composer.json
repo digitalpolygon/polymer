@@ -39,7 +39,7 @@
   },
   "extra": {
     "class": "DigitalPolygon\\Polymer\\Composer\\Plugin",
-    "branch-aliases": {
+    "branch-alias": {
       "dev-main": "1.x-dev"
     }
   },
