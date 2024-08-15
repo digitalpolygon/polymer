@@ -114,10 +114,22 @@ class CompileCommand extends TaskBase
      */
     private function collectBuildCommands(string $artifact): array
     {
+        $artifact_config = $this->getConfigValue('artifacts.' . $artifact);
+        if (empty($artifact_config)) {
+            throw new \Exception("Artifact '{$artifact}' not found in the configuration.");
+        }
         $commands = $this->buildRecipe->getCommands();
         // Check if the artifact contains dependent-builds and add them.
         $dependent_builds = $this->getDependentBuilds($artifact);
-        if (!empty($dependent_builds)) {
+        if (empty($dependent_builds)) {
+            // Remove any build commands if there were no build dependencies specified.
+            foreach ($commands as $key => $command) {
+                if (str_starts_with($command->getName(), 'build')) {
+                    unset($commands[$key]);
+                }
+            }
+        }
+        else {
             // Replace the 'build' command from the build-recipe for the dependent builds specified in the artifact.
             foreach ($commands as $key => $command) {
                 if (str_starts_with($command->getName(), 'build')) {
@@ -179,6 +191,6 @@ class CompileCommand extends TaskBase
     private function getDependentBuilds(string $artifact): array
     {
         // @phpstan-ignore-next-line
-        return $this->getConfigValue("artifacts.$artifact.dependent-builds");
+        return $this->getConfigValue("artifacts.$artifact.dependent-builds", []);
     }
 }
