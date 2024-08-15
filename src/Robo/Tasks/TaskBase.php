@@ -89,7 +89,7 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
         // obviates the need to check the exit code of every invoked command.
         if ($exit_code) {
             $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
-            throw new TaskException($this, "Command `$command_string}` exited with code $exit_code.");
+            throw new TaskException($this, "Command `$command_string` exited with code $exit_code.");
         }
     }
 
