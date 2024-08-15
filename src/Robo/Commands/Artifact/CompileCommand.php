@@ -128,8 +128,7 @@ class CompileCommand extends TaskBase
                     unset($commands[$key]);
                 }
             }
-        }
-        else {
+        } else {
             // Replace the 'build' command from the build-recipe for the dependent builds specified in the artifact.
             foreach ($commands as $key => $command) {
                 if (str_starts_with($command->getName(), 'build')) {
