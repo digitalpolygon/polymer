@@ -12,7 +12,6 @@ use Robo\Contract\ConfigAwareInterface;
  */
 abstract class BuildRecipeBase implements RecipeInterface, ConfigAwareInterface
 {
-    use ConfigAwareTrait;
     use DeployConfigAwareTrait;
 
     /**

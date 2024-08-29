@@ -16,7 +16,6 @@ use Robo\Contract\IOAwareInterface;
  */
 abstract class PushRecipeBase implements RecipeInterface, ConfigAwareInterface, LoggerAwareInterface, IOAwareInterface
 {
-    use ConfigAwareTrait;
     use LoggerAwareTrait;
     use IO;
     use DeployConfigAwareTrait;
