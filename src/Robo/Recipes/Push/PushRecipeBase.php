@@ -2,7 +2,6 @@
 
 namespace DigitalPolygon\Polymer\Robo\Recipes\Push;
 
-use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\DeployConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
 use Psr\Log\LoggerAwareInterface;

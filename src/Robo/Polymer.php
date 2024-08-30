@@ -12,6 +12,7 @@ use DigitalPolygon\Polymer\Robo\Discovery\PushRecipesDiscovery;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * The Polymer Robo application.
  */
-class Polymer implements ContainerAwareInterface
+class Polymer implements ContainerAwareInterface, ConfigAwareInterface
 {
     use ContainerAwareTrait;
     use ConfigAwareTrait;

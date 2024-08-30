@@ -2,12 +2,17 @@
 
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
-use Robo\Tasks;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Robo\Common\IO;
-use Psr\Log\LoggerInterface;
+use Robo\Contract\BuilderAwareInterface;
+use Robo\Contract\IOAwareInterface;
+use Robo\LoadAllTasks;
+use Robo\Result;
+use Robo\Tasks;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Robo\Exception\TaskException;
-use Robo\Contract\IOAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -18,26 +23,20 @@ use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
 /**
  * Utility base class for Polymer commands.
  */
-abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwareInterface, IOAwareInterface
+abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, BuilderAwareInterface, IOAwareInterface, ContainerAwareInterface
 {
+    use LoggerAwareTrait;
     use ConfigAwareTrait;
+    use ContainerAwareTrait;
+    use LoadAllTasks; // uses TaskAccessor, which uses BuilderAwareTrait
     use IO;
 
     /**
-     * The logger instance.
-     *
-     * @var LoggerInterface
+     * @param bool $stopOnFail
      */
-    protected LoggerInterface $logger;
-
-    /**
-     * Sets a logger.
-     *
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
+    protected function stopOnFail($stopOnFail = true): void
     {
-        $this->logger = $logger;
+        Result::$stopOnFail = $stopOnFail;
     }
 
     /**
@@ -102,11 +101,14 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
      * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
      *   The build recipe object.
      */
-    protected function getBuildRecipe(string $recipe_id): ?RecipeInterface
+    protected function getBuildRecipe(string $recipe_id): RecipeInterface|null
     {
         $id = "recipe:build:$recipe_id";
-        // @phpstan-ignore-next-line
-        return $this->getContainer()->get($id);
+        $definition = $this->getContainer()->get($id);
+        if ($definition instanceof RecipeInterface) {
+            return $definition;
+        }
+        return null;
     }
 
     /**
@@ -118,11 +120,14 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
      * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
      *   The push recipe object.
      */
-    protected function getPushRecipe(string $recipe_id): ?RecipeInterface
+    protected function getPushRecipe(string $recipe_id): RecipeInterface|null
     {
         $id = "recipe:push:$recipe_id";
-        // @phpstan-ignore-next-line
-        return $this->getContainer()->get($id);
+        $definition = $this->getContainer()->get($id);
+        if ($definition instanceof RecipeInterface) {
+            return $definition;
+        }
+        return null;
     }
 
     /**
@@ -185,7 +190,7 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
         /** @var string $dir */
         $dir = $this->getConfigValue("command-hooks.$hook.dir");
         if ($command == null) {
-            $this->logger->info("Skipped $hook target hook. No hook is defined.");
+            $this->logger?->info("Skipped $hook target hook. No hook is defined.");
             return 0;
         }
         // Define the task.
@@ -230,7 +235,7 @@ abstract class TaskBase extends Tasks implements ConfigAwareInterface, LoggerAwa
      */
     public function switchSiteContext($site_name): void
     {
-        $this->logger->debug("Switching site context to <comment>$site_name</comment>.");
+        $this->logger?->debug("Switching site context to <comment>$site_name</comment>.");
         /** @var string $repo_root */
         $repo_root = $this->getConfigValue('repo.root');
         $config_initializer = new ConfigInitializer($repo_root, $this->input());
