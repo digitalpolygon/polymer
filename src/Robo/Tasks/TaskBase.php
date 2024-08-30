@@ -9,7 +9,6 @@ use Robo\Contract\BuilderAwareInterface;
 use Robo\Contract\IOAwareInterface;
 use Robo\LoadAllTasks;
 use Robo\Result;
-use Robo\Tasks;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Robo\Exception\TaskException;
@@ -245,5 +244,15 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         // Replaces config.
         // @phpstan-ignore-next-line
         $this->getConfig()->replace($new_config->export());
+    }
+
+    /**
+     * @param \Symfony\Component\Console\Command\Command $command
+     *
+     * @return \DigitalPolygon\Polymer\Robo\Tasks\ToggleableSymfonyCommand|\Robo\Collection\CollectionBuilder
+     */
+    public function taskToggleableSymfonyCommand($command)
+    {
+        return $this->task(ToggleableSymfonyCommand::class, $command);
     }
 }
