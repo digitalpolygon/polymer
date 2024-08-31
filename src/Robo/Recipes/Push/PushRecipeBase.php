@@ -2,7 +2,6 @@
 
 namespace DigitalPolygon\Polymer\Robo\Recipes\Push;
 
-use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\DeployConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -16,7 +15,6 @@ use Robo\Contract\IOAwareInterface;
  */
 abstract class PushRecipeBase implements RecipeInterface, ConfigAwareInterface, LoggerAwareInterface, IOAwareInterface
 {
-    use ConfigAwareTrait;
     use LoggerAwareTrait;
     use IO;
     use DeployConfigAwareTrait;

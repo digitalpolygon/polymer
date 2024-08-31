@@ -16,7 +16,7 @@ trait ConfigAwareTrait
      *
      * @param string $key
      *   The config key.
-     * @param string|null $default
+     * @param mixed $default
      *   The default value if the key does not exist in config.
      *
      * @return mixed
@@ -24,6 +24,7 @@ trait ConfigAwareTrait
      */
     protected function getConfigValue($key, $default = null): mixed
     {
+        // @phpstan-ignore argument.type
         return $this->getConfig()->get($key, $default) ?? $default;
     }
 

@@ -2,6 +2,7 @@
 
 namespace DigitalPolygon\Polymer\Robo\Recipes;
 
+use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use Robo\Exception\TaskException;
 
 /**
@@ -9,19 +10,17 @@ use Robo\Exception\TaskException;
  */
 trait DeployConfigAwareTrait
 {
+    use ConfigAwareTrait;
+
     /**
      * Deploy directory.
-     *
-     * @var string
      */
-    protected string $deployDir;
+    protected ?string $deployDir = null;
 
     /**
      * Deploy docroot directory.
-     *
-     * @var string
      */
-    protected string $deployDocroot;
+    protected ?string $deployDocroot = null;
 
     /**
      * Gather build source and target information.
@@ -30,10 +29,14 @@ trait DeployConfigAwareTrait
      */
     protected function initialize(): void
     {
-        // @phpstan-ignore-next-line
-        $this->deployDir = $this->getConfigValue('deploy.dir');
-        // @phpstan-ignore-next-line
-        $this->deployDocroot = $this->getConfigValue('deploy.docroot');
+        $deployDir = $this->getConfigValue('deploy.dir');
+        if (is_string($deployDir)) {
+            $this->deployDir = $deployDir;
+        }
+        $deployDocroot = $this->getConfigValue('deploy.docroot');
+        if (is_string($deployDocroot)) {
+            $this->deployDocroot = $deployDocroot;
+        }
         if (!$this->deployDir || !$this->deployDocroot) {
             throw new TaskException($this, 'Configuration deploy.dir and deploy.docroot must be set to run this command');
         }

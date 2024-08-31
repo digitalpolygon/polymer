@@ -29,7 +29,11 @@ class CommonBuildRecipe extends BuildRecipeBase
         // Ensure frontend is build in the artifact directory.
         $commands[] = new PolymerCommand('build');
         // Copy files from the source repository into the artifact.
-        $commands[] = new PolymerCommand('source:build:copy', ['--deploy-dir' => $this->deployDir]);
+        $buildCopyOptions = [];
+        if ($this->deployDir) {
+            $buildCopyOptions['--deploy-dir'] = $this->deployDir;
+        }
+        $commands[] = new PolymerCommand('source:build:copy', $buildCopyOptions);
         // Install Composer dependencies for the artifact.
         $commands[] = new PolymerCommand('artifact:composer:install');
         // Remove sensitive files from the artifact directory.

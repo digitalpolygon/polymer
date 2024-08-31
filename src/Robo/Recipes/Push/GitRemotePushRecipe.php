@@ -268,10 +268,12 @@ class GitRemotePushRecipe extends PushRecipeBase
     private function getPrepareDirCommands(): array
     {
         $commands = [];
-        $commands[] = new PolymerCommand('artifact:build:prepare');
-        $commands[] = new PolymerCommand('git init', ['dir' => $this->deployDir], false);
-        $commands[] = new PolymerCommand('git config --local core.excludesfile false', ['dir' => $this->deployDir], false);
-        $commands[] = new PolymerCommand('git config --local core.fileMode true', ['dir' => $this->deployDir], false);
+        if ($this->deployDir) {
+            $commands[] = new PolymerCommand('artifact:build:prepare');
+            $commands[] = new PolymerCommand('git init', ['dir' => $this->deployDir], false);
+            $commands[] = new PolymerCommand('git config --local core.excludesfile false', ['dir' => $this->deployDir], false);
+            $commands[] = new PolymerCommand('git config --local core.fileMode true', ['dir' => $this->deployDir], false);
+        }
         return $commands;
     }
 
@@ -284,9 +286,11 @@ class GitRemotePushRecipe extends PushRecipeBase
     private function getAddGitRemotesCommands(): array
     {
         $commands = [];
-        foreach ($this->remotes as $remote_name => $remote_url) {
-            $command_string = "git remote add $remote_name $remote_url";
-            $commands[] = new PolymerCommand($command_string, ['dir' => $this->deployDir], false);
+        if ($this->deployDir) {
+            foreach ($this->remotes as $remote_name => $remote_url) {
+                $command_string = "git remote add $remote_name $remote_url";
+                $commands[] = new PolymerCommand($command_string, ['dir' => $this->deployDir], false);
+            }
         }
         return $commands;
     }
@@ -300,7 +304,9 @@ class GitRemotePushRecipe extends PushRecipeBase
     private function getCheckoutLocalDeployBranchCommands(): array
     {
         $commands = [];
-        $commands[] = new PolymerCommand("git checkout -b {$this->branchName}", ['dir' => $this->deployDir], false);
+        if ($this->deployDir) {
+            $commands[] = new PolymerCommand("git checkout -b {$this->branchName}", ['dir' => $this->deployDir], false);
+        }
         return $commands;
     }
 
@@ -326,9 +332,11 @@ class GitRemotePushRecipe extends PushRecipeBase
     private function getCommitCommands(): array
     {
         $commands = [];
-        $commands[] = new PolymerCommand('git rm -r --cached --ignore-unmatch --quiet .', ['dir' => $this->deployDir], false);
-        $commands[] = new PolymerCommand('git add -A', ['dir' => $this->deployDir], false);
-        $commands[] = new PolymerCommand($this->getGitCommitCommandString(), ['dir' => $this->deployDir], false);
+        if ($this->deployDir) {
+            $commands[] = new PolymerCommand('git rm -r --cached --ignore-unmatch --quiet .', ['dir' => $this->deployDir], false);
+            $commands[] = new PolymerCommand('git add -A', ['dir' => $this->deployDir], false);
+            $commands[] = new PolymerCommand($this->getGitCommitCommandString(), ['dir' => $this->deployDir], false);
+        }
         return $commands;
     }
 
@@ -341,7 +349,9 @@ class GitRemotePushRecipe extends PushRecipeBase
     private function getCutTagCommands(): array
     {
         $commands = [];
-        $commands[] = new PolymerCommand($this->getGitTagCommandString(), ['dir' => $this->deployDir], false);
+        if ($this->deployDir) {
+            $commands[] = new PolymerCommand($this->getGitTagCommandString(), ['dir' => $this->deployDir], false);
+        }
         return $commands;
     }
 
@@ -357,9 +367,11 @@ class GitRemotePushRecipe extends PushRecipeBase
     private function getPushCommands(string $identifier): array
     {
         $commands = [];
-        $dry_run = $this->dryRun ? '--dry-run' : '';
-        foreach ($this->remotes as $remote_name => $remote_url) {
-            $commands[] = new PolymerCommand("git push {$remote_name} {$identifier} {$dry_run}", ['dir' => $this->deployDir], false);
+        if ($this->deployDir) {
+            $dry_run = $this->dryRun ? '--dry-run' : '';
+            foreach ($this->remotes as $remote_name => $remote_url) {
+                $commands[] = new PolymerCommand("git push {$remote_name} {$identifier} {$dry_run}", ['dir' => $this->deployDir], false);
+            }
         }
         return $commands;
     }

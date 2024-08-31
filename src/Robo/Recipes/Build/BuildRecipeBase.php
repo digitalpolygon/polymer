@@ -2,7 +2,6 @@
 
 namespace DigitalPolygon\Polymer\Robo\Recipes\Build;
 
-use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\DeployConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
 use Robo\Contract\ConfigAwareInterface;
@@ -12,7 +11,6 @@ use Robo\Contract\ConfigAwareInterface;
  */
 abstract class BuildRecipeBase implements RecipeInterface, ConfigAwareInterface
 {
-    use ConfigAwareTrait;
     use DeployConfigAwareTrait;
 
     /**
