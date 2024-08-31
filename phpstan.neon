@@ -7,6 +7,9 @@ parameters:
         - 'test_package'
         - 'test_drupal10'
         - 'src/Robo/Common/ArrayManipulator.php'
+    ignoreErrors:
+        -
+            message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder#"
 #services:
 #    -
 #        class: DigitalPolygon\PolymerTest\PHPStan\CollectionBuilderReflectionExtension
