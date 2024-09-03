@@ -4,6 +4,7 @@ namespace DigitalPolygon\Polymer\Robo\Tasks;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Robo\Collection\CollectionBuilder;
 use Robo\Common\IO;
 use Robo\Contract\BuilderAwareInterface;
 use Robo\Contract\IOAwareInterface;
@@ -249,9 +250,9 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     /**
      * @param \Symfony\Component\Console\Command\Command $command
      *
-     * @return \DigitalPolygon\Polymer\Robo\Tasks\ToggleableSymfonyCommand|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Collection\CollectionBuilder|\DigitalPolygon\Polymer\Robo\Tasks\ToggleableSymfonyCommand
      */
-    public function taskToggleableSymfonyCommand($command)
+    public function taskToggleableSymfonyCommand($command): CollectionBuilder|ToggleableSymfonyCommand
     {
         return $this->task(ToggleableSymfonyCommand::class, $command);
     }

@@ -9,7 +9,7 @@ parameters:
         - 'src/Robo/Common/ArrayManipulator.php'
     ignoreErrors:
         -
-            message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder#"
+            message: "#^Call to an undefined method (.*)Robo\\\\Collection\\\\CollectionBuilder#"
 #services:
 #    -
 #        class: DigitalPolygon\PolymerTest\PHPStan\CollectionBuilderReflectionExtension
