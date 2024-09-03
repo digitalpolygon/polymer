@@ -6,6 +6,7 @@ use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use Robo\Result;
 use Robo\Task\Base\SymfonyCommand;
+use Symfony\Component\Console\Input\InputInterface;
 
 class ToggleableSymfonyCommand extends SymfonyCommand
 {

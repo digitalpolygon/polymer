@@ -25,14 +25,12 @@ if ($output->isVerbose()) {
 }
 
 // Initialize configuration.
-/** @var string $repo_root */
-$repo_root = find_repo_root();
-$config_initializer = new ConfigInitializer($repo_root, $input);
-$config = $config_initializer->initialize();
+/** @var string $repoRoot */
+$repoRoot = find_repo_root();
 
 // Execute command.
 // @phpstan-ignore variable.undefined
-$polymer = new Polymer($config, $input, $output, $classLoader);
+$polymer = new Polymer($repoRoot, $input, $output, $classLoader);
 $status_code = (int) $polymer->run($input, $output);
 
 // Stop timer.

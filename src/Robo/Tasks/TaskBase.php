@@ -2,6 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
+use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
+use DigitalPolygon\Polymer\Robo\ConsoleApplication;
+use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Collection\CollectionBuilder;
@@ -30,6 +33,8 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     use ContainerAwareTrait;
     use LoadAllTasks; // uses TaskAccessor, which uses BuilderAwareTrait
     use IO;
+
+    protected $invokeDepth;
 
     /**
      * @param bool $stopOnFail
@@ -61,34 +66,45 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     /**
      * Invokes a single Polymer command.
      *
-     * @param \DigitalPolygon\Polymer\Robo\Tasks\Command $command
+     * @param string $commandName
      *   The command, e.g., 'artifact:composer:install'.
      *
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Robo\Exception\TaskException
      */
-    protected function invokeCommand(Command $command): void
+    protected function invokeCommand(string $commandName, array $args = []): void
     {
-        // Show start task message.
-        $command_string = (string) $command;
-        $this->say("Invoking Command: '$command_string'");
-        // Get the Console Application instance from the container.
-        /** @var \DigitalPolygon\Polymer\Robo\ConsoleApplication $application */
-        $application = $this->getContainer()->get('application');
-        // Find the task and format its inputs.
-        $task = $application->find($command->getName());
-        $input = new ArrayInput($command->getArgs());
-        $input->setInteractive($this->input()->isInteractive());
-        // Now run the command.
-        $this->output->writeln("   <comment>$command_string</comment>");
-        $exit_code = $application->runCommand($task, $input, $this->output());
-        // The application will catch any exceptions thrown in the executed
-        // command. We must check the exit code and throw our own exception. This
-        // obviates the need to check the exit code of every invoked command.
-        if ($exit_code) {
-            $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
-            throw new TaskException($this, "Command `$command_string` exited with code $exit_code.");
+        $this->invokeDepth++;
+
+        if (!$this->isCommandDisabled($commandName)) {
+            /** @var ConsoleApplication $application */
+            $application = $this->getContainer()->get('application');
+            $command = $application->find($commandName);
+
+            // Build a new input object that inherits options from parent command.
+            if ($this->input()->hasParameterOption('--environment')) {
+                $args['--environment'] = $this->input()->getParameterOption('--environment');
+            }
+            if ($this->input()->hasParameterOption('--site')) {
+                $args['--site'] = $this->input()->getParameterOption('--site');
+            }
+            $input = new ArrayInput($args);
+            $input->setInteractive($this->input()->isInteractive());
+
+            // Now run the command.
+            $prefix = str_repeat(">", $this->invokeDepth);
+            $this->output->writeln("<comment>$prefix $commandName</comment>");
+            $exit_code = $application->runCommand($command, $input, $this->output());
+            $this->invokeDepth--;
+
+            // The application will catch any exceptions thrown in the executed
+            // command. We must check the exit code and throw our own exception. This
+            // obviates the need to check the exit code of every invoked command.
+            if ($exit_code) {
+                $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
+                throw new PolymerException("Command `$commandName {$input->__toString()}` exited with code $exit_code.");
+            }
         }
     }
 
@@ -256,4 +272,43 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     {
         return $this->task(ToggleableSymfonyCommand::class, $command);
     }
+
+    /**
+     * Determines if a command has been disabled via disable-targets.
+     *
+     * @param string $command
+     *   The command name.
+     *
+     * @return bool
+     *   TRUE if the command is disabled.
+     */
+    protected function isCommandDisabled($command)
+    {
+        $disabled_commands = $this->getDisabledCommands();
+        if (is_array($disabled_commands) && array_key_exists(
+                $command,
+                $disabled_commands
+            ) && $disabled_commands[$command]) {
+            $this->logger->warning("The $command command is disabled.");
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets an array of commands that have been configured to be disabled.
+     *
+     * @return array
+     *   A flat array of disabled commands.
+     */
+    protected function getDisabledCommands() {
+        $disabled_commands_config = $this->getConfigValue('disable-targets');
+        if ($disabled_commands_config) {
+            $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');
+            return $disabled_commands;
+        }
+        return [];
+    }
+
 }

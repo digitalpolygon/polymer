@@ -19,12 +19,12 @@ class DefaultConfig extends Config
     public function __construct($repo_root)
     {
         parent::__construct();
-        $this->set('repo.root', $repo_root);
-        $this->set('docroot', $repo_root . '/web');
-        $this->set('polymer.root', $this->getPolymerRoot());
-        $this->set('composer.bin', $repo_root . '/vendor/bin');
-        $this->set('tmp.dir', sys_get_temp_dir());
-        $this->set('polymer.multisites', $this->getMultisiteDirs());
+        $this->setDefault('repo.root', $repo_root);
+        $this->setDefault('docroot', $repo_root . '/web');
+        $this->setDefault('polymer.root', $this->getPolymerRoot());
+        $this->setDefault('composer.bin', $repo_root . '/vendor/bin');
+        $this->setDefault('tmp.dir', sys_get_temp_dir());
+        $this->setDefault('polymer.multisites', $this->getMultisiteDirs());
     }
 
     /**

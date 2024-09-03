@@ -5,10 +5,8 @@ namespace DigitalPolygon\Polymer\Robo;
 use Composer\Autoload\ClassLoader;
 use Composer\InstalledVersions;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use DigitalPolygon\Polymer\Robo\Config\DefaultConfig;
-use DigitalPolygon\Polymer\Robo\Discovery\BuildRecipesDiscovery;
+use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
 use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
-use DigitalPolygon\Polymer\Robo\Discovery\PushRecipesDiscovery;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
@@ -58,6 +56,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
      */
     private array $pushRecipes = [];
 
+    protected ConsoleApplication $application;
+
     /**
      * Object constructor.
      *
@@ -70,27 +70,59 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
      * @param \Composer\Autoload\ClassLoader $classLoader
      *   The Composer classLoader.
      */
-    public function __construct(DefaultConfig $config, InputInterface $input, OutputInterface $output, ClassLoader $classLoader)
+    public function __construct(
+        protected string $repoRoot,
+        protected InputInterface $input,
+        protected OutputInterface $output,
+        protected ClassLoader $classLoader
+    )
     {
-        // Set the config.
+        $this
+            ->initializeConfiguration()
+            ->discoverExtensions()
+            ->createApplication()
+            ->configureContainer()
+            ->configureRunner();
+    }
+
+    protected function initializeConfiguration(): static
+    {
+        // Initialize configuration.
+        $configInitializer = new ConfigInitializer($this->repoRoot, $this->input);
+        $config = $configInitializer->initialize();
         $this->setConfig($config);
-        // Discover commands, build, and push recipes classes.
-        $this->discoverExtensions();
-        // Create Application.
-        $application = new ConsoleApplication(self::APPLICATION_NAME, $this->getVersion());
+
+        return $this;
+    }
+
+    protected function createApplication(): static
+    {
+        $this->application = new ConsoleApplication(self::APPLICATION_NAME, $this->getVersion());
+        return $this;
+    }
+
+    protected function configureContainer(): static
+    {
         // Create and configure container.
-        $container = new Container();
-        Robo::configureContainer($container, $application, $config, $input, $output, $classLoader);
-        $this->configureContainer($container);
-        $this->registerRecipes($container);
+        $container = Robo::createContainer($this->application, $this->getConfig(), $this->classLoader);
+        /** @var \Consolidation\AnnotatedCommand\AnnotatedCommandFactory $factory */
+        $factory = $container->get('commandFactory');
+        $factory->setIncludeAllPublicMethods(false);
         Robo::finalizeContainer($container);
         $this->setContainer($container);
+        return $this;
+    }
+
+    protected function configureRunner(): static
+    {
         // Instantiate Robo Runner.
         $this->runner = new RoboRunner();
-        $this->runner->setClassLoader($classLoader);
-        $this->runner->setContainer($container);
+        $this->runner->setClassLoader($this->classLoader);
+        $this->runner->setContainer($this->getContainer());
         $this->runner->setRelativePluginNamespace('Polymer\Plugin');
         $this->runner->setSelfUpdateRepository(self::REPOSITORY);
+
+        return $this;
     }
 
     /**
@@ -125,17 +157,18 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     /**
      * Discovers commands, build, and push recipes classes which are shipped with core Polymer.
      */
-    private function discoverExtensions(): void
+    protected function discoverExtensions(): static
     {
         // 1. Discovers command classes which are shipped with core Polymer.
         $commands_discovery = new CommandsDiscovery();
         $this->commands = $commands_discovery->getDefinitions();
         // 2. Discovers Build Recipes classes which are shipped with core Polymer.
-        $build_recipes_discovery = new BuildRecipesDiscovery();
-        $this->buildRecipes = $build_recipes_discovery->getDefinitions();
-        // 3. Discovers Build Recipes classes which are shipped with core Polymer.
-        $push_recipes_discovery = new PushRecipesDiscovery();
-        $this->pushRecipes = $push_recipes_discovery->getDefinitions();
+//        $build_recipes_discovery = new BuildRecipesDiscovery();
+//        $this->buildRecipes = $build_recipes_discovery->getDefinitions();
+//        // 3. Discovers Build Recipes classes which are shipped with core Polymer.
+//        $push_recipes_discovery = new PushRecipesDiscovery();
+//        $this->pushRecipes = $push_recipes_discovery->getDefinitions();
+        return $this;
     }
 
     /**
@@ -162,18 +195,4 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         }
     }
 
-    /**
-     * Configure the necessary classes for Polymer.
-     *
-     * @param \League\Container\Container $container
-     *   The container used to register the recipes classes.
-     */
-    public function configureContainer(Container $container): void
-    {
-        /** @var \Consolidation\AnnotatedCommand\AnnotatedCommandFactory $factory */
-        $factory = $container->get('commandFactory');
-        // Tell the command loader to only allow command functions that have a
-        // name/alias.
-        $factory->setIncludeAllPublicMethods(false);
-    }
 }

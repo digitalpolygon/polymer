@@ -68,6 +68,10 @@ class ConfigInitializer
         $this->config = new DefaultConfig($repo_root);
         $this->loader = new YamlConfigLoader();
         $this->processor = new ConfigProcessor();
+
+        $environment = $this->getEnvironment();
+        $this->environment = $environment;
+        $this->config->setDefault('environment', $environment);
     }
 
     /**
@@ -78,13 +82,10 @@ class ConfigInitializer
      */
     public function initialize(): DefaultConfig
     {
-        $environment = $this->determineEnvironment();
-        $this->environment = $environment;
-        $this->config->set('environment', $environment);
         $this->loadConfigFiles();
         $this->processConfigFiles();
-        $this->loadRecipeConfig();
-        $this->processConfigFiles();
+//        $this->loadRecipeConfig();
+//        $this->processConfigFiles();
         return $this->config;
     }
 
@@ -162,7 +163,7 @@ class ConfigInitializer
      * @return string
      *   The Env.
      */
-    public function determineEnvironment(): string
+    public function getEnvironment(): string
     {
         $default = 'local';
         $environment = $this->input->getParameterOption('--environment', $default);
