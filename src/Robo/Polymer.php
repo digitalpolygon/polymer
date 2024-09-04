@@ -7,7 +7,7 @@ use Composer\InstalledVersions;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
 use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
-use League\Container\Container;
+use DigitalPolygon\Polymer\Robo\Discovery\ExtensionDiscovery;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
@@ -57,6 +57,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     private array $pushRecipes = [];
 
     protected ConsoleApplication $application;
+    protected array $extensions;
 
     /**
      * Object constructor.
@@ -75,20 +76,39 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         protected InputInterface $input,
         protected OutputInterface $output,
         protected ClassLoader $classLoader
-    )
-    {
+    ) {
         $this
-            ->initializeConfiguration()
             ->discoverExtensions()
+            ->initializeConfiguration()
             ->createApplication()
             ->configureContainer()
             ->configureRunner();
     }
 
+    /**
+     * Gets the application version.
+     */
+    public static function getVersion(): string
+    {
+        return InstalledVersions::getPrettyVersion('digitalpolygon/polymer') ?? 'latest';
+    }
+
+    /**
+     * Discovers commands, build, and push recipes classes which are shipped with core Polymer.
+     */
+    protected function discoverExtensions(): static
+    {
+        $extensionDiscovery = new ExtensionDiscovery($this->classLoader);
+        $this->extensions = $extensionDiscovery->getExtensions();
+        $commandsDiscovery = new CommandsDiscovery();
+        $this->commands = $commandsDiscovery->getDefinitions();
+        return $this;
+    }
+
     protected function initializeConfiguration(): static
     {
         // Initialize configuration.
-        $configInitializer = new ConfigInitializer($this->repoRoot, $this->input);
+        $configInitializer = new ConfigInitializer($this->repoRoot, $this->input, $this->extensions);
         $config = $configInitializer->initialize();
         $this->setConfig($config);
 
@@ -145,54 +165,4 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         $application = $this->getContainer()->get('application');
         return $this->runner->run($input, $output, $application, $this->commands);
     }
-
-    /**
-     * Gets the application version.
-     */
-    public static function getVersion(): string
-    {
-        return InstalledVersions::getPrettyVersion('digitalpolygon/polymer') ?? 'latest';
-    }
-
-    /**
-     * Discovers commands, build, and push recipes classes which are shipped with core Polymer.
-     */
-    protected function discoverExtensions(): static
-    {
-        // 1. Discovers command classes which are shipped with core Polymer.
-        $commands_discovery = new CommandsDiscovery();
-        $this->commands = $commands_discovery->getDefinitions();
-        // 2. Discovers Build Recipes classes which are shipped with core Polymer.
-//        $build_recipes_discovery = new BuildRecipesDiscovery();
-//        $this->buildRecipes = $build_recipes_discovery->getDefinitions();
-//        // 3. Discovers Build Recipes classes which are shipped with core Polymer.
-//        $push_recipes_discovery = new PushRecipesDiscovery();
-//        $this->pushRecipes = $push_recipes_discovery->getDefinitions();
-        return $this;
-    }
-
-    /**
-     * Register the list of build and push recipes available.
-     *
-     * @param \League\Container\Container $container
-     *   The container used to register the recipes classes.
-     */
-    private function registerRecipes(Container $container): void
-    {
-        // Register build recipes.
-        foreach ($this->buildRecipes as $recipe) {
-            // @phpstan-ignore-next-line
-            $id = call_user_func([$recipe, "getId"]);
-            $recipe_id = 'recipe:build:' . $id;
-            $container->add($recipe_id, $recipe);
-        }
-        // Register push recipes.
-        foreach ($this->pushRecipes as $recipe) {
-            // @phpstan-ignore-next-line
-            $id = call_user_func([$recipe, "getId"]);
-            $recipe_id = 'recipe:push:' . $id;
-            $container->add($recipe_id, $recipe);
-        }
-    }
-
 }

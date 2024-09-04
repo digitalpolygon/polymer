@@ -285,11 +285,13 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     protected function isCommandDisabled($command)
     {
         $disabled_commands = $this->getDisabledCommands();
-        if (is_array($disabled_commands) && array_key_exists(
+        if (
+            is_array($disabled_commands) && array_key_exists(
                 $command,
                 $disabled_commands
-            ) && $disabled_commands[$command]) {
-            $this->logger->warning("The $command command is disabled.");
+            ) && $disabled_commands[$command]
+        ) {
+            $this->logger?->warning("The $command command is disabled.");
             return true;
         }
 
@@ -302,7 +304,8 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
      * @return array
      *   A flat array of disabled commands.
      */
-    protected function getDisabledCommands() {
+    protected function getDisabledCommands()
+    {
         $disabled_commands_config = $this->getConfigValue('disable-targets');
         if ($disabled_commands_config) {
             $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');
@@ -310,5 +313,4 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         }
         return [];
     }
-
 }

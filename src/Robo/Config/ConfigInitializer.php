@@ -20,13 +20,6 @@ class ConfigInitializer
     protected DefaultConfig $config;
 
     /**
-     * Input.
-     *
-     * @var \Symfony\Component\Console\Input\InputInterface
-     */
-    protected InputInterface $input;
-
-    /**
      * Loader.
      *
      * @var \Consolidation\Config\Loader\YamlConfigLoader
@@ -57,15 +50,14 @@ class ConfigInitializer
     /**
      * ConfigInitializer constructor.
      *
-     * @param string $repo_root
+     * @param string $repoRoot
      *   Repo root.
      * @param \Symfony\Component\Console\Input\InputInterface $input
      *   Input.
      */
-    public function __construct(string $repo_root, InputInterface $input)
+    public function __construct(protected string $repoRoot, protected InputInterface $input, protected array $extensionInfo)
     {
-        $this->input = $input;
-        $this->config = new DefaultConfig($repo_root);
+        $this->config = new DefaultConfig($repoRoot);
         $this->loader = new YamlConfigLoader();
         $this->processor = new ConfigProcessor();
 
@@ -84,8 +76,6 @@ class ConfigInitializer
     {
         $this->loadConfigFiles();
         $this->processConfigFiles();
-//        $this->loadRecipeConfig();
-//        $this->processConfigFiles();
         return $this->config;
     }
 
@@ -123,25 +113,10 @@ class ConfigInitializer
      */
     public function loadProjectConfig(): static
     {
-        $this->processor->extend($this->loader->load($this->config->get('repo.root') . '/polymer/polymer.yml'));
+        $this->processor->extend($this->loader->load($this->repoRoot . '/polymer/polymer.yml'));
         $this->processor->extend(
-            $this->loader->load($this->config->get('repo.root') . "/polymer/{$this->environment}.polymer.yml")
+            $this->loader->load($this->repoRoot . "/polymer/{$this->environment}.polymer.yml")
         );
-        return $this;
-    }
-
-    /**
-     * Load Recipe config.
-     *
-     * @return $this
-     */
-    public function loadRecipeConfig(): static
-    {
-        $recipe = $this->config->get('project.recipe');
-        if (!empty($recipe)) {
-            $recipe_path = $this->config->get('polymer.root') . '/recipes/' . $recipe . '/recipe.yml';
-            $this->processor->extend($this->loader->load($recipe_path));
-        }
         return $this;
     }
 
@@ -193,40 +168,13 @@ class ConfigInitializer
      */
     public function loadDefaultPolymerExtensionConfigs(): static
     {
-        $polymer_extension_packages = $this->getPolymerExtensionPackages();
-        if ($polymer_extension_packages) {
-            foreach ($polymer_extension_packages as $polymer_extension_package) {
-                $this->processor->extend($this->loader->load($polymer_extension_package . '/config/default.yml'));
+        foreach ($this->extensionInfo as $extension => $info) {
+            if (!empty($info['config'])) {
+                foreach ($info['config'] as $configFile) {
+                    $this->processor->extend($this->loader->load($configFile));
+                }
             }
         }
         return $this;
-    }
-
-    /**
-     * Get the list of Polymer extension packages.
-     *
-     * @return array<string>
-     *   The list of Polymer extension packages.
-     */
-    private function getPolymerExtensionPackages(): array
-    {
-        $polymer_extension_packages = [];
-        $digitalpolygon_root = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
-
-        // Check if the directory exists and ends with 'digitalpolygon'.
-        if (file_exists($digitalpolygon_root) && str_ends_with($digitalpolygon_root, 'digitalpolygon')) {
-            /** @var \Symfony\Component\Finder\Finder $finder */
-            $finder = new Finder();
-            $dirs = $finder
-            ->in($digitalpolygon_root)
-            ->directories()
-            ->depth('== 0')
-            ->exclude(['polymer'])
-            ->sortByName();
-            foreach ($dirs->getIterator() as $dir) {
-                $polymer_extension_packages[] = $dir->getPathname();
-            }
-        }
-        return $polymer_extension_packages;
     }
 }
