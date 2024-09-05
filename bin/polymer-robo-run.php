@@ -39,4 +39,10 @@ if ($output->isVerbose() && $elapsed != null) {
     $output->writeln("<comment>" . $timer->formatDuration($elapsed) . "</comment> total time elapsed.");
 }
 
+$container = $polymer->getContainer();
+/** @var \Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher $eventDispatcher */
+$eventDispatcher = $container->get('eventDispatcher');
+$called = $eventDispatcher->getCalledListeners();
+$notCalled = $eventDispatcher->getNotCalledListeners();
+
 exit($status_code);

@@ -5,7 +5,6 @@ namespace DigitalPolygon\Polymer\Robo\Config;
 use Consolidation\Config\Config as ConsolidationConfig;
 use Consolidation\Config\Loader\YamlConfigLoader;
 use Robo\Config\Config as RoboConfig;
-use Symfony\Component\Finder\Finder;
 
 /**
  * Default configuration for Polymer.
@@ -26,7 +25,6 @@ class PolymerConfig extends RoboConfig
         $this->setDefault('polymer.root', $this->getPolymerRoot());
         $this->setDefault('composer.bin', $repo_root . '/vendor/bin');
         $this->setDefault('tmp.dir', sys_get_temp_dir());
-//        $this->setDefault('polymer.multisites', $this->getMultisiteDirs());
 
         $loader = new YamlConfigLoader();
         $polymerBaseConfig = $loader->load($this->getPolymerRoot() . '/config/default.yml')->export();
@@ -59,6 +57,13 @@ class PolymerConfig extends RoboConfig
         throw new \Exception('Could not find the Polymer root directory');
     }
 
+    public function reprocess(): void
+    {
+        $contexts = $this->contexts;
+        $exported = $this->exportAll();
+        $x = 5;
+    }
+
     /**
    * Set site.
    *
@@ -73,35 +78,4 @@ class PolymerConfig extends RoboConfig
 //        }
 //    }
 
-    /**
-   * Gets an array of Drupal multisite sites.
-   *
-   * Include sites under docroot/sites, excluding 'all' and acsf 'g'
-   * pseudo-sites and 'settings' directory globbed in blt.settings.php.
-   *
-   * @return array<string>
-   *   An array of sites.
-   */
-//    protected function getMultisiteDirs(): array
-//    {
-//        $sites_dir = $this->get('docroot') . '/sites';
-//        $sites = [];
-//
-//        if (!file_exists($sites_dir)) {
-//            return $sites;
-//        }
-//
-//        $finder = new Finder();
-//        $dirs = $finder
-//        ->in($sites_dir)
-//        ->directories()
-//        ->depth('< 1')
-//        ->exclude(['g', 'settings'])
-//        ->sortByName();
-//        foreach ($dirs->getIterator() as $dir) {
-//            $sites[] = $dir->getRelativePathname();
-//        }
-//
-//        return $sites;
-//    }
 }

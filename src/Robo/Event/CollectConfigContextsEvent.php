@@ -2,7 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Robo\Event;
 
-class CollectConfigContextsEvent {
+use Symfony\Contracts\EventDispatcher\Event;
+
+class CollectConfigContextsEvent extends Event {
 
     protected array $placeholderContexts = [];
 

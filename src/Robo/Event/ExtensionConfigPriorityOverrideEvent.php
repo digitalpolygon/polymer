@@ -2,7 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Robo\Event;
 
-class ExtensionConfigPriorityOverrideEvent {
+use Symfony\Contracts\EventDispatcher\Event;
+
+class ExtensionConfigPriorityOverrideEvent extends Event {
     protected array $extensionPlaceholders = [];
 
     public function addPlaceholder(string $extension): void

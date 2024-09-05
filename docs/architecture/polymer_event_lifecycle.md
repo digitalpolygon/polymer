@@ -3,7 +3,7 @@
 1. Discover extensions.
 2. Add extension service providers to the container.
 3. Finalize the container.
-4. Gather and order contexts.
+4. Gather and order config contexts.
    1. Add default context. (handled by ConfigOverlay)
    2. Add polymer context.
    2. Add extension contexts.

@@ -8,9 +8,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ContextCollectorSubscriber implements EventSubscriberInterface {
 
-    public function addContexts(CollectConfigContextsEvent $event) {
-//        $event->addPlaceholderContext('project');
-    }
+    public function addContexts(CollectConfigContextsEvent $event) {}
 
     public static function getSubscribedEvents()
     {

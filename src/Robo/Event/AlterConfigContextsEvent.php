@@ -2,7 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Robo\Event;
 
-class AlterConfigContextsEvent {
+use Symfony\Contracts\EventDispatcher\Event;
+
+class AlterConfigContextsEvent extends Event {
 
     public function __construct(protected array $contexts) {}
 

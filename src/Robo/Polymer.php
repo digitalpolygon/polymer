@@ -20,13 +20,16 @@ use DrupalFinder\DrupalFinderComposerRuntime;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use OpenTelemetry\SDK\Common\Time\StopWatch;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Robo\Common\TimeKeeper;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\Config\Config as ConsolidationConfig;
+use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher;
 
 /**
  * The Polymer Robo application.
@@ -151,6 +154,13 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $container->addServiceProvider(new $serviceProvider);
         }
 
+        // Traceable event dispatcher.
+        $container->extend('eventDispatcher')
+            ->setConcrete(TraceableEventDispatcher::class)
+            ->addArguments([
+                new ResolvableArgument('eventDispatcher'),
+                new \League\Container\Argument\LiteralArgument(new TimeKeeper()),
+            ]);
         Robo::finalizeContainer($container);
         $this->setContainer($container);
 
