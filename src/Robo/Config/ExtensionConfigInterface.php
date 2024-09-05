@@ -12,11 +12,16 @@ interface ExtensionConfigInterface
     public function getExtensionName(): string;
 
     /**
-     * Get extension config files.
+     * Get extension's config file path.
      *
-     * The files should be specified relative to this file.
-     *
-     * @return array<int, string>
+     * @return string|null
      */
-    public function getConfigFiles(): array;
+    public function getConfig(): ?string;
+
+    /**
+     * Return the service provider class name.
+     *
+     * @return string|null
+     */
+    public function getServiceProvider(): ?string;
 }

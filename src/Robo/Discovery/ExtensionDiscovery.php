@@ -15,6 +15,9 @@ class ExtensionDiscovery extends RelativeNamespaceDiscovery
         $this->searchPattern = '*ExtensionConfig.php';
     }
 
+    /**
+     * @return array<string, ExtensionInfo>
+     */
     public function getExtensions(): array
     {
         $extensions = [];
@@ -24,11 +27,12 @@ class ExtensionDiscovery extends RelativeNamespaceDiscovery
             $file = $this->getFile($class);
             $instance = new $class();
             if ($instance instanceof ExtensionConfigInterface) {
-                $extensions[$instance->getExtensionName()] = [
-                    'class' => $class,
-                    'file' => $file,
-                    'config' => $instance->getConfigFiles()
-                ];
+                $extensions[$instance->getExtensionName()] = new ExtensionInfo(
+                    $class,
+                    $file,
+                    $instance->getConfig(),
+                    $instance->getServiceProvider(),
+                );
             }
         }
 

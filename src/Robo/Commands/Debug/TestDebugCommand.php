@@ -11,8 +11,10 @@ class TestDebugCommand extends TaskBase
     #[Command(name: 'debug:test')]
     public function testConfig(ConsoleIO $io): void
     {
+        $options = $this->input()->getOptions();
         $config = $this->getConfig();
-        $repo_root = $this->getConfigValue('repo.root');
-        $x = 5;
+        $configOptions = $this->getConfigValue('options');
+        $docroot = $this->getConfigValue('docroot');
+        $drush = $this->getConfigValue('deploy');
     }
 }

@@ -6,7 +6,6 @@ use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
-use DigitalPolygon\Polymer\Robo\Tasks\Command as PolymerCommand;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Exception\TaskException;
 use Robo\Symfony\ConsoleIO;
