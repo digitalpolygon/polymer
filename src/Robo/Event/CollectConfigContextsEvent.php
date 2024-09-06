@@ -4,12 +4,13 @@ namespace DigitalPolygon\Polymer\Robo\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
-class CollectConfigContextsEvent extends Event {
-
+class CollectConfigContextsEvent extends Event
+{
     protected array $placeholderContexts = [];
 
     public function __construct()
-    {}
+    {
+    }
 
     /**
      * Add a single context.
@@ -26,5 +27,4 @@ class CollectConfigContextsEvent extends Event {
     {
         return $this->placeholderContexts;
     }
-
 }

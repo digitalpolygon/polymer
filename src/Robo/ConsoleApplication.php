@@ -18,7 +18,7 @@ class ConsoleApplication extends Application
     {
         parent::__construct($name, $version);
         $globalOptions = [
-            new InputOption('--environment', NULL, InputOption::VALUE_REQUIRED, 'Set the environment to load config from polymer/[env].polymer.yml file.', 'local'),
+            new InputOption('--environment', null, InputOption::VALUE_REQUIRED, 'Set the environment to load config from polymer/[env].polymer.yml file.', 'local'),
         ];
         $this->getDefinition()->addOptions($globalOptions);
     }

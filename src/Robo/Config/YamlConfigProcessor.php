@@ -8,8 +8,8 @@ use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
 /**
  * Custom processor for YAML based configuration.
  */
-class YamlConfigProcessor extends ConfigProcessor {
-
+class YamlConfigProcessor extends ConfigProcessor
+{
     /**
      * Expand dot notated keys.
      *
@@ -25,5 +25,4 @@ class YamlConfigProcessor extends ConfigProcessor {
 
         return $config;
     }
-
 }

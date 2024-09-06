@@ -4,13 +4,15 @@ namespace DigitalPolygon\Polymer\Robo\Extension;
 
 use League\Container\ServiceProvider\ServiceProviderInterface;
 
-class ExtensionData {
+class ExtensionData
+{
     public function __construct(
         protected string $class,
         protected string $file,
         protected ?string $configFile = null,
         protected ?ServiceProviderInterface $serviceProvider = null,
-    ) {}
+    ) {
+    }
 
     public function getClass(): string
     {

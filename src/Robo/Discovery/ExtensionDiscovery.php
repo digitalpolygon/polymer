@@ -36,7 +36,7 @@ class ExtensionDiscovery
             $extensionReflection = new \ReflectionClass($class);
             if ($extensionReflection->implementsInterface(PolymerExtensionInterface::class)) {
                 /** @var PolymerExtensionInterface $instance */
-                $instance = new $class;
+                $instance = new $class();
                 $extensionName = $instance->getExtensionName();
                 $extensionFile = $extensionReflection->getFileName();
                 $serviceProvider = $instance->getInstantiatedServiceProvider();
@@ -58,7 +58,7 @@ class ExtensionDiscovery
                     $serviceProviderClassName = static::camelCase($extensionName) . 'ServiceProvider';
                     $serviceProviderClass = $extensionReflection->getNamespaceName() . '\\' . $serviceProviderClassName;
                     if (class_exists($serviceProviderClass)) {
-                        $serviceProvider = new $serviceProviderClass;
+                        $serviceProvider = new $serviceProviderClass();
                     }
                 }
                 $extensions[$extensionName] = new ExtensionData(

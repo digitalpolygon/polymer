@@ -10,8 +10,8 @@ use League\Container\ServiceProvider\ServiceProviderInterface;
  * A Polymer extension MUST include a class in src/Polymer
  * that implements this interface.
  */
-interface PolymerExtensionInterface {
-
+interface PolymerExtensionInterface
+{
     /**
      * Get the extension name.
      *

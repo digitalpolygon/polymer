@@ -150,7 +150,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
 
         $serviceProviders = $this->collectServiceProviders();
         foreach ($serviceProviders as $serviceProvider) {
-            $container->addServiceProvider(new $serviceProvider);
+            $container->addServiceProvider(new $serviceProvider());
         }
 
         // Traceable event dispatcher.
@@ -278,5 +278,4 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $config->addPlaceholder($placeholder);
         }
     }
-
 }

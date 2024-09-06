@@ -4,8 +4,8 @@ namespace DigitalPolygon\Polymer\Robo\Extension;
 
 use League\Container\ServiceProvider\ServiceProviderInterface;
 
-abstract class PolymerExtensionBase implements PolymerExtensionInterface {
-
+abstract class PolymerExtensionBase implements PolymerExtensionInterface
+{
     /**
      * {@inheritdoc}
      */
@@ -21,5 +21,4 @@ abstract class PolymerExtensionBase implements PolymerExtensionInterface {
     {
         return null;
     }
-
 }

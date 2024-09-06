@@ -6,9 +6,11 @@ use DigitalPolygon\Polymer\Robo\Event\CollectConfigContextsEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class ContextCollectorSubscriber implements EventSubscriberInterface {
-
-    public function addContexts(CollectConfigContextsEvent $event) {}
+class ContextCollectorSubscriber implements EventSubscriberInterface
+{
+    public function addContexts(CollectConfigContextsEvent $event)
+    {
+    }
 
     public static function getSubscribedEvents()
     {
