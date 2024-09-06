@@ -9,6 +9,7 @@ use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\GlobalOptionsEventListener;
+use Robo\Application;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,6 +18,12 @@ class ConfigInjector extends GlobalOptionsEventListener implements EventSubscrib
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
+
+    public function __construct(Application $application)
+    {
+        parent::__construct();
+        $this->setApplication($application);
+    }
 
     public function injectEnvironmentConfig(ConsoleCommandEvent $event): void
     {
@@ -49,7 +56,9 @@ class ConfigInjector extends GlobalOptionsEventListener implements EventSubscrib
     public static function getSubscribedEvents(): array
     {
         return [
-            ConsoleEvents::COMMAND => 'injectEnvironmentConfig',
+            ConsoleEvents::COMMAND => [
+                ['injectEnvironmentConfig', 50],
+            ],
         ];
     }
 }

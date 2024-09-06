@@ -15,6 +15,7 @@ use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ContextCollectorSubscriber;
+use League\Container\Argument\ResolvableArgument;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -140,7 +141,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             ->addMethodCall('setIncludeAllPublicMethods', [false]);
 
         Robo::addShared($container, 'defaultPolymerContextSubscriber', ContextCollectorSubscriber::class);
-        Robo::addShared($container, 'polymerConfigInjector', ConfigInjector::class);
+        Robo::addShared($container, 'polymerConfigInjector', ConfigInjector::class)
+            ->addArgument(new ResolvableArgument('application'));
 
         $container->extend('eventDispatcher')
             ->addMethodCall('addSubscriber', ['defaultPolymerContextSubscriber'])
