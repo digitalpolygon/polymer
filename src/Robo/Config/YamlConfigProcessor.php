@@ -13,13 +13,13 @@ class YamlConfigProcessor extends ConfigProcessor
     /**
      * Expand dot notated keys.
      *
-     * @param array $config
+     * @param array<int|string, mixed> $config
      *   The configuration to be processed.
      *
-     * @return array
+     * @return array<int|string, mixed>
      *   The processed configuration
      */
-    protected function preprocess(array $config)
+    protected function preprocess(array $config): array
     {
         $config = ArrayManipulator::expandFromDotNotatedKeys(ArrayManipulator::flattenToDotNotatedKeys($config));
 

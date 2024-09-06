@@ -30,13 +30,6 @@ class CompileCommand extends TaskBase
     protected string $deployDocroot;
 
     /**
-     * The build recipe command to use for the requested artifact.
-     *
-     * @var \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface
-     */
-    protected RecipeInterface $buildRecipe;
-
-    /**
      * Builds deployment artifact.
      *
      * @param string $artifact
@@ -87,7 +80,6 @@ class CompileCommand extends TaskBase
      */
     private function getDependentBuilds(string $artifact): array
     {
-        // @phpstan-ignore-next-line
         return $this->getConfigValue("artifacts.$artifact.dependent-builds", []);
     }
 }

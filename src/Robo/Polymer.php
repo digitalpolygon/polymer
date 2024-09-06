@@ -14,11 +14,12 @@ use DigitalPolygon\Polymer\Robo\Event\CollectConfigContextsEvent;
 use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
-use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ContextCollectorSubscriber;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use League\Container\DefinitionContainerInterface;
+use League\Container\ServiceProvider\ServiceProviderInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
@@ -52,21 +53,10 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
      */
     private array $commands = [];
 
+    /**
+     * @var array<int, string>
+     */
     private array $hooks = [];
-
-    /**
-     * An array of build recipes available to the application.
-     *
-     * @var array<string, string>[]
-     */
-    private array $buildRecipes = [];
-
-    /**
-     * An array of push recipes available to the application.
-     *
-     * @var array<string, string>[]
-     */
-    private array $pushRecipes = [];
 
     protected ConsoleApplication $application;
 
@@ -77,8 +67,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     /**
      * Object constructor.
      *
-     * @param \DigitalPolygon\Polymer\Robo\Config\PolymerConfig $config
-     *   The Polymer configuration.
+     * @param string $repoRoot
+     *   The repository root.
      * @param \Symfony\Component\Console\Input\InputInterface $input
      *   The input service.
      * @param \Symfony\Component\Console\Output\OutputInterface $output
@@ -135,17 +125,16 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         $config = new PolymerConfig($this->repoRoot);
         $this->setConfig($config);
 
+        /** @var DefinitionContainerInterface $container */
         $container = Robo::createContainer($this->application, $config, $this->classLoader);
         // Set the command factory to not include all public methods.
         $container->extend('commandFactory')
             ->addMethodCall('setIncludeAllPublicMethods', [false]);
 
-        Robo::addShared($container, 'defaultPolymerContextSubscriber', ContextCollectorSubscriber::class);
         Robo::addShared($container, 'polymerConfigInjector', ConfigInjector::class)
             ->addArgument(new ResolvableArgument('application'));
 
         $container->extend('eventDispatcher')
-            ->addMethodCall('addSubscriber', ['defaultPolymerContextSubscriber'])
             ->addMethodCall('addSubscriber', ['polymerConfigInjector']);
 
         $serviceProviders = $this->collectServiceProviders();
@@ -209,6 +198,9 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return $this->runner->run($input, $output, $application, $mergedCommandsAndHooks);
     }
 
+    /**
+     * @return array<string, ServiceProviderInterface>
+     */
     protected function collectServiceProviders(): array
     {
         $serviceProviders = [];

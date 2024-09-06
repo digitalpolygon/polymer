@@ -7,6 +7,8 @@ use DigitalPolygon\Polymer\Robo\ConsoleApplication;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Robo\Collection\CollectionBuilder;
 use Robo\Common\IO;
 use Robo\Contract\BuilderAwareInterface;
@@ -19,8 +21,6 @@ use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
 use Symfony\Component\Console\Input\ArrayInput;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
-use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
 
 /**
  * Utility base class for Polymer commands.
@@ -33,7 +33,7 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     use LoadAllTasks; // uses TaskAccessor, which uses BuilderAwareTrait
     use IO;
 
-    protected $invokeDepth;
+    protected int $invokeDepth;
 
     /**
      * @param bool $stopOnFail
@@ -67,10 +67,11 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
      *
      * @param string $commandName
      *   The command, e.g., 'artifact:composer:install'.
+     * @param array<mixed> $args
      *
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Robo\Exception\TaskException
+     * @throws PolymerException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function invokeCommand(string $commandName, array $args = []): void
     {
@@ -105,44 +106,6 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
                 throw new PolymerException("Command `$commandName {$input->__toString()}` exited with code $exit_code.");
             }
         }
-    }
-
-    /**
-     * Load the given build recipe from the container by name.
-     *
-     * @param string $recipe_id
-     *   The recipe ID.
-     *
-     * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
-     *   The build recipe object.
-     */
-    protected function getBuildRecipe(string $recipe_id): RecipeInterface|null
-    {
-        $id = "recipe:build:$recipe_id";
-        $definition = $this->getContainer()->get($id);
-        if ($definition instanceof RecipeInterface) {
-            return $definition;
-        }
-        return null;
-    }
-
-    /**
-     * Load the given push recipe from the container by name.
-     *
-     * @param string $recipe_id
-     *   The recipe ID.
-     *
-     * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
-     *   The push recipe object.
-     */
-    protected function getPushRecipe(string $recipe_id): RecipeInterface|null
-    {
-        $id = "recipe:push:$recipe_id";
-        $definition = $this->getContainer()->get($id);
-        if ($definition instanceof RecipeInterface) {
-            return $definition;
-        }
-        return null;
     }
 
     /**
@@ -241,26 +204,25 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         }
     }
 
-    /**
-     * Sets multisite context by settings site-specific config values.
-     *
-     * @param string $site_name
-     *   The name of a multisite, e.g., if docroot/sites/example.com is the site,
-     *   $site_name would be example.com.
-     */
-    public function switchSiteContext($site_name): void
-    {
-        $this->logger?->debug("Switching site context to <comment>$site_name</comment>.");
-        /** @var string $repo_root */
-        $repo_root = $this->getConfigValue('repo.root');
-        $config_initializer = new ConfigInitializer($repo_root, $this->input());
-        $config_initializer->setSite($site_name);
-        $new_config = $config_initializer->initialize();
-
-        // Replaces config.
-        // @phpstan-ignore-next-line
-        $this->getConfig()->replace($new_config->export());
-    }
+//    /**
+//     * Sets multisite context by settings site-specific config values.
+//     *
+//     * @param string $site_name
+//     *   The name of a multisite, e.g., if docroot/sites/example.com is the site,
+//     *   $site_name would be example.com.
+//     */
+//    public function switchSiteContext($site_name): void
+//    {
+//        $this->logger?->debug("Switching site context to <comment>$site_name</comment>.");
+//        /** @var string $repo_root */
+//        $repo_root = $this->getConfigValue('repo.root');
+//        $config_initializer = new ConfigInitializer($repo_root, $this->input());
+//        $config_initializer->setSite($site_name);
+//        $new_config = $config_initializer->initialize();
+//
+//        // Replaces config.
+//        $this->getConfig()->replace($new_config->export());
+//    }
 
     /**
      * @param \Symfony\Component\Console\Command\Command $command
@@ -300,12 +262,12 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     /**
      * Gets an array of commands that have been configured to be disabled.
      *
-     * @return array
+     * @return array<string, mixed>
      *   A flat array of disabled commands.
      */
-    protected function getDisabledCommands()
+    protected function getDisabledCommands(): array
     {
-        $disabled_commands_config = $this->getConfigValue('disable-targets');
+        $disabled_commands_config = $this->getConfigValue('disable-targets', []);
         if ($disabled_commands_config) {
             $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');
             return $disabled_commands;

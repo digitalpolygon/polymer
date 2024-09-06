@@ -73,6 +73,9 @@ class ExtensionDiscovery
         return $extensions;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getExtensionHooks(): array
     {
         return $this->extensionHookDiscovery->getClasses();

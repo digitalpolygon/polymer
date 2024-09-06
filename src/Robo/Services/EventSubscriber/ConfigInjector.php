@@ -2,6 +2,7 @@
 
 namespace DigitalPolygon\Polymer\Robo\Services\EventSubscriber;
 
+use Consolidation\Config\Config;
 use Consolidation\Config\Loader\YamlConfigLoader;
 use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
 use League\Container\ContainerAwareInterface;
@@ -44,6 +45,7 @@ class ConfigInjector extends GlobalOptionsEventListener implements EventSubscrib
                 $value = $default;
             }
             $environmentProjectConfigFilePath = $config->get('repo.root') . '/polymer/' . $value . '.polymer.yml';
+            /** @var Config $projectEnvironmentConfig */
             $projectEnvironmentConfig = $config->getContext('project_environment');
             $loader = new YamlConfigLoader();
             $projectEnvironmentData = $loader

@@ -6,11 +6,10 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class CollectConfigContextsEvent extends Event
 {
+    /**
+     * @var array<int, string>
+     */
     protected array $placeholderContexts = [];
-
-    public function __construct()
-    {
-    }
 
     /**
      * Add a single context.
@@ -23,6 +22,9 @@ class CollectConfigContextsEvent extends Event
         $this->placeholderContexts[] = $contextName;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getPlaceholderContexts(): array
     {
         return $this->placeholderContexts;
