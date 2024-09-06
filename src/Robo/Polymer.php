@@ -9,7 +9,7 @@ use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
 use DigitalPolygon\Polymer\Robo\Discovery\ExtensionDiscovery;
-use DigitalPolygon\Polymer\Robo\Discovery\ExtensionInfo;
+use DigitalPolygon\Polymer\Robo\Extension\ExtensionData;
 use DigitalPolygon\Polymer\Robo\Event\CollectConfigContextsEvent;
 use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
@@ -71,7 +71,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     protected ConsoleApplication $application;
 
 
-    /** @var array<string, ExtensionInfo>  */
+    /** @var array<string, ExtensionData>  */
     protected array $extensions;
 
     /**
@@ -213,7 +213,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     {
         $serviceProviders = [];
         foreach ($this->extensions as $extension => $info) {
-            $serviceProviders[$extension] = $info->serviceProvider;
+            $serviceProviders[$extension] = $info->getServiceProvider();
         }
         return array_filter($serviceProviders);
     }
@@ -245,7 +245,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         // Steps 3 and 4, load and export configuration from all extensions and add extension contexts.
         foreach ($this->extensions as $extension => $extensionInfo) {
             $loader = new YamlConfigLoader();
-            if ($configFile = $extensionInfo->configFile) {
+            if ($configFile = $extensionInfo->getConfigFile()) {
                 $extensionConfig = $loader->load($configFile)->export();
                 $config->addContext($extension, new ConsolidationConfig($extensionConfig));
             }
