@@ -15,7 +15,6 @@ use Robo\LoadAllTasks;
 use Robo\Result;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerAwareInterface;
-use Robo\Exception\TaskException;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
 use Symfony\Component\Console\Input\ArrayInput;

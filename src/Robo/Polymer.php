@@ -15,21 +15,15 @@ use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ContextCollectorSubscriber;
-use DigitalPolygon\PolymerDrupal\Services\EventSubscriber\DrupalConfigInjector;
-use DrupalFinder\DrupalFinderComposerRuntime;
-use League\Container\Argument\ResolvableArgument;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use OpenTelemetry\SDK\Common\Time\StopWatch;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Robo\Common\TimeKeeper;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\Config\Config as ConsolidationConfig;
-use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher;
 
 /**
  * The Polymer Robo application.
@@ -56,6 +50,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
      * @var array<mixed>[]
      */
     private array $commands = [];
+
+    private array $hooks = [];
 
     /**
      * An array of build recipes available to the application.
@@ -125,6 +121,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     {
         $extensionDiscovery = new ExtensionDiscovery($this->classLoader);
         $this->extensions = $extensionDiscovery->getExtensions();
+        $this->hooks = $extensionDiscovery->getExtensionHooks();
         $commandsDiscovery = new CommandsDiscovery();
         $this->commands = $commandsDiscovery->getDefinitions();
 
@@ -155,12 +152,12 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         }
 
         // Traceable event dispatcher.
-        $container->extend('eventDispatcher')
-            ->setConcrete(TraceableEventDispatcher::class)
-            ->addArguments([
-                new ResolvableArgument('eventDispatcher'),
-                new \League\Container\Argument\LiteralArgument(new TimeKeeper()),
-            ]);
+//        $container->extend('eventDispatcher')
+//            ->setConcrete(TraceableEventDispatcher::class)
+//            ->addArguments([
+//                new LiteralArgument(new EventDispatcher()),
+//                new LiteralArgument(new \Symfony\Component\Stopwatch\Stopwatch()),
+//            ]);
         Robo::finalizeContainer($container);
         $this->setContainer($container);
 
@@ -172,21 +169,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         $this->addPrimaryExtensionConfigurationContexts();
         $this->addProjectConfigurationContexts();
         $this->addOtherExtensionContexts();
-
-//        $configInitializer = new ConfigInitializer($this->repoRoot, $this->input, $this->extensions);
-//        $config = $configInitializer->initialize();
-//        $this->setConfig($config);
-//
-//        $data = $config->export();
-//        $loader = new YamlConfigLoader();
-//        $processor = new ConfigProcessor();
-//        $extra = $loader->load('/var/www/html/scratch/extra.yml');
-//        $extraData = $processor
-//            ->extend($extra)
-//            ->export($data);
-//        $default = new PolymerConfig($this->repoRoot);
-//        $default->addPlaceholder('extra');
-//        $default->getContext('extra')->replace($extraData);
 
         return $this;
     }
@@ -218,9 +200,11 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
      */
     public function run(InputInterface $input, OutputInterface $output): int
     {
+        // Compile the configuration.
         /** @var \Robo\Application $application */
         $application = $this->getContainer()->get('application');
-        return $this->runner->run($input, $output, $application, $this->commands);
+        $mergedCommandsAndHooks = array_merge($this->commands, $this->hooks);
+        return $this->runner->run($input, $output, $application, $mergedCommandsAndHooks);
     }
 
     protected function collectServiceProviders(): array

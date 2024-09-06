@@ -42,7 +42,7 @@ if ($output->isVerbose() && $elapsed != null) {
 $container = $polymer->getContainer();
 /** @var \Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher $eventDispatcher */
 $eventDispatcher = $container->get('eventDispatcher');
-$called = $eventDispatcher->getCalledListeners();
-$notCalled = $eventDispatcher->getNotCalledListeners();
+//$called = $eventDispatcher->getCalledListeners();
+//$notCalled = $eventDispatcher->getNotCalledListeners();
 
 exit($status_code);

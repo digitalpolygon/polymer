@@ -14,4 +14,8 @@
    5. Add processor context. (handled by ConfigOverlay)
 5. Process loaded configuration.
 6. Replace container configuration with newly processed configuration.
-7. Execute command.
+7. Hand off execution to runner.
+8. Runner registers command file hooks.
+9. Runner executes command.
+10. Symfony dispatches console.command event.
+11. Robo hook events are dispatched. See https://github.com/consolidation/annotated-command?tab=readme-ov-file#hooks
