@@ -18,7 +18,6 @@ use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Robo\Contract\ConfigAwareInterface;
@@ -86,8 +85,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         $this
             ->createApplication()
             ->discoverExtensions()
-            ->finalizeContainer()
-            ->updateContainerConfiguration()
+            ->setupContainer()
+            ->loadConfiguration()
             ->configureRunner();
     }
 
@@ -99,7 +98,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return InstalledVersions::getPrettyVersion('digitalpolygon/polymer') ?? 'latest';
     }
 
-    protected function createApplication(): static
+    protected function createApplication(): self
     {
         $this->application = new ConsoleApplication(self::APPLICATION_NAME, $this->getVersion());
 
@@ -109,7 +108,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     /**
      * Discovers commands, build, and push recipes classes which are shipped with core Polymer.
      */
-    protected function discoverExtensions(): static
+    protected function discoverExtensions(): self
     {
         $extensionDiscovery = new ExtensionDiscovery($this->classLoader);
         $this->extensions = $extensionDiscovery->getExtensions();
@@ -120,7 +119,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return $this;
     }
 
-    protected function finalizeContainer(): static
+    protected function setupContainer(): self
     {
         // Create boot config.
         $config = new PolymerConfig($this->repoRoot);
@@ -136,8 +135,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $this->output,
             $this->classLoader,
         );
-        /** @var DefinitionContainerInterface $container */
-//        $container = Robo::createContainer($this->application, $config, $this->classLoader);
         // Set the command factory to not include all public methods.
         $container->extend('commandFactory')
             ->addMethodCall('setIncludeAllPublicMethods', [false]);
@@ -165,7 +162,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return $this;
     }
 
-    protected function updateContainerConfiguration(): static
+    protected function loadConfiguration(): self
     {
         $this->addExtensionConfiguration();
         $this->addProjectConfigurationContexts();
@@ -174,7 +171,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return $this;
     }
 
-    protected function configureRunner(): static
+    protected function configureRunner(): self
     {
         $this->runner = new RoboRunner();
         $this->runner->setClassLoader($this->classLoader);
@@ -246,9 +243,13 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
 
         // Steps 3 and 4, load and export configuration from all extensions and add extension contexts.
         foreach ($this->extensions as $extension => $extensionInfo) {
+            // Load default configuration related to extension.
             $config->setDefault('extension.' . $extension, [
                 'root' => $extensionInfo->getRoot(),
             ]);
+
+            // Add extension configuration from its default file. If the extension
+            // added a placeholder context, it will be added injected in that position.
             $loader = new YamlConfigLoader();
             if ($configFile = $extensionInfo->getConfigFile()) {
                 $extensionConfig = $loader->load($configFile)->export();
