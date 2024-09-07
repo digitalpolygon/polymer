@@ -8,14 +8,21 @@ use Robo\Symfony\ConsoleIO;
 
 class TestDebugCommand extends TaskBase
 {
-    #[Command(name: 'debug:test')]
+    protected string $what;
+
+    #[Command(name: 'debug:test-invoke')]
     public function testConfig(ConsoleIO $io): void
     {
-        $this->logger->warning('Running test debug command.');
-        $options = $this->input()->getOptions();
+        $this->what = 'something';
         $config = $this->getConfig();
-        $configOptions = $this->getConfigValue('options');
-        $docroot = $this->getConfigValue('docroot');
-        $drush = $this->getConfigValue('deploy');
+        $this->invokeCommand('debug:invoke-target');
+        $x = 5;
+    }
+
+    #[Command(name: 'debug:invoke-target')]
+    public function testInvoke(): void
+    {
+        $x = 5;
+        $this->what = 'another thing';
     }
 }

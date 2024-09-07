@@ -9,6 +9,7 @@ class ExtensionData
     public function __construct(
         protected string $class,
         protected string $file,
+        protected string $root,
         protected ?string $configFile = null,
         protected ?ServiceProviderInterface $serviceProvider = null,
     ) {
@@ -22,6 +23,11 @@ class ExtensionData
     public function getFile(): string
     {
         return $this->file;
+    }
+
+    public function getRoot(): string
+    {
+        return $this->root;
     }
 
     public function getConfigFile(): ?string

@@ -41,6 +41,7 @@ class ExtensionDiscovery
                 $extensionFile = $extensionReflection->getFileName();
                 $serviceProvider = $instance->getInstantiatedServiceProvider();
                 $configFile = $instance->getDefaultConfigFile();
+                $extensionRoot = dirname($extensionFile, 3);
 
                 if (!$configFile) {
                     // Since extensions live in the relative Polymer namespace, and
@@ -64,6 +65,7 @@ class ExtensionDiscovery
                 $extensions[$extensionName] = new ExtensionData(
                     $class,
                     $extensionFile,
+                    $extensionRoot,
                     $configFile,
                     $serviceProvider,
                 );

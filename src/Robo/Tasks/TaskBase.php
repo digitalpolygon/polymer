@@ -33,7 +33,7 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     use LoadAllTasks; // uses TaskAccessor, which uses BuilderAwareTrait
     use IO;
 
-    protected int $invokeDepth;
+    protected int $invokeDepth = 0;
 
     /**
      * @param bool $stopOnFail

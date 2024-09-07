@@ -167,7 +167,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
 
     protected function updateContainerConfiguration(): static
     {
-        $this->addPrimaryExtensionConfigurationContexts();
+        $this->addExtensionConfiguration();
         $this->addProjectConfigurationContexts();
         $this->addOtherExtensionContexts();
 
@@ -220,7 +220,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return array_filter($serviceProviders);
     }
 
-    protected function addPrimaryExtensionConfigurationContexts(): void
+    protected function addExtensionConfiguration(): void
     {
 
         // 1. Dispatch gather contexts event to collect all prioritized contexts from extensions who have subscribed.
@@ -246,6 +246,9 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
 
         // Steps 3 and 4, load and export configuration from all extensions and add extension contexts.
         foreach ($this->extensions as $extension => $extensionInfo) {
+            $config->setDefault('extension.' . $extension, [
+                'root' => $extensionInfo->getRoot(),
+            ]);
             $loader = new YamlConfigLoader();
             if ($configFile = $extensionInfo->getConfigFile()) {
                 $extensionConfig = $loader->load($configFile)->export();
