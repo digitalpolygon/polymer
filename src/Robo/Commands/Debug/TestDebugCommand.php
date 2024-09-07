@@ -11,6 +11,7 @@ class TestDebugCommand extends TaskBase
     #[Command(name: 'debug:test')]
     public function testConfig(ConsoleIO $io): void
     {
+        $this->logger->warning('Running test debug command.');
         $options = $this->input()->getOptions();
         $config = $this->getConfig();
         $configOptions = $this->getConfigValue('options');

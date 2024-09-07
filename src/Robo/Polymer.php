@@ -15,6 +15,7 @@ use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
 use League\Container\Argument\ResolvableArgument;
+use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use League\Container\DefinitionContainerInterface;
@@ -125,8 +126,18 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         $config = new PolymerConfig($this->repoRoot);
         $this->setConfig($config);
 
+        $container = new Container();
+        $this->setContainer($container);
+        Robo::configureContainer(
+            $container,
+            $this->application,
+            $config,
+            $this->input,
+            $this->output,
+            $this->classLoader,
+        );
         /** @var DefinitionContainerInterface $container */
-        $container = Robo::createContainer($this->application, $config, $this->classLoader);
+//        $container = Robo::createContainer($this->application, $config, $this->classLoader);
         // Set the command factory to not include all public methods.
         $container->extend('commandFactory')
             ->addMethodCall('setIncludeAllPublicMethods', [false]);
@@ -150,7 +161,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
 //                new LiteralArgument(new \Symfony\Component\Stopwatch\Stopwatch()),
 //            ]);
         Robo::finalizeContainer($container);
-        $this->setContainer($container);
 
         return $this;
     }
