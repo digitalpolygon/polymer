@@ -13,6 +13,7 @@ use DigitalPolygon\Polymer\Robo\Extension\ExtensionData;
 use DigitalPolygon\Polymer\Robo\Event\CollectConfigContextsEvent;
 use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
+use DigitalPolygon\Polymer\Robo\Services\CommandInfoAlterer;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
@@ -135,15 +136,19 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $this->output,
             $this->classLoader,
         );
+
+        $container->addShared('polymerCommandInfoAlterer', CommandInfoAlterer::class);
+
         // Set the command factory to not include all public methods.
         $container->extend('commandFactory')
-            ->addMethodCall('setIncludeAllPublicMethods', [false]);
+            ->addMethodCall('setIncludeAllPublicMethods', [false])
+            ->addMethodCall('addCommandInfoAlterer', [new ResolvableArgument('polymerCommandInfoAlterer')]);
 
         Robo::addShared($container, 'polymerConfigInjector', ConfigInjector::class)
             ->addArgument(new ResolvableArgument('application'));
 
         $container->extend('eventDispatcher')
-            ->addMethodCall('addSubscriber', ['polymerConfigInjector']);
+            ->addMethodCall('addSubscriber', [new ResolvableArgument('polymerConfigInjector')]);
 
         $serviceProviders = $this->collectServiceProviders();
         foreach ($serviceProviders as $serviceProvider) {
