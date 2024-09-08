@@ -20,9 +20,11 @@ class CommandInfoAlterer implements CommandInfoAltererInterface, ConfigAwareInte
     {
         if ($this->getConfigValue('hide-internal-commands')) {
             $name = $commandInfo->getName();
-            [$root,] = explode(':', $name, 2);
-            if ('internal' === $root) {
-                $commandInfo->setHidden(true);
+            if (is_string($name)) {
+                [$root,] = explode(':', $name, 2);
+                if ('internal' === $root) {
+                    $commandInfo->setHidden(true);
+                }
             }
         }
     }

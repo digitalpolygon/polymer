@@ -7,12 +7,18 @@ use League\Container\ServiceProvider\ServiceProviderInterface;
 class ExtensionData
 {
     public function __construct(
+        protected PolymerExtensionInterface $extension,
         protected string $class,
         protected string $file,
         protected string $root,
         protected ?string $configFile = null,
         protected ?ServiceProviderInterface $serviceProvider = null,
     ) {
+    }
+
+    public function getExtension(): PolymerExtensionInterface
+    {
+        return $this->extension;
     }
 
     public function getClass(): string

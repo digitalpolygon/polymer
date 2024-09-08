@@ -111,12 +111,12 @@ class PolymerConfig extends RoboConfig
         return $self;
     }
 
-    /**
-   * Set site.
-   *
-   * @param string $site
-   *   Site name.
-   */
+//    /**
+//     * Set site.
+//     *
+//     * @param string $site
+//     *   Site name.
+//     */
 //    public function setSite($site): void
 //    {
 //        $this->set('site', $site);

@@ -83,19 +83,25 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
             $command = $application->find($commandName);
 
             // Build a new input object that inherits options from parent command.
-            if ($this->input()->hasParameterOption('--environment')) {
-                $args['--environment'] = $this->input()->getParameterOption('--environment');
-            }
-            if ($this->input()->hasParameterOption('--site')) {
-                $args['--site'] = $this->input()->getParameterOption('--site');
-            }
+//            if ($this->input()->hasParameterOption('--environment')) {
+//                $args['--environment'] = $this->input()->getParameterOption('--environment');
+//            }
+//            if ($this->input()->hasParameterOption('--site')) {
+//                $args['--site'] = $this->input()->getParameterOption('--site');
+//            }
             $input = new ArrayInput($args);
             $input->setInteractive($this->input()->isInteractive());
 
             // Now run the command.
             $prefix = str_repeat(">", $this->invokeDepth);
             $this->output->writeln("<comment>$prefix $commandName</comment>");
+
+            $preRunOptions = $this->input()->getOptions();
+
             $exit_code = $application->runCommand($command, $input, $this->output());
+
+            $postRunOptions = $this->input()->getOptions();
+
             $this->invokeDepth--;
 
             // The application will catch any exceptions thrown in the executed

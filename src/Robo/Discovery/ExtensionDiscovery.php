@@ -35,12 +35,12 @@ class ExtensionDiscovery
         foreach ($classes as $class) {
             $extensionReflection = new \ReflectionClass($class);
             if ($extensionReflection->implementsInterface(PolymerExtensionInterface::class)) {
-                /** @var PolymerExtensionInterface $instance */
-                $instance = new $class();
-                $extensionName = $instance->getExtensionName();
+                /** @var PolymerExtensionInterface $extensionInstance */
+                $extensionInstance = $extensionReflection->newInstanceWithoutConstructor();
+                $extensionName = $extensionInstance->getExtensionName();
                 $extensionFile = $extensionReflection->getFileName();
-                $serviceProvider = $instance->getInstantiatedServiceProvider();
-                $configFile = $instance->getDefaultConfigFile();
+                $serviceProvider = $extensionInstance->getInstantiatedServiceProvider();
+                $configFile = $extensionInstance->getDefaultConfigFile();
                 $extensionRoot = dirname($extensionFile, 3);
 
                 if (!$configFile) {
@@ -63,6 +63,7 @@ class ExtensionDiscovery
                     }
                 }
                 $extensions[$extensionName] = new ExtensionData(
+                    $extensionInstance,
                     $class,
                     $extensionFile,
                     $extensionRoot,

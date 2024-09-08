@@ -254,11 +254,13 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             ]);
 
             // Add extension configuration from its default file. If the extension
-            // added a placeholder context, it will be added injected in that position.
+            // added a placeholder context, it will be injected in that position.
             $loader = new YamlConfigLoader();
             if ($configFile = $extensionInfo->getConfigFile()) {
                 $extensionConfig = $loader->load($configFile)->export();
-                $config->addContext($extension, new ConsolidationConfig($extensionConfig));
+                $extensionConfig = new ConsolidationConfig($extensionConfig);
+                $extensionInfo->getExtension()->setDynamicConfiguration($this->getContainer(), $extensionConfig);
+                $config->addContext($extension, $extensionConfig);
             }
         }
     }

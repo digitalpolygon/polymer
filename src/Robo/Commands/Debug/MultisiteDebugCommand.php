@@ -6,30 +6,17 @@ use Consolidation\AnnotatedCommand\Attributes\Command;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Symfony\ConsoleIO;
 
-class TestDebugCommand extends TaskBase
+class MultisiteDebugCommand extends TaskBase
 {
-    protected string $what;
-
-    #[Command(name: 'debug:test-invoke')]
+    #[Command(name: 'debug:multisite-invoke')]
     public function testConfig(ConsoleIO $io): void
     {
-        $this->what = 'something';
         $config = $this->getConfig();
         $currentSite = $config->get('current-site');
         $preInvokeOptions = $this->input()->getOptions();
-        $this->invokeCommand('debug:invoke-target');
+        $this->invokeCommand('debug:test-invoke');
         $postInvokeOptions = $this->input()->getOptions();
         $currentSite = $config->get('current-site');
         $x = 5;
-    }
-
-    #[Command(name: 'debug:invoke-target')]
-    public function testInvoke(): void
-    {
-        $config = $this->getConfig();
-        $x = 5;
-        $currentSite = $config->get('current-site');
-        $options = $this->input()->getOptions();
-        $this->what = 'another thing';
     }
 }
