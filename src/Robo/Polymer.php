@@ -7,6 +7,7 @@ use Composer\InstalledVersions;
 use Consolidation\Config\Loader\YamlConfigLoader;
 use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
+use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
 use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
 use DigitalPolygon\Polymer\Robo\Discovery\ExtensionDiscovery;
 use DigitalPolygon\Polymer\Robo\Extension\ExtensionData;
@@ -14,7 +15,9 @@ use DigitalPolygon\Polymer\Robo\Event\CollectConfigContextsEvent;
 use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
 use DigitalPolygon\Polymer\Robo\Services\CommandInfoAlterer;
+use DigitalPolygon\Polymer\Robo\Services\CommandInvoker;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
+use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\SetGlobalOptionsPostInvoke;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
@@ -137,6 +140,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $this->classLoader,
         );
 
+        // Services.
         $container->addShared('polymerCommandInfoAlterer', CommandInfoAlterer::class);
 
         // Set the command factory to not include all public methods.
@@ -147,9 +151,26 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         Robo::addShared($container, 'polymerConfigInjector', ConfigInjector::class)
             ->addArgument(new ResolvableArgument('application'));
 
-        $container->extend('eventDispatcher')
-            ->addMethodCall('addSubscriber', [new ResolvableArgument('polymerConfigInjector')]);
+        $container->addShared('commandInvoker', CommandInvoker::class)
+            ->addArgument(new ResolvableArgument('eventDispatcher'))
+            ->addArgument(new ResolvableArgument('application'))
+            ->addArgument(new ResolvableArgument('config'))
+            ->addArgument(new ResolvableArgument('input'))
+            ->addArgument(new ResolvableArgument('output'))
+            ->addArgument(new ResolvableArgument('logger'));
 
+        $container->addShared('setGlobalOptionsPostInvoke', SetGlobalOptionsPostInvoke::class)
+            ->addArgument(new ResolvableArgument('application'));
+
+        $container->extend('eventDispatcher')
+            ->addMethodCall('addSubscriber', [new ResolvableArgument('polymerConfigInjector')])
+            ->addMethodCall('addSubscriber', [new ResolvableArgument('setGlobalOptionsPostInvoke')]);
+
+        // Inflectors.
+        $container->inflector(CommandInvokerAwareInterface::class)
+            ->invokeMethod('setCommandInvoker', [new ResolvableArgument('commandInvoker')]);
+
+        // Service providers.
         $serviceProviders = $this->collectServiceProviders();
         foreach ($serviceProviders as $serviceProvider) {
             $container->addServiceProvider(new $serviceProvider());

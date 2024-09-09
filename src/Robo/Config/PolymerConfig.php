@@ -6,6 +6,7 @@ use Consolidation\Config\Config;
 use Consolidation\Config\Config as ConsolidationConfig;
 use Consolidation\Config\ConfigInterface;
 use Consolidation\Config\Loader\YamlConfigLoader;
+use Consolidation\Config\Util\ConfigOverlay;
 use Robo\Config\Config as RoboConfig;
 
 /**

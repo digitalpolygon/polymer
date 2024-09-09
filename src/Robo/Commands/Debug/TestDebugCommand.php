@@ -8,28 +8,31 @@ use Robo\Symfony\ConsoleIO;
 
 class TestDebugCommand extends TaskBase
 {
-    protected string $what;
-
     #[Command(name: 'debug:test-invoke')]
     public function testConfig(ConsoleIO $io): void
     {
-        $this->what = 'something';
         $config = $this->getConfig();
-        $currentSite = $config->get('current-site');
-        $preInvokeOptions = $this->input()->getOptions();
-        $this->invokeCommand('debug:invoke-target');
-        $postInvokeOptions = $this->input()->getOptions();
-        $currentSite = $config->get('current-site');
-        $x = 5;
+        $this->logger->info("Executing debug:test-invoke command...");
+        $this->logger->info("input-option.site: " . $this->input()->getOption('site'));
+        $this->logger->info("config.options.site: {$config->get('options.site')}");
+        $this->logger->info("config.current-site: {$config->get('current-site')}");
+        $this->logger->info("");
+        $this->logger->info("Invoking debug:invoke-target...");
+        $this->commandInvoker->invokeCommand($this->input(), 'debug:invoke-target');
+        $this->logger->info("");
+        $this->logger->info("Resuming execution in debug:test-invoke command...");
+        $this->logger->info("input-option.site: " . $this->input()->getOption('site'));
+        $this->logger->info("config.options.site: {$config->get('options.site')}");
+        $this->logger->info("config.current-site: {$config->get('current-site')}");
     }
 
     #[Command(name: 'debug:invoke-target')]
     public function testInvoke(): void
     {
         $config = $this->getConfig();
-        $x = 5;
-        $currentSite = $config->get('current-site');
-        $options = $this->input()->getOptions();
-        $this->what = 'another thing';
+        $this->logger->info("Executing debug:invoke-target command...");
+        $this->logger->info("input-option.site: " . $this->input()->getOption('site'));
+        $this->logger->info("config.options.site: {$config->get('options.site')}");
+        $this->logger->info("config.current-site: {$config->get('current-site')}");
     }
 }

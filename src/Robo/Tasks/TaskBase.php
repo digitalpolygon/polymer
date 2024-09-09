@@ -4,7 +4,9 @@ namespace DigitalPolygon\Polymer\Robo\Tasks;
 
 use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
 use DigitalPolygon\Polymer\Robo\ConsoleApplication;
+use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Robo\Services\CommandInvokerAwareTrait;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Psr\Container\ContainerExceptionInterface;
@@ -19,21 +21,22 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
-use Symfony\Component\Console\Input\ArrayInput;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
+use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * Utility base class for Polymer commands.
  */
-abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, BuilderAwareInterface, IOAwareInterface, ContainerAwareInterface
+abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, BuilderAwareInterface, IOAwareInterface, ContainerAwareInterface, CommandInvokerAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoadAllTasks; // uses TaskAccessor, which uses BuilderAwareTrait
     use IO;
+    use CommandInvokerAwareTrait;
 
-    protected int $invokeDepth = 0;
+    protected static int $invokeDepth = 0;
 
     /**
      * @param bool $stopOnFail
@@ -43,24 +46,24 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         Result::$stopOnFail = $stopOnFail;
     }
 
-    /**
-     * Invokes an array of Polymer commands.
-     *
-     * @param Command[] $commands
-     *   Array of Polymer commands to invoke, e.g. 'artifact:composer:install'.
-     *
-     * @throws \Robo\Exception\TaskException
-     */
-    protected function invokeCommands(array $commands): void
-    {
-        foreach ($commands as $command) {
-            if ($command->isInvokable()) {
-                $this->invokeCommand($command);
-            } else {
-                $this->execCommand($command->getName(), $command->getArgs());
-            }
-        }
-    }
+//    /**
+//     * Invokes an array of Polymer commands.
+//     *
+//     * @param Command[] $commands
+//     *   Array of Polymer commands to invoke, e.g. 'artifact:composer:install'.
+//     *
+//     * @throws \Robo\Exception\TaskException
+//     */
+//    protected function invokeCommands(array $commands): void
+//    {
+//        foreach ($commands as $command) {
+//            if ($command->isInvokable()) {
+//                $this->invokeCommand($command);
+//            } else {
+//                $this->execCommand($command->getName(), $command->getArgs());
+//            }
+//        }
+//    }
 
     /**
      * Invokes a single Polymer command.
@@ -75,7 +78,7 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
      */
     protected function invokeCommand(string $commandName, array $args = []): void
     {
-        $this->invokeDepth++;
+        static::$invokeDepth++;
 
         if (!$this->isCommandDisabled($commandName)) {
             /** @var ConsoleApplication $application */
@@ -93,7 +96,7 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
             $input->setInteractive($this->input()->isInteractive());
 
             // Now run the command.
-            $prefix = str_repeat(">", $this->invokeDepth);
+            $prefix = str_repeat(">", static::$invokeDepth);
             $this->output->writeln("<comment>$prefix $commandName</comment>");
 
             $preRunOptions = $this->input()->getOptions();
@@ -102,7 +105,7 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
 
             $postRunOptions = $this->input()->getOptions();
 
-            $this->invokeDepth--;
+            static::$invokeDepth--;
 
             // The application will catch any exceptions thrown in the executed
             // command. We must check the exit code and throw our own exception. This
@@ -114,44 +117,44 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         }
     }
 
-    /**
-     * Executed a given command or a script, typically defined in polymer.yml.
-     *
-     * @param string $command
-     *   The command or script to execute.
-     * @param array<string, string> $options
-     *   The command or script options.
-     *
-     * @return int
-     *   The task exit status code.
-     *
-     * @throws \Robo\Exception\AbortTasksException
-     * @throws \Robo\Exception\TaskException
-     */
-    protected function execCommand(string $command, array $options = []): int
-    {
-        // Define the task.
-        /** @var \Robo\Task\CommandStack $task */
-        $task = $this->taskExecStack();
-        $task = $task->exec($command);
-        // Get the directory where to execute the command or script.
-        $dir = $options['dir'] ?? null;
-        if ($dir != null) {
-            $task->dir($dir);
-        }
-        $task->interactive($this->input()->isInteractive());
-        $task->stopOnFail();
-        // Ser verbosity output.
-        $is_verbose = $this->output()->isVerbose();
-        $task->printOutput($is_verbose);
-        $task->printMetadata($is_verbose);
-        // Execute the task.
-        $result = $task->run();
-        if (!$result->wasSuccessful()) {
-            throw new AbortTasksException("Executing command '$command' failed.", $result->getExitCode());
-        }
-        return $result->getExitCode();
-    }
+//    /**
+//     * Executed a given command or a script, typically defined in polymer.yml.
+//     *
+//     * @param string $command
+//     *   The command or script to execute.
+//     * @param array<string, string> $options
+//     *   The command or script options.
+//     *
+//     * @return int
+//     *   The task exit status code.
+//     *
+//     * @throws \Robo\Exception\AbortTasksException
+//     * @throws \Robo\Exception\TaskException
+//     */
+//    protected function execCommand(string $command, array $options = []): int
+//    {
+//        // Define the task.
+//        /** @var \Robo\Task\CommandStack $task */
+//        $task = $this->taskExecStack();
+//        $task = $task->exec($command);
+//        // Get the directory where to execute the command or script.
+//        $dir = $options['dir'] ?? null;
+//        if ($dir != null) {
+//            $task->dir($dir);
+//        }
+//        $task->interactive($this->input()->isInteractive());
+//        $task->stopOnFail();
+//        // Ser verbosity output.
+//        $is_verbose = $this->output()->isVerbose();
+//        $task->printOutput($is_verbose);
+//        $task->printMetadata($is_verbose);
+//        // Execute the task.
+//        $result = $task->run();
+//        if (!$result->wasSuccessful()) {
+//            throw new AbortTasksException("Executing command '$command' failed.", $result->getExitCode());
+//        }
+//        return $result->getExitCode();
+//    }
 
     /**
      * Invokes a given 'command-hooks' hook, typically defined in polymer.yml.
@@ -196,19 +199,19 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         return $result->getExitCode();
     }
 
-    /**
-     * List the given command sin the order they will be executed.
-     *
-     * @param Command[] $commands
-     *   Array of Polymer commands to list.
-     */
-    protected function listCommands(array $commands): void
-    {
-        foreach ($commands as $delta => $command) {
-            $command_string = (string) $command;
-            $this->say(" [$delta] Invoke Command: '{$command_string}'.");
-        }
-    }
+//    /**
+//     * List the given command sin the order they will be executed.
+//     *
+//     * @param Command[] $commands
+//     *   Array of Polymer commands to list.
+//     */
+//    protected function listCommands(array $commands): void
+//    {
+//        foreach ($commands as $delta => $command) {
+//            $command_string = (string) $command;
+//            $this->say(" [$delta] Invoke Command: '{$command_string}'.");
+//        }
+//    }
 
 //    /**
 //     * Sets multisite context by settings site-specific config values.
@@ -273,11 +276,12 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
      */
     protected function getDisabledCommands(): array
     {
-        $disabled_commands_config = $this->getConfigValue('disable-targets', []);
+        $disabled_commands_config = $this->config->get('disable-targets', []);
         if ($disabled_commands_config) {
             $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');
             return $disabled_commands;
         }
         return [];
     }
+
 }
