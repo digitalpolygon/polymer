@@ -283,5 +283,4 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         }
         return [];
     }
-
 }

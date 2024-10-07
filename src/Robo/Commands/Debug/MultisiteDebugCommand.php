@@ -3,13 +3,11 @@
 namespace DigitalPolygon\Polymer\Robo\Commands\Debug;
 
 use Consolidation\AnnotatedCommand\Attributes\Command;
-use DigitalPolygon\Polymer\Robo\ConsoleApplication;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Symfony\ConsoleIO;
 
 class MultisiteDebugCommand extends TaskBase
 {
-
     #[Command(name: 'debug:multisite-invoke')]
     public function testConfig(ConsoleIO $io): void
     {

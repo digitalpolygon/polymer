@@ -19,8 +19,8 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface {
-
+class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
+{
     use ContainerAwareTrait;
 
     protected int $invokeDepth = 0;
@@ -35,8 +35,8 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
         protected InputInterface $input,
         protected OutputInterface $output,
         protected LoggerInterface $logger,
-    )
-    {}
+    ) {
+    }
 
     public function getPinnedGlobals(): array
     {
@@ -115,15 +115,13 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
             foreach ($options as $option) {
                 $pinnedOptions[$option] = $parentInput->getParameterOption($option);
             }
-        }
-        else {
+        } else {
             $this->pinnedCommandOptions[$this->invokeDepth] ??= [];
             $pinnedOptions = &$this->pinnedCommandOptions[$this->invokeDepth];
             foreach ($options as $option => $value) {
                 if (is_int($option)) {
                     $pinnedOptions[] = $value;
-                }
-                else {
+                } else {
                     $pinnedOptions[$option] = $value;
                 }
             }
