@@ -2,10 +2,10 @@
 
 namespace DigitalPolygon\Polymer\Robo\Commands\Artifact;
 
+use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
-use DigitalPolygon\Polymer\Robo\Tasks\Command as PolymerCommand;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Exception\TaskException;
 use Robo\Symfony\ConsoleIO;
@@ -30,13 +30,6 @@ class CompileCommand extends TaskBase
     protected string $deployDocroot;
 
     /**
-     * The build recipe command to use for the requested artifact.
-     *
-     * @var \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface
-     */
-    protected RecipeInterface $buildRecipe;
-
-    /**
      * Builds deployment artifact.
      *
      * @param string $artifact
@@ -45,6 +38,7 @@ class CompileCommand extends TaskBase
      * @throws \Robo\Exception\TaskException|\Robo\Exception\AbortTasksException
      */
     #[Command(name: 'artifact:compile')]
+    #[Argument(name: 'artifact', description: 'The name of the artifact to compile.')]
     #[Usage(name: 'polymer artifact:compile -v', description: 'Builds deployment artifact.')]
     public function buildArtifact(ConsoleIO $io, string $artifact): void
     {
@@ -61,30 +55,16 @@ class CompileCommand extends TaskBase
         $io->say("Generating build artifact '{$artifact}'...");
 
         // Execute the build process.
-        $this->invokeHook("pre-deploy-build");
-
+//        $this->invokeHook("pre-deploy-build");
+//
         /** @var array<int,string> $dependent_builds */
         $dependent_builds = $this->getDependentBuilds($artifact);
-        $builder = $this->collectionBuilder($io);
         foreach ($dependent_builds as $build) {
-            // @phpstan-ignore method.nonObject
-            $command = $application->find('build');
-            // @phpstan-ignore method.notFound
-            $builder
-                ->taskToggleableSymfonyCommand($command)
-                ->arg('target', $build);
+            $this->invokeCommand('build', ['target' => $build]);
         }
-        // @phpstan-ignore method.notFound
-        $builder
-            // @phpstan-ignore method.nonObject
-            ->taskToggleableSymfonyCommand($application->find('source:build:copy'))
-                ->opt('deploy-dir', $deployDir)
-            // @phpstan-ignore method.nonObject
-            ->taskToggleableSymfonyCommand($application->find('artifact:composer:install'))
-            // @phpstan-ignore method.nonObject
-            ->taskToggleableSymfonyCommand($application->find('artifact:build:sanitize'));
-        $result = $builder->run();
-
+        $this->invokeCommand('source:build:copy', ['--deploy-dir' => $deployDir]);
+        $this->invokeCommand('artifact:composer:install');
+        $this->invokeCommand('artifact:build:sanitize');
         $this->invokeHook("post-deploy-build");
         $this->say("<info>The deployment artifact was generated at {$deployDir}.</info>");
     }
@@ -100,7 +80,6 @@ class CompileCommand extends TaskBase
      */
     private function getDependentBuilds(string $artifact): array
     {
-        // @phpstan-ignore-next-line
         return $this->getConfigValue("artifacts.$artifact.dependent-builds", []);
     }
 }

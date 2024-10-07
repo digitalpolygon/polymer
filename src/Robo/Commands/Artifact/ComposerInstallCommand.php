@@ -34,9 +34,7 @@ class ComposerInstallCommand extends TaskBase
      */
     public function initialize(): void
     {
-        // @phpstan-ignore-next-line
         $this->deployDir = $this->getConfigValue('deploy.dir');
-        // @phpstan-ignore-next-line
         $this->sourceDir = $this->getConfigValue('repo.root');
         if (!$this->sourceDir || !$this->deployDir) {
             throw new TaskException($this, 'Configuration deploy.dir must be set to run this command');

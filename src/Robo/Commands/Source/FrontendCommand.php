@@ -2,10 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Robo\Commands\Source;
 
+use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
-use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
-use DigitalPolygon\Polymer\Robo\Tasks\Command as PolymerCommand;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Exception\AbortTasksException;
 
@@ -24,6 +23,7 @@ class FrontendCommand extends TaskBase
      * @throws \Robo\Exception\TaskException If a specific build target fails.
      */
     #[Command(name: 'build')]
+    #[Argument(name: 'target', description: 'The name of the build target to build.')]
     #[Usage(name: 'polymer build theme_build_admin', description: 'Runs and builds the "theme_build_admin" target.')]
     #[Usage(name: 'polymer build -v', description: 'Runs and builds all frontend targets.')]
     public function build(string $target = null): void
@@ -55,6 +55,7 @@ class FrontendCommand extends TaskBase
      * @throws \Robo\Exception\TaskException If the build target execution fails.
      */
     #[Command(name: 'build:reqs')]
+    #[Argument(name: 'target', description: 'The name of the build target to setup pre-requisites for.')]
     #[Usage(name: 'polymer build:reqs theme_build_admin', description: 'Runs and builds the reqs command for the "theme_build_admin" target.')]
     public function reqs(string $target): int
     {
@@ -73,7 +74,7 @@ class FrontendCommand extends TaskBase
         if ($dir) {
             $options['dir'] = $dir;
         }
-        return $this->execCommand($setup, $options);
+        return $this->commandInvoker->invokeCommand($this->input(), $setup, $options);
     }
 
     /**
@@ -89,6 +90,7 @@ class FrontendCommand extends TaskBase
      * @throws \Robo\Exception\TaskException If the build target execution fails.
      */
     #[Command(name: 'build:assets')]
+    #[Argument(name: 'target', description: 'The name of the build target to compile assets for.')]
     #[Usage(name: 'polymer build:assets --target=theme_build_admin', description: 'Runs and builds the assets command for the "theme_build_admin" target.')]
     public function assets(string $target): int
     {
@@ -106,7 +108,7 @@ class FrontendCommand extends TaskBase
         if ($dir) {
             $options['dir'] = $dir;
         }
-        return $this->execCommand($assets, $options);
+        return $this->commandInvoker->invokeCommand($this->input(), $assets, $options);
     }
 
     /**
@@ -129,14 +131,16 @@ class FrontendCommand extends TaskBase
         // Execute setup command if defined.
         $setup = $target_info['setup'] ?? null;
         if (!empty($setup)) {
-            $commands[] = new PolymerCommand("build:reqs", ['target' => $target]);
+            $commands['build:reqs'] = ['target' => $target];
         }
         // Execute assets command if defined.
         $assets = $target_info['assets'] ?? null;
         if (!empty($assets)) {
-            $commands[] = new PolymerCommand("build:assets", ['target' => $target]);
+            $commands['build:assets'] = ['target' => $target];
         }
         // Execute all commands collected.
-        $this->invokeCommands($commands);
+        foreach ($commands as $command => $args) {
+            $this->commandInvoker->invokeCommand($this->input(), $command, $args);
+        }
     }
 }
