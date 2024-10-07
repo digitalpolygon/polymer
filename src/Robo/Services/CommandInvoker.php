@@ -24,8 +24,20 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     use ContainerAwareTrait;
 
     protected int $invokeDepth = 0;
-//    protected array $pinnedInputOptions = [];
-//    protected array $pinnedCommandOptions = [];
+
+    /**
+     * @var array<int, string>
+     */
+    protected array $pinnedInputOptions = [];
+
+    /**
+     * @var array<int, array<string|int, string>>
+     */
+    protected array $pinnedCommandOptions = [];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
     protected array $pinnedGlobalOptions = [];
 
     public function __construct(
@@ -38,11 +50,17 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     ) {
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getPinnedGlobals(): array
     {
         return $this->pinnedGlobalOptions;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setPinnedGlobals(array $pinnedGlobals): void
     {
         $this->pinnedGlobalOptions = $pinnedGlobals;
@@ -51,7 +69,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): void
+    public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): int
     {
         $this->invokeDepth++;
 
@@ -101,7 +119,9 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
                 $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
                 throw new PolymerException("Command `$commandName {$input->__toString()}` exited with code $exit_code.");
             }
+            return $exit_code;
         }
+        return 0;
     }
 
     /**
@@ -133,6 +153,11 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 //        }
     }
 
+    /**
+     * Get pinned options.
+     *
+     * @return array<string|int, string>
+     */
     protected function getPinnedOptions(): array
     {
         $currentDepth = $this->invokeDepth;
@@ -155,7 +180,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
      * @return bool
      *   TRUE if the command is disabled.
      */
-    protected function isCommandDisabled($command)
+    protected function isCommandDisabled(string $command): bool
     {
         $disabled_commands = $this->getDisabledCommands();
         if (
@@ -164,7 +189,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
                 $disabled_commands
             ) && $disabled_commands[$command]
         ) {
-            $this->logger?->warning("The $command command is disabled.");
+            $this->logger->warning("The $command command is disabled.");
             return true;
         }
 
@@ -187,12 +212,18 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
         return [];
     }
 
-    public function pinGlobal(string $option, $value = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function pinGlobal(string $option, $value = null): void
     {
         $this->pinnedGlobalOptions[$option] ??= [];
         array_push($this->pinnedGlobalOptions[$option], $value);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function unpinGlobal(string $option): void
     {
         array_pop($this->pinnedGlobalOptions[$option]);

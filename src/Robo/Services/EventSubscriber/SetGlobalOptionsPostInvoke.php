@@ -24,7 +24,7 @@ class SetGlobalOptionsPostInvoke extends GlobalOptionsEventListener
         ];
     }
 
-    public function onPostInvokeCommand(PostInvokeCommandEvent $event)
+    public function onPostInvokeCommand(PostInvokeCommandEvent $event): void
     {
         $input = $event->getParentInput();
         $output = new NullOutput();

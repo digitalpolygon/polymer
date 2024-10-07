@@ -7,7 +7,6 @@ use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Exception\AbortTasksException;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Defines commands in the "build" namespace.
@@ -75,7 +74,7 @@ class FrontendCommand extends TaskBase
         if ($dir) {
             $options['dir'] = $dir;
         }
-        return $this->execCommand($setup, $options);
+        return $this->commandInvoker->invokeCommand($this->input(), $setup, $options);
     }
 
     /**
@@ -109,8 +108,7 @@ class FrontendCommand extends TaskBase
         if ($dir) {
             $options['dir'] = $dir;
         }
-        $result = $this->execCommand($assets, $options);
-        return $result;
+        return $this->commandInvoker->invokeCommand($this->input(), $assets, $options);
     }
 
     /**
@@ -142,7 +140,7 @@ class FrontendCommand extends TaskBase
         }
         // Execute all commands collected.
         foreach ($commands as $command => $args) {
-            $this->invokeCommand($command, $args);
+            $this->commandInvoker->invokeCommand($this->input(), $command, $args);
         }
     }
 }
