@@ -5,41 +5,68 @@ namespace DigitalPolygon\Polymer\Robo\Services;
 use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
 use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
 use DigitalPolygon\Polymer\Robo\ConsoleApplication;
-use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
-use DigitalPolygon\Polymer\Robo\Event\PostInvokeCommandEvent;
-use DigitalPolygon\Polymer\Robo\Event\PreInvokeCommandEvent;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
-use Robo\Common\IO;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Service class responsible for invoking console commands within a Polymer
+ * framework. Supports command execution tracking, global and local option
+ * pinning, and command disabling.
+ */
 class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
+    /**
+     * Tracks the current depth of nested command invocations.
+     *
+     * @var int
+     */
     protected int $invokeDepth = 0;
 
     /**
+     * Stores pinned options for input during nested command invocations.
+     *
      * @var array<int, string>
      */
     protected array $pinnedInputOptions = [];
 
     /**
+     * Stores pinned options for commands during nested command invocations.
+     *
      * @var array<int, array<string|int, string>>
      */
     protected array $pinnedCommandOptions = [];
 
     /**
+     * Stores global options pinned for all command invocations.
+     *
      * @var array<string, array<string, string>>
      */
     protected array $pinnedGlobalOptions = [];
 
+    /**
+     * CommandInvoker constructor.
+     *
+     * @param \Psr\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     *   Event dispatcher for handling command events.
+     * @param \DigitalPolygon\Polymer\Robo\ConsoleApplication $application
+     *   The console application instance to invoke commands from.
+     * @param \DigitalPolygon\Polymer\Robo\Config\PolymerConfig $config
+     *   Configuration object for command settings.
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     *   Input interface for managing user input.
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *   Output interface for displaying command results.
+     * @param \Psr\Log\LoggerInterface $logger
+     *   Logger interface for logging messages and errors.
+     */
     public function __construct(
         protected EventDispatcherInterface $eventDispatcher,
         protected ConsoleApplication $application,
@@ -72,44 +99,26 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): int
     {
         $this->invokeDepth++;
-
+        // Check if the command is disabled.
         if (!$this->isCommandDisabled($commandName)) {
             $command = $this->application->find($commandName);
-
-            // Build a new input object that inherits options from parent command.
-//            foreach ($this->pinnedGlobalOptions as $pinnedGlobalOption) {
-//                if ($parentInput->hasParameterOption($pinnedGlobalOption)) {
-//                    $args[$pinnedGlobalOption] = $parentInput->getParameterOption($pinnedGlobalOption);
-//                }
-//            }
+            // Apply pinned global options to command arguments.
             foreach ($this->pinnedGlobalOptions as $option => $value) {
                 $args[$option] = reset($value);
             }
+            // Create a new input with the provided arguments and make it interactive if the parent input is.
             $input = new ArrayInput($args);
             $input->setInteractive($parentInput->isInteractive());
 
-            // Now run the command.
+            // Execute the command and capture the exit code.
             $prefix = str_repeat(">", $this->invokeDepth);
             $this->output->writeln("<comment>$prefix Entering $commandName...</comment>");
-
-//            $preRunOptions = $this->input->getOptions();
-
-            $preInvokeEvent = new PreInvokeCommandEvent($command, $parentInput, $input, $this->invokeDepth);
-//            $this->eventDispatcher->dispatch($preInvokeEvent, PolymerEvents::PRE_INVOKE_COMMAND);
-
             $exit_code = $this->application->runCommand($command, $input, $this->output);
-
             $this->output->writeln("<comment>$prefix Exited $commandName...</comment>");
 
             // After we return from the command invocation, the configuration and active input should be restored to
             // what it was prior to entering the invocation.
-
-//            $postInvokeEvent = new PostInvokeCommandEvent($command, $parentInput, $input, $this->invokeDepth);
-//            $this->eventDispatcher->dispatch($postInvokeEvent, PolymerEvents::POST_INVOKE_COMMAND);
             $this->config->reprocess();
-
-//            $postRunOptions = $this->input->getOptions();
-
             $this->invokeDepth--;
 
             // The application will catch any exceptions thrown in the executed
@@ -119,8 +128,10 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
                 $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
                 throw new PolymerException("Command `$commandName {$input->__toString()}` exited with code $exit_code.");
             }
+
             return $exit_code;
         }
+
         return 0;
     }
 
@@ -132,12 +143,14 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
         if ($parentInput) {
             $this->pinnedInputOptions[$this->invokeDepth] ??= [];
             $pinnedOptions = &$this->pinnedInputOptions[$this->invokeDepth];
+
             foreach ($options as $option) {
                 $pinnedOptions[$option] = $parentInput->getParameterOption($option);
             }
         } else {
             $this->pinnedCommandOptions[$this->invokeDepth] ??= [];
             $pinnedOptions = &$this->pinnedCommandOptions[$this->invokeDepth];
+
             foreach ($options as $option => $value) {
                 if (is_int($option)) {
                     $pinnedOptions[] = $value;
@@ -146,22 +159,18 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
                 }
             }
         }
-//        foreach ($options as $option) {
-//            if ($this->input->hasParameterOption('--environment')) {
-//                $args['--environment'] = $this->input->getParameterOption('--environment');
-//            }
-//        }
     }
 
     /**
-     * Get pinned options.
+     * Retrieves pinned options for the current invocation depth.
      *
      * @return array<string|int, string>
+     *   The pinned options.
      */
     protected function getPinnedOptions(): array
     {
-        $currentDepth = $this->invokeDepth;
         $pinnedOptions = [];
+        // Merge pinned input and command options at the current depth level.
         if (isset($this->pinnedInputOptions[$this->invokeDepth])) {
             $pinnedOptions = $this->pinnedInputOptions[$this->invokeDepth];
         }
@@ -183,16 +192,10 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     protected function isCommandDisabled(string $command): bool
     {
         $disabled_commands = $this->getDisabledCommands();
-        if (
-            is_array($disabled_commands) && array_key_exists(
-                $command,
-                $disabled_commands
-            ) && $disabled_commands[$command]
-        ) {
+        if (isset($disabled_commands[$command]) && $disabled_commands[$command]) {
             $this->logger->warning("The $command command is disabled.");
             return true;
         }
-
         return false;
     }
 
@@ -200,16 +203,18 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
      * Gets an array of commands that have been configured to be disabled.
      *
      * @return array<string, mixed>
-     *   A flat array of disabled commands.
+     *   An associative array of disabled commands.
      */
     protected function getDisabledCommands(): array
     {
-        $disabled_commands_config = $this->config->get('disable-targets', []);
-        if ($disabled_commands_config) {
-            $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');
-            return $disabled_commands;
+        // Fetch disabled commands from the config.
+        /** @var array<string, mixed> $disabled_commands_config */
+        $disabled_commands_config = $this->config->get('disable-targets');
+        if (!$disabled_commands_config) {
+            return [];
         }
-        return [];
+        // Flatten multidimensional arrays for easier processing.
+        return ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');
     }
 
     /**
@@ -218,7 +223,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     public function pinGlobal(string $option, $value = null): void
     {
         $this->pinnedGlobalOptions[$option] ??= [];
-        array_push($this->pinnedGlobalOptions[$option], $value);
+        $this->pinnedGlobalOptions[$option][] = $value;
     }
 
     /**

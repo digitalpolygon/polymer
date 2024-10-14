@@ -108,7 +108,7 @@ class FrontendCommand extends TaskBase
         if ($dir) {
             $options['dir'] = $dir;
         }
-        return $this->commandInvoker->invokeCommand($this->input(), $assets, $options);
+        return $this->invokeCommand($assets, $options);
     }
 
     /**
