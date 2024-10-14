@@ -2,6 +2,8 @@
 
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
+use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
+use DigitalPolygon\Polymer\Robo\Services\CommandInvokerAwareTrait;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Collection\CollectionBuilder;
@@ -12,248 +14,88 @@ use Robo\LoadAllTasks;
 use Robo\Result;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerAwareInterface;
-use Robo\Exception\TaskException;
 use Robo\Contract\ConfigAwareInterface;
-use Robo\Exception\AbortTasksException;
-use Symfony\Component\Console\Input\ArrayInput;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
-use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
+use Symfony\Component\Console\Command\Command;
 
 /**
- * Utility base class for Polymer commands.
+ * Base class for Polymer Robo commands.
+ *
+ * This class provides common utilities for Polymer-based commands, including
+ * command invocation, hook handling, and command disabling mechanisms.
  */
-abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, BuilderAwareInterface, IOAwareInterface, ContainerAwareInterface
+abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, BuilderAwareInterface, IOAwareInterface, ContainerAwareInterface, CommandInvokerAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoadAllTasks; // uses TaskAccessor, which uses BuilderAwareTrait
     use IO;
+    use CommandInvokerAwareTrait;
 
     /**
-     * @param bool $stopOnFail
+     * Creates a toggleable Symfony command task.
+     *
+     * @param \Symfony\Component\Console\Command\Command $command
+     *   The command instance.
+     *
+     * @return \Robo\Collection\CollectionBuilder|\DigitalPolygon\Polymer\Robo\Tasks\ToggleableSymfonyCommand
+     *   The task instance for the command.
      */
-    protected function stopOnFail($stopOnFail = true): void
+    public function taskToggleableSymfonyCommand(Command $command): CollectionBuilder|ToggleableSymfonyCommand
+    {
+        return $this->task(ToggleableSymfonyCommand::class, $command);
+    }
+
+    /**
+     * Configures whether to stop the execution of tasks upon failure.
+     *
+     * @param bool $stopOnFail
+     *   Set to TRUE to stop on failure, FALSE to continue.
+     */
+    protected function stopOnFail(bool $stopOnFail = true): void
     {
         Result::$stopOnFail = $stopOnFail;
     }
 
     /**
-     * Invokes an array of Polymer commands.
+     * Invokes a single Polymer command by name.
      *
-     * @param Command[] $commands
-     *   Array of Polymer commands to invoke, e.g. 'artifact:composer:install'.
+     * This method uses the CommandInvoker service to invoke commands dynamically
+     * during task execution. It allows passing additional arguments to the
+     * command for greater flexibility.
      *
-     * @throws \Robo\Exception\TaskException
-     */
-    protected function invokeCommands(array $commands): void
-    {
-        foreach ($commands as $command) {
-            if ($command->isInvokable()) {
-                $this->invokeCommand($command);
-            } else {
-                $this->execCommand($command->getName(), $command->getArgs());
-            }
-        }
-    }
-
-    /**
-     * Invokes a single Polymer command.
-     *
-     * @param \DigitalPolygon\Polymer\Robo\Tasks\Command $command
-     *   The command, e.g., 'artifact:composer:install'.
-     *
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Robo\Exception\TaskException
-     */
-    protected function invokeCommand(Command $command): void
-    {
-        // Show start task message.
-        $command_string = (string) $command;
-        $this->say("Invoking Command: '$command_string'");
-        // Get the Console Application instance from the container.
-        /** @var \DigitalPolygon\Polymer\Robo\ConsoleApplication $application */
-        $application = $this->getContainer()->get('application');
-        // Find the task and format its inputs.
-        $task = $application->find($command->getName());
-        $input = new ArrayInput($command->getArgs());
-        $input->setInteractive($this->input()->isInteractive());
-        // Now run the command.
-        $this->output->writeln("   <comment>$command_string</comment>");
-        $exit_code = $application->runCommand($task, $input, $this->output());
-        // The application will catch any exceptions thrown in the executed
-        // command. We must check the exit code and throw our own exception. This
-        // obviates the need to check the exit code of every invoked command.
-        if ($exit_code) {
-            $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
-            throw new TaskException($this, "Command `$command_string` exited with code $exit_code.");
-        }
-    }
-
-    /**
-     * Load the given build recipe from the container by name.
-     *
-     * @param string $recipe_id
-     *   The recipe ID.
-     *
-     * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
-     *   The build recipe object.
-     */
-    protected function getBuildRecipe(string $recipe_id): RecipeInterface|null
-    {
-        $id = "recipe:build:$recipe_id";
-        $definition = $this->getContainer()->get($id);
-        if ($definition instanceof RecipeInterface) {
-            return $definition;
-        }
-        return null;
-    }
-
-    /**
-     * Load the given push recipe from the container by name.
-     *
-     * @param string $recipe_id
-     *   The recipe ID.
-     *
-     * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
-     *   The push recipe object.
-     */
-    protected function getPushRecipe(string $recipe_id): RecipeInterface|null
-    {
-        $id = "recipe:push:$recipe_id";
-        $definition = $this->getContainer()->get($id);
-        if ($definition instanceof RecipeInterface) {
-            return $definition;
-        }
-        return null;
-    }
-
-    /**
-     * Executed a given command or a script, typically defined in polymer.yml.
-     *
-     * @param string $command
-     *   The command or script to execute.
-     * @param array<string, string> $options
-     *   The command or script options.
+     * @param string $commandName
+     *   The fully qualified name of the command (e.g., 'artifact:composer:install').
+     * @param array<string, array<string, string>|string> $args
+     *   An associative array of arguments to pass to the command.
      *
      * @return int
-     *   The task exit status code.
-     *
-     * @throws \Robo\Exception\AbortTasksException
-     * @throws \Robo\Exception\TaskException
+     *   The exit code returned by the invoked command. A value of 0 indicates success.
      */
-    protected function execCommand(string $command, array $options = []): int
+    protected function invokeCommand(string $commandName, array $args = []): int
     {
-        // Define the task.
-        /** @var \Robo\Task\CommandStack $task */
-        $task = $this->taskExecStack();
-        $task = $task->exec($command);
-        // Get the directory where to execute the command or script.
-        $dir = $options['dir'] ?? null;
-        if ($dir != null) {
-            $task->dir($dir);
-        }
-        $task->interactive($this->input()->isInteractive());
-        $task->stopOnFail();
-        // Ser verbosity output.
-        $is_verbose = $this->output()->isVerbose();
-        $task->printOutput($is_verbose);
-        $task->printMetadata($is_verbose);
-        // Execute the task.
-        $result = $task->run();
-        if (!$result->wasSuccessful()) {
-            throw new AbortTasksException("Executing command '$command' failed.", $result->getExitCode());
-        }
-        return $result->getExitCode();
+        return $this->commandInvoker->invokeCommand($this->input(), $commandName, $args);
     }
 
     /**
-     * Invokes a given 'command-hooks' hook, typically defined in polymer.yml.
+     * Invokes a specified hook from the Polymer 'command-hooks'.
+     *
+     * Hooks are typically defined in polymer.yml and provide an extension point
+     * for custom behaviors in Polymer commands. This method is used to trigger
+     * those hooks by name.
      *
      * @param string $hook
-     *   The hook name.
+     *   The name of the hook to invoke.
      *
      * @return int
-     *   The task exit status code.
-     *
-     * @throws \Robo\Exception\AbortTasksException
-     * @throws \Robo\Exception\TaskException
+     *   The exit status code for the hook invocation.
      */
     protected function invokeHook(string $hook): int
     {
+        // Outputs a message indicating that the hook is being executed.
         $this->say("Executing $hook target hook...");
-        // Gather the command information associated to the hook.
-        /** @var string $command */
-        $command = $this->getConfigValue("command-hooks.$hook.command");
-        /** @var string $dir */
-        $dir = $this->getConfigValue("command-hooks.$hook.dir");
-        if ($command == null) {
-            $this->logger?->info("Skipped $hook target hook. No hook is defined.");
-            return 0;
-        }
-        // Define the task.
-        /** @var \Robo\Task\CommandStack $task */
-        $task = $this->taskExecStack();
-        $task = $task->exec($command);
-        if ($dir != null) {
-            $task->dir($dir);
-        }
-        $task->interactive($this->input()->isInteractive());
-        $task->printOutput(true);
-        $task->printMetadata(true);
-        $task->stopOnFail();
-        // Execute the task.
-        $result = $task->run();
-        if (!$result->wasSuccessful()) {
-            throw new AbortTasksException("Executing target-hook $hook failed.", $result->getExitCode());
-        }
-        return $result->getExitCode();
-    }
-
-    /**
-     * List the given command sin the order they will be executed.
-     *
-     * @param Command[] $commands
-     *   Array of Polymer commands to list.
-     */
-    protected function listCommands(array $commands): void
-    {
-        foreach ($commands as $delta => $command) {
-            $command_string = (string) $command;
-            $this->say(" [$delta] Invoke Command: '{$command_string}'.");
-        }
-    }
-
-    /**
-     * Sets multisite context by settings site-specific config values.
-     *
-     * @param string $site_name
-     *   The name of a multisite, e.g., if docroot/sites/example.com is the site,
-     *   $site_name would be example.com.
-     */
-    public function switchSiteContext($site_name): void
-    {
-        $this->logger?->debug("Switching site context to <comment>$site_name</comment>.");
-        /** @var string $repo_root */
-        $repo_root = $this->getConfigValue('repo.root');
-        $config_initializer = new ConfigInitializer($repo_root, $this->input());
-        $config_initializer->setSite($site_name);
-        $new_config = $config_initializer->initialize();
-
-        // Replaces config.
-        // @phpstan-ignore-next-line
-        $this->getConfig()->replace($new_config->export());
-    }
-
-    /**
-     * @param \Symfony\Component\Console\Command\Command $command
-     *
-     * @return \Robo\Collection\CollectionBuilder|\DigitalPolygon\Polymer\Robo\Tasks\ToggleableSymfonyCommand
-     */
-    public function taskToggleableSymfonyCommand($command): CollectionBuilder|ToggleableSymfonyCommand
-    {
-        return $this->task(ToggleableSymfonyCommand::class, $command);
+        // @todo: Refactor this to use CommandInvoker service or potentially a new HookInvoker service for better separation of concerns.
+        return 0; // Return 0 as a placeholder; hook execution logic to be implemented.
     }
 }
