@@ -78,6 +78,10 @@ class ConfigInitializer
      */
     public function initialize(): DefaultConfig
     {
+        if (!$this->site) {
+            $site = $this->determineSite();
+            $this->setSite($site);
+        }
         $environment = $this->determineEnvironment();
         $this->environment = $environment;
         $this->config->set('environment', $environment);
@@ -227,5 +231,20 @@ class ConfigInitializer
             }
         }
         return $polymer_extension_packages;
+    }
+
+    /**
+     * Determine site.
+     *
+     * @return mixed|string
+     *   Site.
+     */
+    protected function determineSite(): string
+    {
+      // Support --site=foo.
+        if ($this->input->hasParameterOption('--site')) {
+            return $this->input->getParameterOption('--site');
+        }
+        return 'default';
     }
 }
