@@ -48,10 +48,10 @@ class ConfigInitializer
     protected string $environment;
 
     /**
-   * Site.
-   *
-   * @var string
-   */
+     * Site.
+     *
+     * @var string
+     */
     protected $site;
 
     /**
@@ -236,13 +236,14 @@ class ConfigInitializer
     /**
      * Determine site.
      *
-     * @return mixed|string
+     * @return string
      *   Site.
      */
     protected function determineSite(): string
     {
-      // Support --site=foo.
+        // Support --site=foo.
         if ($this->input->hasParameterOption('--site')) {
+            // @phpstan-ignore-next-line
             return $this->input->getParameterOption('--site');
         }
         return 'default';
