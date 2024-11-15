@@ -48,10 +48,10 @@ class ConfigInitializer
     protected string $environment;
 
     /**
-   * Site.
-   *
-   * @var string
-   */
+     * Site.
+     *
+     * @var string
+     */
     protected $site;
 
     /**
@@ -78,6 +78,10 @@ class ConfigInitializer
      */
     public function initialize(): DefaultConfig
     {
+        if (!$this->site) {
+            $site = $this->determineSite();
+            $this->setSite($site);
+        }
         $environment = $this->determineEnvironment();
         $this->environment = $environment;
         $this->config->set('environment', $environment);
@@ -227,5 +231,21 @@ class ConfigInitializer
             }
         }
         return $polymer_extension_packages;
+    }
+
+    /**
+     * Determine site.
+     *
+     * @return string
+     *   Site.
+     */
+    protected function determineSite(): string
+    {
+        // Support --site=foo.
+        if ($this->input->hasParameterOption('--site')) {
+            // @phpstan-ignore-next-line
+            return $this->input->getParameterOption('--site');
+        }
+        return 'default';
     }
 }
