@@ -20,11 +20,33 @@ class DefaultConfig extends Config
     {
         parent::__construct();
         $this->set('repo.root', $repo_root);
-        $this->set('docroot', $repo_root . '/web');
+        $this->set('docroot', $this->getDrupalRoot($repo_root));
         $this->set('polymer.root', $this->getPolymerRoot());
         $this->set('composer.bin', $repo_root . '/vendor/bin');
         $this->set('tmp.dir', sys_get_temp_dir());
         $this->set('polymer.multisites', $this->getMultisiteDirs());
+    }
+
+    /**
+     * Gets the drupal root directory, e.g., /var/www/html/docroot or /var/www/html/web.
+     *
+     * @return string
+     *   The filepath for the drupal root.
+     *
+     * @throws \Exception
+     */
+    private function getDrupalRoot(string $repo_root): string
+    {
+        $possible_drupal_repo_roots = [
+            $repo_root . '/docroot',
+            $repo_root . '/web',
+        ];
+        foreach ($possible_drupal_repo_roots as $possible_drupal_repo_root) {
+            if (file_exists($possible_drupal_repo_root)) {
+                return $possible_drupal_repo_root;
+            }
+        }
+        throw new \Exception('Could not find the drupal root directory.');
     }
 
     /**
