@@ -30,11 +30,6 @@ class BuildPrepareCommand extends TaskBase
     /**
      * Prepare the artifact build dir.
      *
-     * @command artifact:build:prepare
-     *
-     * @usage artifact:build:prepare
-     * @usage artifact:build:prepare -v
-     *
      * @throws \Robo\Exception\TaskException
      */
     #[Command(name: 'artifact:build:prepare')]

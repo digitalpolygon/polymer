@@ -1,0 +1,21 @@
+services:
+  backstop:
+    image: backstopjs/backstopjs:6.3.23
+    container_name: ddev-${DDEV_SITENAME}-backstop
+    command: remote --config=backstop.config.js
+    ports:
+      - 3000
+    user:  '$DDEV_UID:$DDEV_GID'
+    tty: true
+    volumes:
+      - ../tests/backstop:/src
+    labels:
+        com.ddev.platform: ddev
+        com.ddev.site-name: ${DDEV_SITENAME}
+    environment:
+      VIRTUAL_HOST: '${DDEV_HOSTNAME}'
+      VIRTUAL_HOST_GO: '${DDEV_HOSTNAME}:445'
+      XDG_CONFIG_HOME: '/tmp/.chromium'
+      XDG_CACHE_HOME: '/tmp/.chromium'
+    external_links:
+      - "ddev-router:${DDEV_HOSTNAME}"
