@@ -32,21 +32,10 @@ class DefaultConfig extends Config
      *
      * @return string
      *   The filepath for the drupal root.
-     *
-     * @throws \Exception
      */
     private function getDrupalRoot(string $repo_root): string
     {
-        $possible_drupal_repo_roots = [
-            $repo_root . '/docroot',
-            $repo_root . '/web',
-        ];
-        foreach ($possible_drupal_repo_roots as $possible_drupal_repo_root) {
-            if (file_exists($possible_drupal_repo_root)) {
-                return $possible_drupal_repo_root;
-            }
-        }
-        throw new \Exception('Could not find the drupal root directory.');
+        return file_exists($repo_root . '/docroot') ? $repo_root . '/docroot' : $repo_root . '/web';
     }
 
     /**
