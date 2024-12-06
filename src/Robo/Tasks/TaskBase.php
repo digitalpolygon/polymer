@@ -155,7 +155,7 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         if ($dir != null) {
             $task->dir($dir);
         }
-        $task->interactive($this->input()->isInteractive());
+        $task->interactive();
         $task->stopOnFail();
         // Ser verbosity output.
         $is_verbose = $this->output()->isVerbose();
