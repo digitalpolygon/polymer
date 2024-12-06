@@ -16,6 +16,7 @@ use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -81,6 +82,7 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         // Create and configure container.
         $container = new Container();
         Robo::configureContainer($container, $application, $config, $input, $output, $classLoader);
+        $this->addDefaultArgumentsAndOptions($application);
         $this->configureContainer($container);
         $this->registerRecipes($container);
         Robo::finalizeContainer($container);
@@ -112,6 +114,28 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         /** @var \Robo\Application $application */
         $application = $this->getContainer()->get('application');
         return $this->runner->run($input, $output, $application, $this->commands);
+    }
+
+    /**
+     * Add any global arguments or options that apply to all commands.
+     *
+     * @param \DigitalPolygon\Polymer\Robo\ConsoleApplication $app
+     *   The Symfony application.
+     */
+    private function addDefaultArgumentsAndOptions(ConsoleApplication $app): void
+    {
+        $app->getDefinition()
+        ->addOption(
+            new InputOption('--define', '-D', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Define a configuration item value.', [])
+        );
+        $app->getDefinition()
+        ->addOption(
+            new InputOption('--environment', null, InputOption::VALUE_REQUIRED, 'Set the environment to load config from polymer/[env].yml file.', [])
+        );
+        $app->getDefinition()
+        ->addOption(
+            new InputOption('--site', null, InputOption::VALUE_REQUIRED, 'The multisite to execute this command against.', [])
+        );
     }
 
     /**
