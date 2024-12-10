@@ -2,23 +2,24 @@
 
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
-use Robo\Collection\CollectionBuilder;
-use Robo\Common\IO;
-use Robo\Contract\BuilderAwareInterface;
-use Robo\Contract\IOAwareInterface;
-use Robo\LoadAllTasks;
 use Robo\Result;
+use Robo\Common\IO;
+use Robo\LoadAllTasks;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Robo\Exception\TaskException;
+use Robo\Contract\IOAwareInterface;
+use Robo\Collection\CollectionBuilder;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
+use Robo\Contract\BuilderAwareInterface;
+use League\Container\ContainerAwareTrait;
+use League\Container\ContainerAwareInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
 use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
+use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
+use DigitalPolygon\Polymer\Environment\AcquiaEnvironmentDetector;
 
 /**
  * Utility base class for Polymer commands.
@@ -79,7 +80,9 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         // Find the task and format its inputs.
         $task = $application->find($command->getName());
         $input = new ArrayInput($command->getArgs());
-        $input->setInteractive($this->input()->isInteractive());
+        /** @var bool $is_interactive */
+        $is_interactive = (AcquiaEnvironmentDetector::isCiEnv()) ? false : $this->input()->isInteractive();
+        $input->setInteractive($is_interactive);
         // Now run the command.
         $this->output->writeln("   <comment>$command_string</comment>");
         $exit_code = $application->runCommand($task, $input, $this->output());
