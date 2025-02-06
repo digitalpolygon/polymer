@@ -103,6 +103,7 @@ class ConfigInitializer
         $this->loadDefaultConfig();
         $this->loadDefaultPolymerExtensionConfigs();
         $this->loadProjectConfig();
+        $this->loadSiteConfig();
         return $this;
     }
 
@@ -130,6 +131,23 @@ class ConfigInitializer
         $this->processor->extend(
             $this->loader->load($this->config->get('repo.root') . "/polymer/{$this->environment}.polymer.yml")
         );
+        return $this;
+    }
+
+    /**
+     * Load site specific config.
+     *
+     * @return $this
+     */
+    public function loadSiteConfig()
+    {
+        if ($this->site) {
+            // Since docroot can change in the project, we need to respect that here.
+            $this->config->replace($this->processor->export());
+            $this->processor->extend($this->loader->load($this->config->get('docroot') . "/sites/{$this->site}/polymer.yml"));
+            $this->processor->extend($this->loader->load($this->config->get('docroot') . "/sites/{$this->site}/{$this->environment}.polymer.yml"));
+        }
+
         return $this;
     }
 
