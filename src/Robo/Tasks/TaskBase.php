@@ -117,44 +117,44 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         }
     }
 
-//    /**
-//     * Executed a given command or a script, typically defined in polymer.yml.
-//     *
-//     * @param string $command
-//     *   The command or script to execute.
-//     * @param array<string, string> $options
-//     *   The command or script options.
-//     *
-//     * @return int
-//     *   The task exit status code.
-//     *
-//     * @throws \Robo\Exception\AbortTasksException
-//     * @throws \Robo\Exception\TaskException
-//     */
-//    protected function execCommand(string $command, array $options = []): int
-//    {
-//        // Define the task.
-//        /** @var \Robo\Task\CommandStack $task */
-//        $task = $this->taskExecStack();
-//        $task = $task->exec($command);
-//        // Get the directory where to execute the command or script.
-//        $dir = $options['dir'] ?? null;
-//        if ($dir != null) {
-//            $task->dir($dir);
-//        }
-//        $task->interactive($this->input()->isInteractive());
-//        $task->stopOnFail();
-//        // Ser verbosity output.
-//        $is_verbose = $this->output()->isVerbose();
-//        $task->printOutput($is_verbose);
-//        $task->printMetadata($is_verbose);
-//        // Execute the task.
-//        $result = $task->run();
-//        if (!$result->wasSuccessful()) {
-//            throw new AbortTasksException("Executing command '$command' failed.", $result->getExitCode());
-//        }
-//        return $result->getExitCode();
-//    }
+    /**
+     * Executed a given command or a script, typically defined in polymer.yml.
+     *
+     * @param string $command
+     *   The command or script to execute.
+     * @param array<string, string> $options
+     *   The command or script options.
+     *
+     * @return int
+     *   The task exit status code.
+     *
+     * @throws \Robo\Exception\AbortTasksException
+     * @throws \Robo\Exception\TaskException
+     */
+    protected function execCommand(string $command, array $options = []): int
+    {
+        // Define the task.
+        /** @var \Robo\Task\CommandStack $task */
+        $task = $this->taskExecStack();
+        $task = $task->exec($command);
+        // Get the directory where to execute the command or script.
+        $dir = $options['dir'] ?? null;
+        if ($dir != null) {
+            $task->dir($dir);
+        }
+        $task->interactive($this->input()->isInteractive());
+        $task->stopOnFail();
+        // Ser verbosity output.
+        $is_verbose = $this->output()->isVerbose();
+        $task->printOutput($is_verbose);
+        $task->printMetadata($is_verbose);
+        // Execute the task.
+        $result = $task->run();
+        if (!$result->wasSuccessful()) {
+            throw new AbortTasksException("Executing command '$command' failed.", $result->getExitCode());
+        }
+        return $result->getExitCode();
+    }
 
     /**
      * Invokes a given 'command-hooks' hook, typically defined in polymer.yml.
@@ -276,6 +276,7 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
      */
     protected function getDisabledCommands(): array
     {
+        // @phpstan-ignore argument.type
         $disabled_commands_config = $this->config->get('disable-targets', []);
         if ($disabled_commands_config) {
             $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');

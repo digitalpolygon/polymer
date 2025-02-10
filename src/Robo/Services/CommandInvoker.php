@@ -24,8 +24,14 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     use ContainerAwareTrait;
 
     protected int $invokeDepth = 0;
-//    protected array $pinnedInputOptions = [];
-//    protected array $pinnedCommandOptions = [];
+
+    /** @var array<int, mixed> */
+    protected array $pinnedInputOptions = [];
+
+    /** @var array<int, mixed> */
+    protected array $pinnedCommandOptions = [];
+
+    /** @var array<string, mixed> */
     protected array $pinnedGlobalOptions = [];
 
     public function __construct(
@@ -119,6 +125,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
             $this->pinnedCommandOptions[$this->invokeDepth] ??= [];
             $pinnedOptions = &$this->pinnedCommandOptions[$this->invokeDepth];
             foreach ($options as $option => $value) {
+                // @phpstan-ignore function.impossibleType
                 if (is_int($option)) {
                     $pinnedOptions[] = $value;
                 } else {
@@ -133,18 +140,21 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 //        }
     }
 
-    protected function getPinnedOptions(): array
-    {
-        $currentDepth = $this->invokeDepth;
-        $pinnedOptions = [];
-        if (isset($this->pinnedInputOptions[$this->invokeDepth])) {
-            $pinnedOptions = $this->pinnedInputOptions[$this->invokeDepth];
-        }
-        if (isset($this->pinnedCommandOptions[$this->invokeDepth])) {
-            $pinnedOptions = array_merge($pinnedOptions, $this->pinnedCommandOptions[$this->invokeDepth]);
-        }
-        return $pinnedOptions;
-    }
+//    /**
+//     * @return array<string, mixed>
+//     */
+//    protected function getPinnedOptions(): array
+//    {
+//        $currentDepth = $this->invokeDepth;
+//        $pinnedOptions = [];
+//        if (isset($this->pinnedInputOptions[$this->invokeDepth])) {
+//            $pinnedOptions = $this->pinnedInputOptions[$this->invokeDepth];
+//        }
+//        if (isset($this->pinnedCommandOptions[$this->invokeDepth])) {
+//            $pinnedOptions = array_merge($pinnedOptions, $this->pinnedCommandOptions[$this->invokeDepth]);
+//        }
+//        return $pinnedOptions;
+//    }
 
     /**
      * Determines if a command has been disabled via disable-targets.
@@ -164,7 +174,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
                 $disabled_commands
             ) && $disabled_commands[$command]
         ) {
-            $this->logger?->warning("The $command command is disabled.");
+            $this->logger->warning("The $command command is disabled.");
             return true;
         }
 
@@ -187,7 +197,14 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
         return [];
     }
 
-    public function pinGlobal(string $option, $value = null)
+    /**
+     * Pin a global option.
+     *
+     * @param string $option
+     * @param mixed $value
+     * @return void
+     */
+    public function pinGlobal(string $option, $value = null): void
     {
         $this->pinnedGlobalOptions[$option] ??= [];
         array_push($this->pinnedGlobalOptions[$option], $value);

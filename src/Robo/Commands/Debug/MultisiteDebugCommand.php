@@ -36,7 +36,7 @@ class MultisiteDebugCommand extends TaskBase
             $this->logger->info("config.current-site: {$config->get('current-site')}");
         }
         $this->logger->info("");
-        /** @var \Symfony\Component\Console\Command\Command $command */
+//        /** @var \Symfony\Component\Console\Command\Command $command */
 //        $command = $this->getContainer()->get('application')->find('debug:multisite-invoke');
 //        $this->input()->bind($command->getDefinition());
         $this->logger->info("Multisite loop complete.");
