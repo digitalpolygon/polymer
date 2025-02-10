@@ -9,8 +9,8 @@ use Robo\GlobalOptionsEventListener;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Output\NullOutput;
 
-class SetGlobalOptionsPostInvoke extends GlobalOptionsEventListener {
-
+class SetGlobalOptionsPostInvoke extends GlobalOptionsEventListener
+{
     public function __construct(ConsoleApplication $application)
     {
         parent::__construct();
@@ -31,5 +31,4 @@ class SetGlobalOptionsPostInvoke extends GlobalOptionsEventListener {
         $consoleEvent = new ConsoleCommandEvent(null, $input, $output);
         $this->handleCommandEvent($consoleEvent);
     }
-
 }

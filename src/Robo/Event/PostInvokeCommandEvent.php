@@ -12,8 +12,8 @@ class PostInvokeCommandEvent
         protected InputInterface $parentInput,
         protected InputInterface $newInput,
         protected int $depth
-    )
-    {}
+    ) {
+    }
 
     public function getCommand(): Command
     {
@@ -34,5 +34,4 @@ class PostInvokeCommandEvent
     {
         return $this->depth;
     }
-
 }

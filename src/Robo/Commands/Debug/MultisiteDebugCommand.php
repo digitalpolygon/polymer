@@ -9,7 +9,6 @@ use Robo\Symfony\ConsoleIO;
 
 class MultisiteDebugCommand extends TaskBase
 {
-
     #[Command(name: 'debug:multisite-invoke')]
     public function testConfig(ConsoleIO $io): void
     {
