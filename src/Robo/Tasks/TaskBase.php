@@ -2,8 +2,15 @@
 
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
+use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
+use DigitalPolygon\Polymer\Robo\ConsoleApplication;
+use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
+use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Robo\Services\CommandInvokerAwareTrait;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Robo\Collection\CollectionBuilder;
 use Robo\Common\IO;
 use Robo\Contract\BuilderAwareInterface;
@@ -12,24 +19,24 @@ use Robo\LoadAllTasks;
 use Robo\Result;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerAwareInterface;
-use Robo\Exception\TaskException;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
-use Symfony\Component\Console\Input\ArrayInput;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
-use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * Utility base class for Polymer commands.
  */
-abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, BuilderAwareInterface, IOAwareInterface, ContainerAwareInterface
+abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, BuilderAwareInterface, IOAwareInterface, ContainerAwareInterface, CommandInvokerAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoadAllTasks; // uses TaskAccessor, which uses BuilderAwareTrait
     use IO;
+    use CommandInvokerAwareTrait;
+
+    protected static int $invokeDepth = 0;
 
     /**
      * @param bool $stopOnFail
@@ -39,95 +46,75 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         Result::$stopOnFail = $stopOnFail;
     }
 
-    /**
-     * Invokes an array of Polymer commands.
-     *
-     * @param Command[] $commands
-     *   Array of Polymer commands to invoke, e.g. 'artifact:composer:install'.
-     *
-     * @throws \Robo\Exception\TaskException
-     */
-    protected function invokeCommands(array $commands): void
-    {
-        foreach ($commands as $command) {
-            if ($command->isInvokable()) {
-                $this->invokeCommand($command);
-            } else {
-                $this->execCommand($command->getName(), $command->getArgs());
-            }
-        }
-    }
+//    /**
+//     * Invokes an array of Polymer commands.
+//     *
+//     * @param Command[] $commands
+//     *   Array of Polymer commands to invoke, e.g. 'artifact:composer:install'.
+//     *
+//     * @throws \Robo\Exception\TaskException
+//     */
+//    protected function invokeCommands(array $commands): void
+//    {
+//        foreach ($commands as $command) {
+//            if ($command->isInvokable()) {
+//                $this->invokeCommand($command);
+//            } else {
+//                $this->execCommand($command->getName(), $command->getArgs());
+//            }
+//        }
+//    }
 
     /**
      * Invokes a single Polymer command.
      *
-     * @param \DigitalPolygon\Polymer\Robo\Tasks\Command $command
+     * @param string $commandName
      *   The command, e.g., 'artifact:composer:install'.
+     * @param array<mixed> $args
      *
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Robo\Exception\TaskException
+     * @throws PolymerException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    protected function invokeCommand(Command $command): void
+    protected function invokeCommand(string $commandName, array $args = []): void
     {
-        // Show start task message.
-        $command_string = (string) $command;
-        $this->say("Invoking Command: '$command_string'");
-        // Get the Console Application instance from the container.
-        /** @var \DigitalPolygon\Polymer\Robo\ConsoleApplication $application */
-        $application = $this->getContainer()->get('application');
-        // Find the task and format its inputs.
-        $task = $application->find($command->getName());
-        $input = new ArrayInput($command->getArgs());
-        $input->setInteractive($this->input()->isInteractive());
-        // Now run the command.
-        $this->output->writeln("   <comment>$command_string</comment>");
-        $exit_code = $application->runCommand($task, $input, $this->output());
-        // The application will catch any exceptions thrown in the executed
-        // command. We must check the exit code and throw our own exception. This
-        // obviates the need to check the exit code of every invoked command.
-        if ($exit_code) {
-            $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
-            throw new TaskException($this, "Command `$command_string` exited with code $exit_code.");
-        }
-    }
+        static::$invokeDepth++;
 
-    /**
-     * Load the given build recipe from the container by name.
-     *
-     * @param string $recipe_id
-     *   The recipe ID.
-     *
-     * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
-     *   The build recipe object.
-     */
-    protected function getBuildRecipe(string $recipe_id): RecipeInterface|null
-    {
-        $id = "recipe:build:$recipe_id";
-        $definition = $this->getContainer()->get($id);
-        if ($definition instanceof RecipeInterface) {
-            return $definition;
-        }
-        return null;
-    }
+        if (!$this->isCommandDisabled($commandName)) {
+            /** @var ConsoleApplication $application */
+            $application = $this->getContainer()->get('application');
+            $command = $application->find($commandName);
 
-    /**
-     * Load the given push recipe from the container by name.
-     *
-     * @param string $recipe_id
-     *   The recipe ID.
-     *
-     * @return \DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface|null
-     *   The push recipe object.
-     */
-    protected function getPushRecipe(string $recipe_id): RecipeInterface|null
-    {
-        $id = "recipe:push:$recipe_id";
-        $definition = $this->getContainer()->get($id);
-        if ($definition instanceof RecipeInterface) {
-            return $definition;
+            // Build a new input object that inherits options from parent command.
+//            if ($this->input()->hasParameterOption('--environment')) {
+//                $args['--environment'] = $this->input()->getParameterOption('--environment');
+//            }
+//            if ($this->input()->hasParameterOption('--site')) {
+//                $args['--site'] = $this->input()->getParameterOption('--site');
+//            }
+            $input = new ArrayInput($args);
+            $input->setInteractive($this->input()->isInteractive());
+
+            // Now run the command.
+            $prefix = str_repeat(">", static::$invokeDepth);
+            $this->output->writeln("<comment>$prefix $commandName</comment>");
+
+            $preRunOptions = $this->input()->getOptions();
+
+            $exit_code = $application->runCommand($command, $input, $this->output());
+
+            $postRunOptions = $this->input()->getOptions();
+
+            static::$invokeDepth--;
+
+            // The application will catch any exceptions thrown in the executed
+            // command. We must check the exit code and throw our own exception. This
+            // obviates the need to check the exit code of every invoked command.
+            if ($exit_code) {
+                $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
+                throw new PolymerException("Command `$commandName {$input->__toString()}` exited with code $exit_code.");
+            }
         }
-        return null;
     }
 
     /**
@@ -212,40 +199,39 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
         return $result->getExitCode();
     }
 
-    /**
-     * List the given command sin the order they will be executed.
-     *
-     * @param Command[] $commands
-     *   Array of Polymer commands to list.
-     */
-    protected function listCommands(array $commands): void
-    {
-        foreach ($commands as $delta => $command) {
-            $command_string = (string) $command;
-            $this->say(" [$delta] Invoke Command: '{$command_string}'.");
-        }
-    }
+//    /**
+//     * List the given command sin the order they will be executed.
+//     *
+//     * @param Command[] $commands
+//     *   Array of Polymer commands to list.
+//     */
+//    protected function listCommands(array $commands): void
+//    {
+//        foreach ($commands as $delta => $command) {
+//            $command_string = (string) $command;
+//            $this->say(" [$delta] Invoke Command: '{$command_string}'.");
+//        }
+//    }
 
-    /**
-     * Sets multisite context by settings site-specific config values.
-     *
-     * @param string $site_name
-     *   The name of a multisite, e.g., if docroot/sites/example.com is the site,
-     *   $site_name would be example.com.
-     */
-    public function switchSiteContext($site_name): void
-    {
-        $this->logger?->debug("Switching site context to <comment>$site_name</comment>.");
-        /** @var string $repo_root */
-        $repo_root = $this->getConfigValue('repo.root');
-        $config_initializer = new ConfigInitializer($repo_root, $this->input());
-        $config_initializer->setSite($site_name);
-        $new_config = $config_initializer->initialize();
-
-        // Replaces config.
-        // @phpstan-ignore-next-line
-        $this->getConfig()->replace($new_config->export());
-    }
+//    /**
+//     * Sets multisite context by settings site-specific config values.
+//     *
+//     * @param string $site_name
+//     *   The name of a multisite, e.g., if docroot/sites/example.com is the site,
+//     *   $site_name would be example.com.
+//     */
+//    public function switchSiteContext($site_name): void
+//    {
+//        $this->logger?->debug("Switching site context to <comment>$site_name</comment>.");
+//        /** @var string $repo_root */
+//        $repo_root = $this->getConfigValue('repo.root');
+//        $config_initializer = new ConfigInitializer($repo_root, $this->input());
+//        $config_initializer->setSite($site_name);
+//        $new_config = $config_initializer->initialize();
+//
+//        // Replaces config.
+//        $this->getConfig()->replace($new_config->export());
+//    }
 
     /**
      * @param \Symfony\Component\Console\Command\Command $command
@@ -255,5 +241,47 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     public function taskToggleableSymfonyCommand($command): CollectionBuilder|ToggleableSymfonyCommand
     {
         return $this->task(ToggleableSymfonyCommand::class, $command);
+    }
+
+    /**
+     * Determines if a command has been disabled via disable-targets.
+     *
+     * @param string $command
+     *   The command name.
+     *
+     * @return bool
+     *   TRUE if the command is disabled.
+     */
+    protected function isCommandDisabled($command)
+    {
+        $disabled_commands = $this->getDisabledCommands();
+        if (
+            is_array($disabled_commands) && array_key_exists(
+                $command,
+                $disabled_commands
+            ) && $disabled_commands[$command]
+        ) {
+            $this->logger?->warning("The $command command is disabled.");
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets an array of commands that have been configured to be disabled.
+     *
+     * @return array<string, mixed>
+     *   A flat array of disabled commands.
+     */
+    protected function getDisabledCommands(): array
+    {
+        // @phpstan-ignore argument.type
+        $disabled_commands_config = $this->config->get('disable-targets', []);
+        if ($disabled_commands_config) {
+            $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');
+            return $disabled_commands;
+        }
+        return [];
     }
 }

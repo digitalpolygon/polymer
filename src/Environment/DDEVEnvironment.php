@@ -125,7 +125,6 @@ final class DDEVEnvironment
         if (empty($this->ddevConfig)) {
             $this->loadDDEVConfig();
         }
-        // @phpstan-ignore-next-line
         return $this->ddevConfig[$key] ?? null;
     }
 

@@ -40,11 +40,9 @@ class ComposerValidateCommand extends TaskBase
         // Define the task.
         $task = $this->taskExecStack();
         if ($dir = $this->getConfigValue('repo.root')) {
-            // @phpstan-ignore method.notFound
             $task->dir($dir);
         }
         // Execute the task.
-        // @phpstan-ignore method.notFound
         $command = $task->exec("composer audit --format=table --ansi $cmd_options");
         $result = $command->run();
         // Parse the result.

@@ -5,7 +5,6 @@
  * Execute Polymer commands via Robo.
  */
 
-use DigitalPolygon\Polymer\Robo\Config\ConfigInitializer;
 use DigitalPolygon\Polymer\Robo\Polymer;
 use Robo\Common\TimeKeeper;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -25,14 +24,12 @@ if ($output->isVerbose()) {
 }
 
 // Initialize configuration.
-/** @var string $repo_root */
-$repo_root = find_repo_root();
-$config_initializer = new ConfigInitializer($repo_root, $input);
-$config = $config_initializer->initialize();
+/** @var string $repoRoot */
+$repoRoot = find_repo_root();
 
 // Execute command.
 // @phpstan-ignore variable.undefined
-$polymer = new Polymer($config, $input, $output, $classLoader);
+$polymer = new Polymer($repoRoot, $input, $output, $classLoader);
 $status_code = (int) $polymer->run($input, $output);
 
 // Stop timer.
@@ -41,5 +38,11 @@ $elapsed = $timer->elapsed();
 if ($output->isVerbose() && $elapsed != null) {
     $output->writeln("<comment>" . $timer->formatDuration($elapsed) . "</comment> total time elapsed.");
 }
+
+$container = $polymer->getContainer();
+/** @var \Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher $eventDispatcher */
+$eventDispatcher = $container->get('eventDispatcher');
+//$called = $eventDispatcher->getCalledListeners();
+//$notCalled = $eventDispatcher->getNotCalledListeners();
 
 exit($status_code);

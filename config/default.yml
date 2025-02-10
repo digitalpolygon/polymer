@@ -1,3 +1,10 @@
+# Hide any command prefixed with 'internal:'.
+# Note: Robo's Help annotation CANNOT reverse the effect of this configuration
+# since attributes are applied BEFORE the command factory's command info listeners.
+# This means you can't use #[Help(hidden: false)] to reverse the effect of this
+# configuration.
+hide-internal-commands: true
+
 project:
   human_name: My Polymer site
   machine_name: my_polymer_site

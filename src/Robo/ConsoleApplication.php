@@ -2,10 +2,11 @@
 
 namespace DigitalPolygon\Polymer\Robo;
 
-use Symfony\Component\Console\Application;
+use Robo\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -13,6 +14,15 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ConsoleApplication extends Application
 {
+    public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN')
+    {
+        parent::__construct($name, $version);
+        $globalOptions = [
+            new InputOption('--environment', null, InputOption::VALUE_REQUIRED, 'Set the environment to load config from polymer/[env].polymer.yml file.', 'local'),
+        ];
+        $this->getDefinition()->addOptions($globalOptions);
+    }
+
     /**
      * This command is identical to its parent, but public rather than protected.
      */
@@ -36,5 +46,10 @@ class ConsoleApplication extends Application
         }
 
         return $exit_code;
+    }
+
+    public function addGlobalOption(InputOption $option): void
+    {
+        $this->getDefinition()->addOption($option);
     }
 }

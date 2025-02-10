@@ -89,7 +89,7 @@ class ArrayManipulator
      * ['drush' => ['alias' => 'self']] would be flattened to
      * [drush.alias => 'self'].
      *
-     * @param array<string, array<string,string>|bool> $array
+     * @param array<string, mixed> $array
      *   The multidimensional array.
      * @param string $glue
      *   The character(s) to use for imploding keys.
