@@ -24,6 +24,7 @@ deploy:
   gitignore_file: ${polymer.root}/config/.gitignore
 
 git:
+  github-repository: ~
   commit-msg:
     pattern: '/(^(awesome-project)-[0-9]+(: )[^ ].{15,}\.)|(Merge branch(.)+)/'
     example: "awesome-project-PWT-62: Update module configuration."
@@ -33,5 +34,17 @@ git:
   user:
     # Name and email to use for the purposes of Git commits if you don't want to
     # use global Git configuration.
-    name: "John Doe"
-    email: "john-doe@awasome-email.com"
+    name: 'John Doe'
+    email: 'john-doe@awasome-email.com'
+
+vrt:
+  aws:
+    region: us-east-2
+    shared-stack-id: 'polymer-vrt'
+    shared-stack-formation-file: ${polymer.root}/vrt/infrastructure/shared-resources.yaml
+    test-report-formation-file: ${polymer.root}/vrt/infrastructure/backstop-html-report.yaml
+    function-id: polymer-backstopjs-html-report-auth-fn
+    account-id: ~
+  ci:
+    github-workflow-source: ${polymer.root}/vrt/github_workflows/reference-images.yml
+    github-workflow-destination: ${repo.root}/.github/workflows/reference-images.yml
