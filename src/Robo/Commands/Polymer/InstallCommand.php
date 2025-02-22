@@ -22,20 +22,20 @@ class InstallCommand extends TaskBase
     #[Usage(name: 'polymer polymer:init', description: 'Initialize the polymer configs.')]
     public function initPolymer(): void
     {
-        if ($this->isInitialInstall()) {
-            try {
-                // Creates the polymer/polymer.yml file.
-                $this->copyPolymerConfigs();
-                $this->displayArt();
-                $this->yell("Polymer has been added to your project.");
-                $this->say("Please continue by following the \"Adding Polymer to an existing project\" instructions:");
-                $this->say("<comment>https://digitalpolygon.github.io/polymer/</comment>");
-            } catch (\Exception $e) {
-                $this->say("<error>Failed to initialize Polymer: {$e->getMessage()}</error>");
-            }
-        } else {
-            $this->say("Polymer is already installed.");
-        }
+//        if ($this->isInitialInstall()) {
+//            try {
+//                // Creates the polymer/polymer.yml file.
+//                $this->copyPolymerConfigs();
+//                $this->displayArt();
+//                $this->yell("Polymer has been added to your project.");
+//                $this->say("Please continue by following the \"Adding Polymer to an existing project\" instructions:");
+//                $this->say("<comment>https://digitalpolygon.github.io/polymer/</comment>");
+//            } catch (\Exception $e) {
+//                $this->say("<error>Failed to initialize Polymer: {$e->getMessage()}</error>");
+//            }
+//        } else {
+//            $this->say("Polymer is already installed.");
+//        }
     }
 
     /**
