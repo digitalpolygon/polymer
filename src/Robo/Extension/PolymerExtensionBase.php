@@ -27,7 +27,7 @@ abstract class PolymerExtensionBase implements PolymerExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function setDynamicConfiguration(DefinitionContainerInterface $container, ConfigInterface $config): void
+    public function setDynamicConfiguration(DefinitionContainerInterface $container, array &$config): void
     {
     }
 }
