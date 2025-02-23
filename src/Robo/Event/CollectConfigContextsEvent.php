@@ -14,9 +14,10 @@ class CollectConfigContextsEvent extends Event
     protected array $contexts = [];
 
     public function __construct(
-        protected Command $command ,
+        protected Command $command,
         protected InputInterface $input,
-    ) {}
+    ) {
+    }
 
     /**
      * Add a single context.

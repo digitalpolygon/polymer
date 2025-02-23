@@ -14,11 +14,13 @@ use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
-class LoadConfiguration implements EventSubscriberInterface, ConfigAwareInterface, ContainerAwareInterface {
+class LoadConfiguration implements EventSubscriberInterface, ConfigAwareInterface, ContainerAwareInterface
+{
     use ConfigAwareTrait;
     use ContainerAwareTrait;
 
-    public function loadConfiguration(ConsoleCommandEvent $event): void {
+    public function loadConfiguration(ConsoleCommandEvent $event): void
+    {
         /** @var ConfigManager $configManager */
         $configManager = $this->getContainer()->get('configManager');
         $contextData = $configManager->collectContextData($event->getCommand(), $event->getInput());
@@ -31,7 +33,8 @@ class LoadConfiguration implements EventSubscriberInterface, ConfigAwareInterfac
         $configManager->pushConfig($polymerConfig);
     }
 
-    public function getFreshConfig(): PolymerConfig {
+    public function getFreshConfig(): PolymerConfig
+    {
         // Carry forward values expected to be there, see Robo::configureContainer around line 294.
         $freshConfig = new PolymerConfig();
         $freshConfig->set(\Robo\Config::DECORATED, $this->getConfig()->get(\Robo\Config::DECORATED));
@@ -39,7 +42,8 @@ class LoadConfiguration implements EventSubscriberInterface, ConfigAwareInterfac
         return $freshConfig;
     }
 
-    public static function getSubscribedEvents(): array {
+    public static function getSubscribedEvents(): array
+    {
         return [
             ConsoleEvents::COMMAND => ['loadConfiguration', 50],
         ];

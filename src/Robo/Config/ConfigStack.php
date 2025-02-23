@@ -4,8 +4,8 @@ namespace DigitalPolygon\Polymer\Robo\Config;
 
 use Consolidation\Config\ConfigInterface;
 
-class ConfigStack implements ConfigStackInterface, ConfigInterface, \Countable {
-
+class ConfigStack implements ConfigStackInterface, ConfigInterface, \Countable
+{
     /**
      * @var ConfigInterface[]
      */

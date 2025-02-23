@@ -14,7 +14,8 @@ class AlterConfigContextsEvent extends Event
     public function __construct(
         protected array $contexts,
         protected Command $command,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<string, ConfigInterface>
@@ -36,7 +37,8 @@ class AlterConfigContextsEvent extends Event
     /**
      * @return Command
      */
-    public function getCommand(): Command {
+    public function getCommand(): Command
+    {
         return clone $this->command;
     }
 }

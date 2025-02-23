@@ -137,7 +137,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return $this;
     }
 
-    protected function setupBootContainer(): self {
+    protected function setupBootContainer(): self
+    {
         $this->bootContainer = new Container();
         $this->bootContainer->addShared('extensionDiscovery', ExtensionDiscovery::class)
             ->addArgument($this->classLoader);

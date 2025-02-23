@@ -84,5 +84,4 @@ class PolymerConfig extends RoboConfig
         $this->reprocess();
         return $self;
     }
-
 }

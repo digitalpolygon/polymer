@@ -10,14 +10,15 @@ use League\Container\ContainerAwareTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareInterface {
-
+class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareInterface
+{
     use ContainerAwareTrait;
 
     public function __construct(
         protected string $repoRoot,
         protected ExtensionDiscovery $extensionDiscovery,
-    ) {}
+    ) {
+    }
 
     public function collectContexts(CollectConfigContextsEvent $event): void
     {
@@ -34,7 +35,8 @@ class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareI
         $event->addContexts($contexts);
     }
 
-    public function getSystemConfig(): array {
+    public function getSystemConfig(): array
+    {
         $filesystemLocations = [
             'repo.root' => $this->repoRoot,
             'docroot' => $this->repoRoot . '/web',
@@ -50,7 +52,8 @@ class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareI
         });
     }
 
-    public function getPolymerApplicationConfig(): array|null {
+    public function getPolymerApplicationConfig(): array|null
+    {
         $polymerDefaultFilePath = $this->getPolymerRoot() . '/config/default.yml';
         if (file_exists($polymerDefaultFilePath)) {
             $loader = new YamlConfigLoader();
@@ -59,7 +62,8 @@ class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareI
         return null;
     }
 
-    public function getExtensionConfig(): array {
+    public function getExtensionConfig(): array
+    {
         $extensionConfig = [];
         $extensions = $this->extensionDiscovery->getExtensions();
         foreach ($extensions as $extensionId => $extensionInfo) {
@@ -79,7 +83,8 @@ class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareI
         return $extensionConfig;
     }
 
-    public function getProjectConfig(InputInterface $input): array {
+    public function getProjectConfig(InputInterface $input): array
+    {
         $projectConfig = [];
         $potentialFiles['project'] = $this->repoRoot . '/polymer/polymer.yml';
         $environment = $input->getOption('environment');
