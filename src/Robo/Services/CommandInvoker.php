@@ -186,6 +186,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
      */
     protected function getDisabledCommands(): array
     {
+        // @phpstan-ignore argument.type
         $disabled_commands_config = $this->config->get('disable-targets', []);
         if ($disabled_commands_config) {
             $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');

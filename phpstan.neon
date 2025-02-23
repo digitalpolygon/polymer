@@ -10,6 +10,8 @@ parameters:
     ignoreErrors:
         -
             message: "#^Parameter \\#2 \\$default of method Consolidation\\\\Config\\\\Util\\\\ConfigOverlay\\:\\:get\\(\\) expects string\\|null, array given\\.$#"
+        -
+            identifier: missingType.iterableValue
 #services:
 #    -
 #        class: DigitalPolygon\PolymerTest\PHPStan\CollectionBuilderReflectionExtension

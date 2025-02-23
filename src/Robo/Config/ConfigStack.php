@@ -11,47 +11,73 @@ class ConfigStack implements ConfigStackInterface, ConfigInterface, \Countable
      */
     protected array $stack;
 
-    public function has($key)
+    /**
+     * {@inheritdoc}
+     */
+    public function has($key): bool
     {
-        $this->getCurrentConfig()->has($key);
+        return $this->getCurrentConfig()->has($key);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get($key, $defaultFallback = null)
     {
         return $this->getCurrentConfig()->get($key, $defaultFallback);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function set($key, $value)
     {
         $this->getCurrentConfig()->set($key, $value);
+
+        return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function import($data)
     {
-        $this->getCurrentConfig()->import($data);
+        return $this->getCurrentConfig()->import($data);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function export()
     {
         return $this->getCurrentConfig()->export();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function hasDefault($key)
     {
         return $this->getCurrentConfig()->hasDefault($key);
     }
 
-    public function getDefault($key, $defaultFallback = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefault($key, $defaultFallback = null): mixed
     {
         return $this->getCurrentConfig()->getDefault($key, $defaultFallback);
     }
 
-    public function setDefault($key, $value)
+    /**
+     * {@inheritdoc}
+     */
+    public function setDefault($key, $value): void
     {
         $this->getCurrentConfig()->setDefault($key, $value);
     }
 
-    public function pushConfig(ConfigInterface $config)
+    public function pushConfig(ConfigInterface $config): void
     {
         $this->stack[] = $config;
     }

@@ -37,7 +37,9 @@ class LoadConfiguration implements EventSubscriberInterface, ConfigAwareInterfac
     {
         // Carry forward values expected to be there, see Robo::configureContainer around line 294.
         $freshConfig = new PolymerConfig();
+        // @phpstan-ignore classConstant.deprecatedClass,classConstant.deprecatedClass
         $freshConfig->set(\Robo\Config::DECORATED, $this->getConfig()->get(\Robo\Config::DECORATED));
+        // @phpstan-ignore classConstant.deprecatedClass,classConstant.deprecatedClass
         $freshConfig->set(\Robo\Config::INTERACTIVE, $this->getConfig()->get(\Robo\Config::INTERACTIVE));
         return $freshConfig;
     }

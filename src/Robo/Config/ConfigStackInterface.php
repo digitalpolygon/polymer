@@ -6,6 +6,6 @@ use Consolidation\Config\ConfigInterface;
 
 interface ConfigStackInterface
 {
-    public function pushConfig(ConfigInterface $config);
+    public function pushConfig(ConfigInterface $config): void;
     public function popConfig(): ?ConfigInterface;
 }

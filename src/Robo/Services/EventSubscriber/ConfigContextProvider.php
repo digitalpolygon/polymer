@@ -83,6 +83,11 @@ class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareI
         return $extensionConfig;
     }
 
+    /**
+     * @param InputInterface $input
+     *
+     * @return array<string, array>
+     */
     public function getProjectConfig(InputInterface $input): array
     {
         $projectConfig = [];

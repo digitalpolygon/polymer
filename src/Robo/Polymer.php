@@ -103,7 +103,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             ->createApplication()
             ->discoverExtensions()
             ->setupContainer()
-            ->loadConfiguration()
             ->configureRunner();
     }
 
@@ -225,15 +224,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return $this;
     }
 
-    protected function loadConfiguration(): self
-    {
-//        $this->addExtensionConfiguration();
-//        $this->addProjectConfigurationContexts();
-//        $this->addOtherExtensionContexts();
-
-        return $this;
-    }
-
     protected function configureRunner(): self
     {
         $this->runner = new RoboRunner();
@@ -280,75 +270,5 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $serviceProviders[$extension] = $info->getServiceProvider();
         }
         return array_filter($serviceProviders);
-    }
-
-    protected function addExtensionConfiguration(): void
-    {
-
-        // 1. Dispatch gather contexts event to collect all prioritized contexts from extensions who have subscribed.
-        // 2. Add placeholder contexts from collected context list.
-        // 3. Load and export configuration from all extensions.
-        // 4. Add instantiated configuration context for each extension to the config service. For services that
-        //    provided a placeholder context entry, that slot will be where that context is added.
-
-        /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $this->getContainer()->get('eventDispatcher');
-        /** @var PolymerConfig $config */
-        $config = $this->getConfig();
-
-        // Step 1, dispatch and gather priority extensions.
-        $extensionConfigPriorityOverrideEvent = new ExtensionConfigPriorityOverrideEvent();
-        $eventDispatcher->dispatch($extensionConfigPriorityOverrideEvent, PolymerEvents::EXTENSION_CONFIG_PRIORITY_OVERRIDE);
-        $placeholders = $extensionConfigPriorityOverrideEvent->getPlaceholders();
-
-        // Step 2, add extension placeholders.
-        foreach ($placeholders as $placeholder) {
-            $config->addPlaceholder($placeholder);
-        }
-
-        // Steps 3 and 4, load and export configuration from all extensions and add extension contexts.
-        foreach ($this->extensions as $extension => $extensionInfo) {
-            // Load default configuration related to extension.
-            $config->setDefault('extension.' . $extension, [
-                'root' => $extensionInfo->getRoot(),
-            ]);
-
-            // Add extension configuration from its default file. If the extension
-            // added a placeholder context, it will be injected in that position.
-            $loader = new YamlConfigLoader();
-            if ($configFile = $extensionInfo->getConfigFile()) {
-                $extensionConfig = $loader->load($configFile)->export();
-                $extensionConfig = new ConsolidationConfig($extensionConfig);
-                $extensionInfo->getExtension()->setDynamicConfiguration($this->getContainer(), $extensionConfig);
-                $config->addContext($extension, $extensionConfig);
-            }
-        }
-    }
-
-    protected function addProjectConfigurationContexts(): void
-    {
-        /** @var PolymerConfig $config */
-        $config = $this->getConfig();
-        $config->addPlaceholder('project');
-        $config->addPlaceholder('project_environment');
-        $projectConfigFile = $this->repoRoot . '/polymer/polymer.yml';
-        $loader = new YamlConfigLoader();
-        $projectConfig = $loader->load($projectConfigFile)->export();
-        $config->addContext('project', new ConsolidationConfig($projectConfig));
-    }
-
-    protected function addOtherExtensionContexts(): void
-    {
-        /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $this->getContainer()->get('eventDispatcher');
-        /** @var PolymerConfig $config */
-        $config = $this->getConfig();
-
-        $collectConfigContextsEvent = new CollectConfigContextsEvent();
-        $eventDispatcher->dispatch($collectConfigContextsEvent, PolymerEvents::COLLECT_CONFIG_CONTEXTS);
-        $placeholders = $collectConfigContextsEvent->getPlaceholderContexts();
-        foreach ($placeholders as $placeholder) {
-            $config->addPlaceholder($placeholder);
-        }
     }
 }
