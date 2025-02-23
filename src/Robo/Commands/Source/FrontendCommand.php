@@ -7,6 +7,7 @@ use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Exception\AbortTasksException;
+use Robo\Symfony\ConsoleIO;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -27,10 +28,10 @@ class FrontendCommand extends TaskBase
     #[Argument(name: 'target', description: 'The name of the build target to build.')]
     #[Usage(name: 'polymer build theme_build_admin', description: 'Runs and builds the "theme_build_admin" target.')]
     #[Usage(name: 'polymer build -v', description: 'Runs and builds all frontend targets.')]
-    public function build(string $target = null): void
+    public function build(ConsoleIO $io, string $target = null): void
     {
         if ($target) {
-            $this->buildTarget($target);
+            $this->buildTarget($io, $target);
             return;
         }
         // If no target is passed, then all defined builds should be executed.
@@ -39,7 +40,7 @@ class FrontendCommand extends TaskBase
             throw new AbortTasksException('No build targets defined.');
         }
         foreach ($targets as $target_name => $target_info) {
-            $this->buildTarget($target_name);
+            $this->buildTarget($io, $target_name);
         }
     }
 
@@ -122,7 +123,7 @@ class FrontendCommand extends TaskBase
      * @throws \Robo\Exception\AbortTasksException If the specified build target is not valid.
      * @throws \Robo\Exception\TaskException If any command execution fails.
      */
-    private function buildTarget(string $target): void
+    private function buildTarget(ConsoleIO $io, string $target): void
     {
         /* @var array<string, string> $target_info */
         $target_info = $this->getConfigValue("builds.$target");
@@ -142,7 +143,7 @@ class FrontendCommand extends TaskBase
         }
         // Execute all commands collected.
         foreach ($commands as $command => $args) {
-            $this->invokeCommand($command, $args);
+            $this->commandInvoker->invokeCommand($io->input(), $command, $args);
         }
     }
 }

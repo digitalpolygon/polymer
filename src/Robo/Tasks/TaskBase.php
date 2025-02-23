@@ -76,46 +76,46 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    protected function invokeCommand(string $commandName, array $args = []): void
-    {
-        static::$invokeDepth++;
-
-        if (!$this->isCommandDisabled($commandName)) {
-            /** @var ConsoleApplication $application */
-            $application = $this->getContainer()->get('application');
-            $command = $application->find($commandName);
-
-            // Build a new input object that inherits options from parent command.
-//            if ($this->input()->hasParameterOption('--environment')) {
-//                $args['--environment'] = $this->input()->getParameterOption('--environment');
+//    protected function invokeCommand(string $commandName, array $args = []): void
+//    {
+//        static::$invokeDepth++;
+//
+//        if (!$this->isCommandDisabled($commandName)) {
+//            /** @var ConsoleApplication $application */
+//            $application = $this->getContainer()->get('application');
+//            $command = $application->find($commandName);
+//
+//            // Build a new input object that inherits options from parent command.
+////            if ($this->input()->hasParameterOption('--environment')) {
+////                $args['--environment'] = $this->input()->getParameterOption('--environment');
+////            }
+////            if ($this->input()->hasParameterOption('--site')) {
+////                $args['--site'] = $this->input()->getParameterOption('--site');
+////            }
+//            $input = new ArrayInput($args);
+//            $input->setInteractive($this->input()->isInteractive());
+//
+//            // Now run the command.
+//            $prefix = str_repeat(">", static::$invokeDepth);
+//            $this->output->writeln("<comment>$prefix $commandName</comment>");
+//
+//            $preRunOptions = $this->input()->getOptions();
+//
+//            $exit_code = $application->runCommand($command, $input, $this->output());
+//
+//            $postRunOptions = $this->input()->getOptions();
+//
+//            static::$invokeDepth--;
+//
+//            // The application will catch any exceptions thrown in the executed
+//            // command. We must check the exit code and throw our own exception. This
+//            // obviates the need to check the exit code of every invoked command.
+//            if ($exit_code) {
+//                $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
+//                throw new PolymerException("Command `$commandName {$input->__toString()}` exited with code $exit_code.");
 //            }
-//            if ($this->input()->hasParameterOption('--site')) {
-//                $args['--site'] = $this->input()->getParameterOption('--site');
-//            }
-            $input = new ArrayInput($args);
-            $input->setInteractive($this->input()->isInteractive());
-
-            // Now run the command.
-            $prefix = str_repeat(">", static::$invokeDepth);
-            $this->output->writeln("<comment>$prefix $commandName</comment>");
-
-            $preRunOptions = $this->input()->getOptions();
-
-            $exit_code = $application->runCommand($command, $input, $this->output());
-
-            $postRunOptions = $this->input()->getOptions();
-
-            static::$invokeDepth--;
-
-            // The application will catch any exceptions thrown in the executed
-            // command. We must check the exit code and throw our own exception. This
-            // obviates the need to check the exit code of every invoked command.
-            if ($exit_code) {
-                $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
-                throw new PolymerException("Command `$commandName {$input->__toString()}` exited with code $exit_code.");
-            }
-        }
-    }
+//        }
+//    }
 
     /**
      * Executed a given command or a script, typically defined in polymer.yml.

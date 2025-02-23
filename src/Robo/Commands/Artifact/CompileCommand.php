@@ -60,11 +60,11 @@ class CompileCommand extends TaskBase
         /** @var array<int,string> $dependent_builds */
         $dependent_builds = $this->getDependentBuilds($artifact);
         foreach ($dependent_builds as $build) {
-            $this->invokeCommand('build', ['target' => $build]);
+            $this->commandInvoker->invokeCommand($io->input(), 'build', ['target' => $build]);
         }
-        $this->invokeCommand('source:build:copy', ['--deploy-dir' => $deployDir]);
-        $this->invokeCommand('artifact:composer:install');
-        $this->invokeCommand('artifact:build:sanitize');
+        $this->commandInvoker->invokeCommand($io->input(), 'source:build:copy', ['--deploy-dir' => $deployDir]);
+        $this->commandInvoker->invokeCommand($io->input(), 'artifact:composer:install');
+        $this->commandInvoker->invokeCommand($io->input(), 'artifact:build:sanitize');
         $this->invokeHook("post-deploy-build");
         $this->say("<info>The deployment artifact was generated at {$deployDir}.</info>");
     }
