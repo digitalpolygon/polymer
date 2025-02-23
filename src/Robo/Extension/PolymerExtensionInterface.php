@@ -61,9 +61,9 @@ interface PolymerExtensionInterface
      *
      * @param DefinitionContainerInterface $container
      *   The container instance.
-     * @param ConfigInterface $config
+     * @param array $config
      *   The default configuration context for this extension.
      * @return void
      */
-    public function setDynamicConfiguration(DefinitionContainerInterface $container, ConfigInterface $config): void;
+    public function setDynamicConfiguration(DefinitionContainerInterface $container, array &$config): void;
 }

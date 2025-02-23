@@ -5,6 +5,8 @@ namespace DigitalPolygon\Polymer\Robo;
 use Composer\Autoload\ClassLoader;
 use Composer\InstalledVersions;
 use Consolidation\Config\Loader\YamlConfigLoader;
+use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
+use DigitalPolygon\Polymer\Robo\Config\ConfigStack;
 use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
@@ -16,8 +18,11 @@ use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
 use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
 use DigitalPolygon\Polymer\Robo\Services\CommandInfoAlterer;
 use DigitalPolygon\Polymer\Robo\Services\CommandInvoker;
+use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigContextProvider;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
+use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\LoadConfiguration;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\SetGlobalOptionsPostInvoke;
+use League\Container\Argument\LiteralArgument;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
@@ -42,6 +47,13 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     const APPLICATION_NAME = 'Polymer';
 
     const REPOSITORY = 'digitalpolygon/polymer';
+
+    /**
+     * Boot services.
+     *
+     * @var Container
+     */
+    protected $bootContainer;
 
     /**
      * The Robo task runner.
@@ -87,10 +99,10 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         protected ClassLoader $classLoader
     ) {
         $this
+            ->setupBootContainer()
             ->createApplication()
             ->discoverExtensions()
             ->setupContainer()
-            ->loadConfiguration()
             ->configureRunner();
     }
 
@@ -114,7 +126,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
      */
     protected function discoverExtensions(): self
     {
-        $extensionDiscovery = new ExtensionDiscovery($this->classLoader);
+        /** @var ExtensionDiscovery $extensionDiscovery */
+        $extensionDiscovery = $this->bootContainer->get('extensionDiscovery');
         $this->extensions = $extensionDiscovery->getExtensions();
         $this->hooks = $extensionDiscovery->getExtensionHooks();
         $commandsDiscovery = new CommandsDiscovery();
@@ -123,13 +136,24 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         return $this;
     }
 
+    protected function setupBootContainer(): self
+    {
+        $this->bootContainer = new Container();
+        $this->bootContainer->addShared('extensionDiscovery', ExtensionDiscovery::class)
+            ->addArgument($this->classLoader);
+
+        return $this;
+    }
+
     protected function setupContainer(): self
     {
         // Create boot config.
-        $config = new PolymerConfig($this->repoRoot);
+        $config = new ConfigStack();
+        $config->pushConfig(new PolymerConfig());
         $this->setConfig($config);
 
         $container = new Container();
+        $container->delegate($this->bootContainer);
         $this->setContainer($container);
         Robo::configureContainer(
             $container,
@@ -157,14 +181,26 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             ->addArgument(new ResolvableArgument('config'))
             ->addArgument(new ResolvableArgument('input'))
             ->addArgument(new ResolvableArgument('output'))
-            ->addArgument(new ResolvableArgument('logger'));
+            ->addArgument(new ResolvableArgument('logger'))
+            ->addArgument(new ResolvableArgument('configManager'));
 
         $container->addShared('setGlobalOptionsPostInvoke', SetGlobalOptionsPostInvoke::class)
             ->addArgument(new ResolvableArgument('application'));
 
+        $container->addShared('configManager', ConfigManager::class)
+            ->addArgument(new ResolvableArgument('eventDispatcher'))
+            ->addArgument(new ResolvableArgument('config'));
+
+        $container->addShared('configLoader', LoadConfiguration::class);
+        $container->addShared('polymerConfigContextProvider', ConfigContextProvider::class)
+            ->addArgument(new LiteralArgument($this->repoRoot))
+            ->addArgument(new ResolvableArgument('extensionDiscovery'));
+
         $container->extend('eventDispatcher')
-            ->addMethodCall('addSubscriber', [new ResolvableArgument('polymerConfigInjector')])
-            ->addMethodCall('addSubscriber', [new ResolvableArgument('setGlobalOptionsPostInvoke')]);
+//            ->addMethodCall('addSubscriber', [new ResolvableArgument('polymerConfigInjector')])
+            ->addMethodCall('addSubscriber', [new ResolvableArgument('setGlobalOptionsPostInvoke')])
+            ->addMethodCall('addSubscriber', [new ResolvableArgument('configLoader')])
+            ->addMethodCall('addSubscriber', [new ResolvableArgument('polymerConfigContextProvider')]);
 
         // Inflectors.
         $container->inflector(CommandInvokerAwareInterface::class)
@@ -184,15 +220,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
 //                new LiteralArgument(new \Symfony\Component\Stopwatch\Stopwatch()),
 //            ]);
         Robo::finalizeContainer($container);
-
-        return $this;
-    }
-
-    protected function loadConfiguration(): self
-    {
-        $this->addExtensionConfiguration();
-        $this->addProjectConfigurationContexts();
-        $this->addOtherExtensionContexts();
 
         return $this;
     }
@@ -227,6 +254,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         // Compile the configuration.
         /** @var \Robo\Application $application */
         $application = $this->getContainer()->get('application');
+        /** @var ExtensionDiscovery $extensionDiscovery */
+        $extensionDiscovery = $this->getContainer()->get('extensionDiscovery');
         $mergedCommandsAndHooks = array_merge($this->commands, $this->hooks);
         return $this->runner->run($input, $output, $application, $mergedCommandsAndHooks);
     }
@@ -241,75 +270,5 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $serviceProviders[$extension] = $info->getServiceProvider();
         }
         return array_filter($serviceProviders);
-    }
-
-    protected function addExtensionConfiguration(): void
-    {
-
-        // 1. Dispatch gather contexts event to collect all prioritized contexts from extensions who have subscribed.
-        // 2. Add placeholder contexts from collected context list.
-        // 3. Load and export configuration from all extensions.
-        // 4. Add instantiated configuration context for each extension to the config service. For services that
-        //    provided a placeholder context entry, that slot will be where that context is added.
-
-        /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $this->getContainer()->get('eventDispatcher');
-        /** @var PolymerConfig $config */
-        $config = $this->getConfig();
-
-        // Step 1, dispatch and gather priority extensions.
-        $extensionConfigPriorityOverrideEvent = new ExtensionConfigPriorityOverrideEvent();
-        $eventDispatcher->dispatch($extensionConfigPriorityOverrideEvent, PolymerEvents::EXTENSION_CONFIG_PRIORITY_OVERRIDE);
-        $placeholders = $extensionConfigPriorityOverrideEvent->getPlaceholders();
-
-        // Step 2, add extension placeholders.
-        foreach ($placeholders as $placeholder) {
-            $config->addPlaceholder($placeholder);
-        }
-
-        // Steps 3 and 4, load and export configuration from all extensions and add extension contexts.
-        foreach ($this->extensions as $extension => $extensionInfo) {
-            // Load default configuration related to extension.
-            $config->setDefault('extension.' . $extension, [
-                'root' => $extensionInfo->getRoot(),
-            ]);
-
-            // Add extension configuration from its default file. If the extension
-            // added a placeholder context, it will be injected in that position.
-            $loader = new YamlConfigLoader();
-            if ($configFile = $extensionInfo->getConfigFile()) {
-                $extensionConfig = $loader->load($configFile)->export();
-                $extensionConfig = new ConsolidationConfig($extensionConfig);
-                $extensionInfo->getExtension()->setDynamicConfiguration($this->getContainer(), $extensionConfig);
-                $config->addContext($extension, $extensionConfig);
-            }
-        }
-    }
-
-    protected function addProjectConfigurationContexts(): void
-    {
-        /** @var PolymerConfig $config */
-        $config = $this->getConfig();
-        $config->addPlaceholder('project');
-        $config->addPlaceholder('project_environment');
-        $projectConfigFile = $this->repoRoot . '/polymer/polymer.yml';
-        $loader = new YamlConfigLoader();
-        $projectConfig = $loader->load($projectConfigFile)->export();
-        $config->addContext('project', new ConsolidationConfig($projectConfig));
-    }
-
-    protected function addOtherExtensionContexts(): void
-    {
-        /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $this->getContainer()->get('eventDispatcher');
-        /** @var PolymerConfig $config */
-        $config = $this->getConfig();
-
-        $collectConfigContextsEvent = new CollectConfigContextsEvent();
-        $eventDispatcher->dispatch($collectConfigContextsEvent, PolymerEvents::COLLECT_CONFIG_CONTEXTS);
-        $placeholders = $collectConfigContextsEvent->getPlaceholderContexts();
-        foreach ($placeholders as $placeholder) {
-            $config->addPlaceholder($placeholder);
-        }
     }
 }

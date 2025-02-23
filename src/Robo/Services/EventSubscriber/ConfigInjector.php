@@ -57,10 +57,11 @@ class ConfigInjector extends GlobalOptionsEventListener implements EventSubscrib
 
     public static function getSubscribedEvents(): array
     {
-        return [
-            ConsoleEvents::COMMAND => [
-                ['injectEnvironmentConfig', 50],
-            ],
-        ];
+        return [];
+//        return [
+//            ConsoleEvents::COMMAND => [
+//                ['injectEnvironmentConfig', 50],
+//            ],
+//        ];
     }
 }

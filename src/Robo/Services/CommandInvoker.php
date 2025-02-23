@@ -2,19 +2,15 @@
 
 namespace DigitalPolygon\Polymer\Robo\Services;
 
+use Consolidation\Config\ConfigInterface;
 use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
-use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
+use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
 use DigitalPolygon\Polymer\Robo\ConsoleApplication;
-use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
-use DigitalPolygon\Polymer\Robo\Event\PostInvokeCommandEvent;
-use DigitalPolygon\Polymer\Robo\Event\PreInvokeCommandEvent;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
-use Robo\Common\IO;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,10 +33,11 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     public function __construct(
         protected EventDispatcherInterface $eventDispatcher,
         protected ConsoleApplication $application,
-        protected PolymerConfig $config,
+        protected ConfigInterface $config,
         protected InputInterface $input,
         protected OutputInterface $output,
         protected LoggerInterface $logger,
+        protected ConfigManager $configManager,
     ) {
     }
 
@@ -59,9 +56,8 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
      */
     public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): void
     {
-        $this->invokeDepth++;
-
         if (!$this->isCommandDisabled($commandName)) {
+            $this->invokeDepth++;
             $command = $this->application->find($commandName);
 
             // Build a new input object that inherits options from parent command.
@@ -82,7 +78,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 
 //            $preRunOptions = $this->input->getOptions();
 
-            $preInvokeEvent = new PreInvokeCommandEvent($command, $parentInput, $input, $this->invokeDepth);
+//            $preInvokeEvent = new PreInvokeCommandEvent($command, $parentInput, $input, $this->invokeDepth);
 //            $this->eventDispatcher->dispatch($preInvokeEvent, PolymerEvents::PRE_INVOKE_COMMAND);
 
             $exit_code = $this->application->runCommand($command, $input, $this->output);
@@ -94,10 +90,11 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 
 //            $postInvokeEvent = new PostInvokeCommandEvent($command, $parentInput, $input, $this->invokeDepth);
 //            $this->eventDispatcher->dispatch($postInvokeEvent, PolymerEvents::POST_INVOKE_COMMAND);
-            $this->config->reprocess();
+//            $this->config->reprocess();
 
 //            $postRunOptions = $this->input->getOptions();
 
+            $this->configManager->popConfig();
             $this->invokeDepth--;
 
             // The application will catch any exceptions thrown in the executed
@@ -189,6 +186,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
      */
     protected function getDisabledCommands(): array
     {
+        // @phpstan-ignore argument.type
         $disabled_commands_config = $this->config->get('disable-targets', []);
         if ($disabled_commands_config) {
             $disabled_commands = ArrayManipulator::flattenMultidimensionalArray($disabled_commands_config, ':');
