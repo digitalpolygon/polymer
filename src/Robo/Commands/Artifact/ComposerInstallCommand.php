@@ -67,12 +67,8 @@ class ComposerInstallCommand extends TaskBase
         $task_copy->run();
         // Composer install.
         $command = 'composer install --no-dev --no-interaction --optimize-autoloader --ignore-platform-reqs';
-        /** @var \Robo\Task\CommandStack $composer_task */
-        $composer_task = $this->taskExecStack();
-        $composer_task->dir($this->deployDir);
-        $composer_task->exec($command);
-        $result = $composer_task->run();
-        if (!$result->wasSuccessful()) {
+        $result = $this->execCommand($command, ['dir' => $this->deployDir]);
+        if (0 !== $result) {
             throw new TaskException($this, 'Composer install failed, please check the output for details.');
         }
     }
