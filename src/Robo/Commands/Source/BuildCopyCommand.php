@@ -55,14 +55,9 @@ class BuildCopyCommand extends TaskBase
         $this->say("rsync files from source repo into the build artifact...");
         // Define the task.
         $command = $this->getRsyncCommand($exclude_list_file, $this->sourceDir, $this->deployDir);
-        /** @var \Robo\Task\CommandStack $task */
-        $task = $this->taskExecStack();
-        $task = $task->exec($command);
-        $task->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE);
-        $task->dir($this->sourceDir);
         // Execute the task.
-        $result = $task->run();
-        if (!$result->wasSuccessful()) {
+        $result = $this->execCommand($command, ['dir' => $this->sourceDir]);
+        if (0 !== $result) {
             throw new TaskException($this, 'Failed to rsync artifact');
         }
         // Remove temporary file that may have been created by $this->getExcludeListFile().

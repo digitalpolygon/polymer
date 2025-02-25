@@ -202,6 +202,12 @@ class DeployCommand extends TaskBase
             $remote_name = md5($remote);
             $pushTask->exec("git push $remote_name $ref");
         }
+        $pushTask->interactive($this->input()->isInteractive());
+        $pushTask->stopOnFail();
+        // Ser verbosity output.
+        $is_verbose = $this->output()->isVerbose();
+        $pushTask->printOutput($is_verbose);
+        $pushTask->printMetadata($is_verbose);
         $result = $pushTask->run();
 
         if (!$result->wasSuccessful()) {
@@ -280,9 +286,14 @@ class DeployCommand extends TaskBase
             if (!$result->wasSuccessful()) {
                 throw new PolymerException('Failed to create deploy directory');
             }
+            $is_verbose = $this->output()->isVerbose();
             $result = $this->taskExecStack()
                 ->dir($deploy_dir)
                 ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
+                ->interactive($this->input()->isInteractive())
+                ->stopOnFail()
+                ->printOutput($is_verbose)
+                ->printMetadata($is_verbose)
                 ->exec("git init")
                 ->exec("git config --local core.excludesfile false")
                 ->exec("git config --local core.fileMode true")
@@ -323,12 +334,8 @@ class DeployCommand extends TaskBase
     {
         // Generate an md5 sum of the remote URL to use as remote name.
         $remote_name = md5($remote_url);
-        $result = $this->taskExecStack()
-            ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
-            ->dir($this->deployDir)
-            ->exec("git remote add $remote_name $remote_url")
-            ->run();
-        if (!$result->wasSuccessful()) {
+        $result = $this->execCommand("git remote add $remote_name $remote_url", ['dir' => $this->deployDir]);
+        if (0 !== $result) {
             throw new PolymerException('Failed to add remote');
         }
     }
@@ -340,12 +347,8 @@ class DeployCommand extends TaskBase
      */
     protected function checkoutLocalDeployBranch(): void
     {
-        $result = $this->taskExecStack()
-            ->dir($this->deployDir)
-            ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
-            ->exec("git checkout -b {$this->branchName}")
-            ->run();
-        if (!$result->wasSuccessful()) {
+        $result = $this->execCommand("git checkout -b {$this->branchName}", ['dir' => $this->deployDir]);
+        if (0 !== $result) {
             throw new PolymerException('Failed to check out branch');
         }
     }
@@ -366,11 +369,14 @@ class DeployCommand extends TaskBase
         $this->say("Merging upstream changes into local artifact...");
 
         // Check if remote branch exists before fetching.
+        $is_verbose = $this->output()->isVerbose();
         $result = $this->taskExecStack()
             ->dir($this->deployDir)
             ->stopOnFail(false)
             ->exec("git ls-remote --exit-code --heads $remote_url {$this->branchName}")
-            ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
+            ->printMetadata($is_verbose)
+            ->printOutput($is_verbose)
+            ->interactive($this->input()->isInteractive())
             ->run();
         switch ($result->getExitCode()) {
             case 0:
@@ -387,11 +393,15 @@ class DeployCommand extends TaskBase
         }
 
         // Now we know the remote branch exists, let's fetch and merge it.
+        $is_verbose = $this->output()->isVerbose();
         $result = $this->taskExecStack()
             ->dir($this->deployDir)
             ->exec("git fetch $remote_name {$this->branchName} --depth=1")
             ->exec("git merge $remote_name/{$this->branchName}")
-            ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
+            ->printMetadata($is_verbose)
+            ->printOutput($is_verbose)
+            ->interactive($this->input()->isInteractive())
+            ->stopOnFail()
             ->run();
         if (!$result->wasSuccessful()) {
             throw new PolymerException('Failed to merge branch');

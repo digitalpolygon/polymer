@@ -40,11 +40,17 @@ class ComposerValidateCommand extends TaskBase
         // Define the task.
         $task = $this->taskExecStack();
         if ($dir = $this->getConfigValue('repo.root')) {
-            $task->dir($dir);
+          $task->dir($dir);
         }
         // Execute the task.
-        $command = $task->exec("composer audit --format=table --ansi $cmd_options");
-        $result = $command->run();
+        $task = $task->exec("composer audit --format=table --ansi $cmd_options");
+        $task->interactive($this->input()->isInteractive());
+        $task->stopOnFail();
+        // Ser verbosity output.
+        $is_verbose = $this->output()->isVerbose();
+        $task->printOutput($is_verbose);
+        $task->printMetadata($is_verbose);
+        $result = $task->run();
         // Parse the result.
         if ($result->wasSuccessful()) {
             $io->success('Security check successfully passed!');
