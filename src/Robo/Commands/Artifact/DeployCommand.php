@@ -108,9 +108,7 @@ class DeployCommand extends TaskBase
 
         $this->say("Deploying artifact '{$artifact}'...");
 
-        $this->taskToggleableSymfonyCommand($this->application->find('artifact:compile'))
-                ->arg('artifact', $artifact)
-                ->run();
+        $this->commandInvoker->invokeCommand($io->input(), 'artifact:compile', ['artifact' => $artifact]);
 
         $this->commit();
 
@@ -138,9 +136,7 @@ class DeployCommand extends TaskBase
         $this->addGitRemotes();
         $this->checkoutLocalDeployBranch();
 
-        $this->taskToggleableSymfonyCommand($this->application->find('artifact:compile'))
-            ->arg('artifact', $artifact)
-            ->run();
+        $this->commandInvoker->invokeCommand($io->input(), 'artifact:compile', ['artifact' => $artifact]);
 
         $this->commit();
         $this->cutTag('build');
