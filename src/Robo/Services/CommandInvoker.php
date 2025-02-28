@@ -67,7 +67,7 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 //                }
 //            }
             foreach ($this->pinnedGlobalOptions as $option => $value) {
-                $args[$option] = reset($value);
+                $args[$option] = end($value);
             }
             $input = new ArrayInput($args);
             $input->setInteractive($parentInput->isInteractive());
