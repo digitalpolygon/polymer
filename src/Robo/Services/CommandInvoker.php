@@ -12,7 +12,9 @@ use League\Container\ContainerAwareTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
@@ -66,9 +68,14 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 //                    $args[$pinnedGlobalOption] = $parentInput->getParameterOption($pinnedGlobalOption);
 //                }
 //            }
+
             foreach ($this->pinnedGlobalOptions as $option => $value) {
                 $args[$option] = end($value);
             }
+
+            // Always pin the define option, which will carry through config overrides
+            // through all invoked commands.
+            $args['--define'] = $parentInput->getOption('define');
             $input = new ArrayInput($args);
             $input->setInteractive($parentInput->isInteractive());
 
