@@ -8,6 +8,7 @@ use Consolidation\AnnotatedCommand\Attributes\Command;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use DigitalPolygon\Polymer\Robo\ConsoleApplication;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Yaml\Yaml;
@@ -52,7 +53,7 @@ class MkCommand extends TaskBase
                 if ($command instanceof AnnotatedCommand) {
                     $command->optionsHook();
                 }
-                $body = $this->appendPreamble($command);
+                $body = $this->appendPreamble($command, $dir_root);
                 if ($command instanceof AnnotatedCommand) {
                     $body .= $this->appendUsages($command);
                 }
@@ -115,11 +116,16 @@ class MkCommand extends TaskBase
         return $body;
     }
 
-    protected function appendPreamble(SymfonyCommand $command): string
+    protected function appendPreamble(SymfonyCommand $command, string $root): string
     {
+        $path = '';
+        if ($command instanceof AnnotatedCommand) {
+            $path = Path::makeRelative($command->getAnnotationData()->get('_path'), $root);
+        }
+        $edit_url = $path ? "https://github.com/digitalpolygon/polymer/blob/main/$path" : '';
         $body = <<<EOT
 ---
-edit_url: whatever
+edit_url: $edit_url
 command: {$command->getName()}
 ---
 
@@ -147,8 +153,15 @@ EOT;
 
     protected function appendArguments(SymfonyCommand $command): string
     {
-        $body = '';
-        return $body;
+        if ($args = $command->getDefinition()->getArguments()) {
+            $body = "#### Arguments\n\n";
+            foreach ($args as $arg) {
+                $arg_array = self::argToArray($arg);
+                $body .= '- **' . self::formatArgumentName($arg_array) . '**. ' . self::cliTextToMarkdown($arg->getDescription()) . "\n";
+            }
+            return "$body\n";
+        }
+        return '';
     }
 
     protected function appendOptions(SymfonyCommand $command): string
@@ -359,5 +372,33 @@ EOT;
         $yaml_nav = str_replace("'!!python/name:material.extensions.emoji.to_svg'", '!!python/name:material.extensions.emoji.to_svg', $yaml_nav);
 
         file_put_contents(Path::join($dest, 'mkdocs.yml'), $yaml_nav);
+    }
+
+    /**
+     * Build an array since that's what HelpCLIFormatter expects.
+     */
+    public static function argToArray(InputArgument $arg): iterable
+    {
+        return [
+            'name' => $arg->getName(),
+            'is_array' => $arg->isArray(),
+            'is_required' => $arg->isRequired(),
+        ];
+    }
+
+    public static function formatArgumentName(array $argument): string
+    {
+        $element = $argument['name'];
+        if (!$argument['is_required']) {
+            $element = '[' . $element . ']';
+        } elseif ($argument['is_array']) {
+            $element = $element . ' (' . $element . ')';
+        }
+
+        if ($argument['is_array']) {
+            $element .= '...';
+        }
+
+        return $element;
     }
 }
