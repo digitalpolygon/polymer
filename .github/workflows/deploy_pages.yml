@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/debug-docs-build
 
 jobs:
   build:
