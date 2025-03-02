@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class FrontendCommand extends TaskBase
 {
     /**
-     * Runs frontend build targets.
+     * Builds the specified build target.
      *
      * @param string|null $target
      *   The name of the target to execute.

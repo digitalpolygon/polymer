@@ -4,4 +4,6 @@
 
 set -e
 
+ddev composer install --no-interaction
+ddev exec -- polymer mk:docs
 ./scripts/build-docs.sh build --clean

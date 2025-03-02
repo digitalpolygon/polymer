@@ -45,7 +45,7 @@ class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareI
             'tmp.dir' => sys_get_temp_dir(),
         ];
         return array_filter($filesystemLocations, function ($path) {
-            if (!file_exists($path)) {
+            if (!is_dir($path)) {
                 return false;
             }
             return true;
@@ -108,18 +108,20 @@ class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareI
 
     private function getPolymerRoot(): string
     {
-        $possible_polymer_roots = [
-            dirname(dirname(dirname(dirname(dirname(__FILE__))))),
-            dirname(dirname(dirname(dirname(__FILE__)))),
-        ];
-        foreach ($possible_polymer_roots as $polymer_root) {
-            if (basename($polymer_root) !== 'polymer') {
-                continue;
+        // Polymer should be usable in its own development space as well when
+        // it is required in a project.
+        $polymerRoot = realpath(dirname(__FILE__) . '/../../../..');
+        $composerFile = $polymerRoot . DIRECTORY_SEPARATOR . 'composer.json';
+        if (file_exists($composerFile)) {
+            $composerJson = json_decode(file_get_contents($composerFile), true);
+            if (
+                isset($composerJson['name'])
+                && $composerJson['name'] === 'digitalpolygon/polymer'
+                && isset($composerJson['type'])
+                && $composerJson['type'] === 'composer-plugin'
+            ) {
+                return $polymerRoot;
             }
-            if (!file_exists("$polymer_root/src/Robo/Polymer.php")) {
-                continue;
-            }
-            return $polymer_root;
         }
         throw new \Exception('Could not find the Polymer root directory');
     }

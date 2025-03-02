@@ -52,20 +52,8 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: '!!python/name:material.extensions.emoji.twemoji'
+      emoji_generator: '!!python/name:material.extensions.emoji.to_svg'
 nav:
   - Home: index.md
   - Development: development.md
-  - Commands:
-      - artifact:
-          - 'artifact:compile': commands/artifact_compile.md
-          - 'artifact:deploy': commands/artifact_deploy.md
-      - build:
-          - build: commands/build.md
-          - 'build:reqs': commands/build_reqs.md
-          - 'build:assets': commands/build_assets.md
-      - composer:
-          - 'composer:validate:security': commands/composer_validate_security.md
-      - drupal:
-          - 'drupal:multisite:create': commands/drupal_multisite_create.md
