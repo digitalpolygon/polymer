@@ -16,9 +16,7 @@ jobs:
       - name: Generate docs
         run: |
           composer install --no-interaction
-          ls -lha
-          ls -lha vendor/bin
-          vendor/bin/polymer mk:docs
+          bin/polymer mk:docs
       - name: Build docs site
         run: ./scripts/build-docs.sh build --clean
 #      - name: Upload pages artifact
