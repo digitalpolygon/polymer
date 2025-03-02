@@ -31,19 +31,21 @@ require_once __DIR__ . '/polymer-robo-run.php';
  */
 function find_repo_root()
 {
+    $polymer_files = ['vendor/digitalpolygon/polymer', 'vendor/autoload.php'];
+    $polymer_files = ['vendor/autoload.php'];
     $possible_repo_roots = [
         getcwd(),
-        dirname(__DIR__) . '/',
-        dirname(__DIR__, 3) . '/',
+        dirname(__DIR__),
+        dirname(__DIR__, 3),
     ];
-    $blt_files = ['vendor/digitalpolygon/polymer', 'vendor/autoload.php'];
     // Check for PWD - some local environments will not have this key.
     if (getenv('PWD')) {
         array_unshift($possible_repo_roots, getenv('PWD'));
     }
-    $possible_repo_roots = array_filter($possible_repo_roots);
+    $possible_repo_roots = array_unique($possible_repo_roots);
+    $possible_repo_roots = array_filter($possible_repo_roots, 'is_dir');
     foreach ($possible_repo_roots as $possible_repo_root) {
-        if ($repo_root = find_directory_containing_files($possible_repo_root, $blt_files)) {
+        if ($repo_root = find_directory_containing_files($possible_repo_root, $polymer_files)) {
             return $repo_root;
         }
     }
