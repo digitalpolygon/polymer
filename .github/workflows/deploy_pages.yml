@@ -13,7 +13,9 @@ jobs:
       - name: Setup PHP Action
         uses: shivammathur/setup-php@2.32.0
       - name: Generate docs
-        run: polymer mk:docs
+        run: |
+          composer install --no-interaction
+          polymer mk:docs
       - name: Build docs site
         run: ./scripts/build-docs.sh build --clean
       - name: Upload pages artifact
