@@ -159,8 +159,20 @@ EOT;
 
     protected function appendOptions(SymfonyCommand $command): string
     {
-        $body = '';
-        return $body;
+        if ($opts = $command->getDefinition()->getOptions()) {
+            $body = '';
+            foreach ($opts as $opt) {
+                if (!self::isGlobalOption($this->getContainer()->get('application'), $opt->getName())) {
+                    $opt_array = self::optionToArray($opt);
+                    $body .= '- **' . self::formatOptionKeys($opt_array) . '**. ' . self::cliTextToMarkdown(self::formatOptionDescription($opt_array)) . "\n";
+                }
+            }
+            if ($body) {
+                $body = "#### Options\n\n$body\n";
+            }
+            return $body;
+        }
+        return '';
     }
 
     protected function appendOptionsGlobal(ConsoleApplication $application): string
@@ -393,5 +405,25 @@ EOT;
         }
 
         return $element;
+    }
+
+    public static function isGlobalOption(ConsoleApplication $application, string $name): bool
+    {
+        $def = $application->getDefinition();
+        return array_key_exists($name, $def->getOptions()) || str_starts_with($name, 'notify') || str_starts_with($name, 'xh-') || str_starts_with($name, 'druplicon');
+    }
+
+    public static function formatOptionDescription(array $option): string
+    {
+        $defaults = '';
+        if (array_key_exists('defaults', $option)) {
+            $defaults = implode(' ', $option['defaults']); //
+            // Avoid info tags for large strings https://github.com/drush-ops/drush/issues/4639.
+            if (strlen($defaults) <= 100) {
+                $defaults = "<info>$defaults</info>";
+            }
+            $defaults = ' [default: ' . $defaults . ']';
+        }
+        return $option['description'] . $defaults;
     }
 }
