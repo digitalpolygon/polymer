@@ -9,7 +9,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Get the project root directory.
 PROJECT_ROOT="$(dirname "$DIR")"
 
-docker build -f Dockerfile.docs -t digitalpolygon/polymer-docs $PROJECT_ROOT
+docker build -f Dockerfile.docs -t digitalpolygon/polymer-docs "$PROJECT_ROOT"
 
 docker run \
     --rm \
