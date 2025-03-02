@@ -103,19 +103,6 @@ class MkCommand extends TaskBase
             ->run();
     }
 
-    protected function getCommandDocsPage(): string
-    {
-        // Every command should have the following sections:
-        // - Description
-        // - Examples
-        // - Arguments
-        // - Options
-        // - Global Options
-        // - Topics
-        $body = '';
-        return $body;
-    }
-
     protected function appendPreamble(SymfonyCommand $command, string $root): string
     {
         $path = '';
@@ -145,10 +132,16 @@ EOT;
         return $body;
     }
 
-    protected function appendUsages(SymfonyCommand $command): string
+    protected function appendUsages(AnnotatedCommand $command): string
     {
-        $body = '';
-        return $body;
+        if ($usages = $command->getExampleUsages()) {
+            $body = "#### Examples\n\n";
+            foreach ($usages as $key => $value) {
+                $body .= '- <code>' . $key . '</code>. ' . self::cliTextToMarkdown($value) . "\n";
+            }
+            return "$body\n";
+        }
+        return '';
     }
 
     protected function appendArguments(SymfonyCommand $command): string
