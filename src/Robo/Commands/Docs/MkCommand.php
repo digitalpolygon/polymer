@@ -382,7 +382,7 @@ EOT;
     /**
      * Build an array since that's what HelpCLIFormatter expects.
      */
-    public static function argToArray(InputArgument $arg): iterable
+    public static function argToArray(InputArgument $arg): array
     {
         return [
             'name' => $arg->getName(),
