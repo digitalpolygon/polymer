@@ -19,7 +19,25 @@ web_extra_exposed_ports:
       container_port: 81
       http_port: 81
       https_port: 444
-
+hooks:
+  post-start:
+    - exec: |
+        #### GITHUB_TOKEN_COMPOSER_ADD
+        if [ ! -z "$GITHUB_TOKEN" ]; then
+          echo "Setting up GitHub token for composer..."
+          composer config --global github-oauth.github.com "$GITHUB_TOKEN"
+          echo "Added your GitHub token to composer global configuration in the web container."
+        fi
+    - exec: |
+        #### TERMINUS_MACHINE_TOKEN_COMPOSER_ADD
+        if [ ! -z "$TERMINUS_MACHINE_TOKEN" ]; then
+          echo "Setting up Terminus Machine Token..."
+          if terminus auth:login --machine-token="$TERMINUS_MACHINE_TOKEN"; then
+            echo "Terminus successfully logged in."
+          else
+            echo "Terminus login failed."
+          fi
+        fi
 # Key features of DDEV's config.yaml:
 
 # name: <projectname> # Name of the project, automatically provides
