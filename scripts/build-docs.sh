@@ -15,5 +15,7 @@ docker run \
     --rm \
     -p 8000 \
     --user=`id -u`:`id -g` \
-    -v ${PROJECT_ROOT}:/docs digitalpolygon/polymer-docs \
-    "$@"
+    --entrypoint="/bin/sh" \
+    -v ${PROJECT_ROOT}/scripts:/scripts \
+    -v ${PROJECT_ROOT}:/docs \
+    digitalpolygon/polymer-docs /scripts/build-docs-internal.sh
