@@ -19,6 +19,8 @@ class MkCommand extends TaskBase
     public function docs(ConsoleIO $io): void
     {
         $polymer_root = $this->getConfigValue('polymer.root');
+        $repo_root = $this->getConfigValue('repo.root');
+        $destination_root = strcmp($polymer_root, $repo_root) === 0 ? $polymer_root : $repo_root;
         /** @var ConsoleApplication $application */
         $application = self::getContainer()->get('application');
         $all = $application->all();
@@ -26,13 +28,13 @@ class MkCommand extends TaskBase
             return $command->getName() === $key;
         }, ARRAY_FILTER_USE_BOTH);
         $destination = 'commands';
-        $destination_path = Path::join($polymer_root, 'docs', $destination);
+        $destination_path = Path::join($destination_root, 'docs', $destination);
         $this->prepare($destination_path);
         $namespaced = self::categorize($all);
-        [$nav_commands, $pages_commands, $map_commands] = $this->writeContentFilesAndBuildNavAndBuildRedirectMap($namespaced, $destination, $polymer_root, $destination_path);
+        [$nav_commands, $pages_commands, $map_commands] = $this->writeContentFilesAndBuildNavAndBuildRedirectMap($namespaced, $destination, $destination_root, $destination_path);
         $this->writeAllMd($pages_commands, $destination_path, 'All commands');
 
-        $this->writeYml($nav_commands, $map_commands, $polymer_root);
+        $this->writeYml($nav_commands, $map_commands, $destination_root);
     }
 
     /**
