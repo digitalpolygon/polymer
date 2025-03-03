@@ -16,16 +16,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://digitalpolygon.github.io/polymer/latest/latest/architecture/configuration_discovery/</loc>
-         <lastmod>2025-03-03</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://digitalpolygon.github.io/polymer/latest/latest/architecture/polymer_event_lifecycle/</loc>
-         <lastmod>2025-03-03</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://digitalpolygon.github.io/polymer/latest/latest/commands/all/</loc>
          <lastmod>2025-03-03</lastmod>
          <changefreq>daily</changefreq>
