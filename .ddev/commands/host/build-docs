@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-# This script builds documentation.
-
-set -e
-
-ddev composer install --no-interaction
-ddev exec -- polymer mk:docs
-./scripts/build-docs.sh

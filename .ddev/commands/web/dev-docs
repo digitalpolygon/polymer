@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# This script starts docs dev server.
+
+set -ve
+
+composer install --no-interaction
+polymer mk:docs
+mkdocs serve -a 0.0.0.0:8000

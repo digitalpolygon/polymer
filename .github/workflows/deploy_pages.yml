@@ -41,7 +41,6 @@ jobs:
           composer install --no-interaction
           bin/polymer mk:docs
       - name: Delete all old docs
-        run: mike delete --all --allow-empty
       - name: Mike alias
         run: mike alias 0.x latest --update-aliases
       - name: Mike set-default
@@ -49,20 +48,3 @@ jobs:
       # See https://github.com/jimporter/mike?tab=readme-ov-file#building-your-docs
       - name: Mike deploy
         run: mike deploy --push ${GITHUB_REF_NAME}
-#      - name: Upload pages artifact
-#        uses: actions/upload-pages-artifact@v3
-#        with:
-#          path: docs_site/
-#  deploy:
-#      runs-on: ubuntu-latest
-#      needs: build
-#      permissions:
-#        pages: write
-#        id-token: write
-#      environment:
-#        name: github-pages
-#        url: ${{ steps.deployment.outputs.page_url }}
-#      steps:
-#        - name: Deploy to GitHub Pages
-#          id: deployment
-#          uses: actions/deploy-pages@v4

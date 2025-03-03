@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# This script builds documentation.
+
+set -ve
+
+composer install --no-interaction
+polymer mk:docs
+mkdocs build --clean

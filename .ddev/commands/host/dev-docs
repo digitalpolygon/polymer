@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-# This script starts docs dev server.
-
-set -e
-
-./scripts/build-docs.sh serve -a 0.0.0.0:8000
