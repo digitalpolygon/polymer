@@ -36,6 +36,8 @@ jobs:
         run: |
           composer install --no-interaction
           bin/polymer mk:docs
+      - name: Delete all old docs
+        run: mike delete --all
       - name: Mike alias
         run: mike alias 0.x latest --update-aliases
       - name: Mike set-default
