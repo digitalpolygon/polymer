@@ -36,9 +36,6 @@ plugins:
   - git-revision-date-localized:
       exclude:
         - commands/*
-  - git-authors:
-      exclude:
-        - commands/*
   - mike:
       canonical_version: latest
       alias_type: redirect
