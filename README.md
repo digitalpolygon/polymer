@@ -1,4 +1,5 @@
 [![CI](https://github.com/digitalpolygon/polymer/actions/workflows/code_standards.yml/badge.svg)](https://github.com/digitalpolygon/polymer/actions/workflows/code_standards.yml)
+[![Documentation](https://github.com/digitalpolygon/polymer/actions/workflows/pages/pages-build-deployment/badge.svg)](https://digitalpolygon.github.io/polymer/latest/)
 
 # Polymer: WebOps Tooling
 
