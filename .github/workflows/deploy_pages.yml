@@ -36,6 +36,8 @@ jobs:
             git+https://gitlab.com/blacs30/mkdocs-edit-url.git;
       - name: Setup PHP Action
         uses: shivammathur/setup-php@2.32.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate docs
         run: |
           composer install --no-interaction
