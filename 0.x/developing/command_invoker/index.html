@@ -12,24 +12,28 @@
         <meta name="author" content="Les Peabody">
       
       
-        <link rel="canonical" href="https://digitalpolygon.github.io/polymer/latest/latest/extending_polymer/">
+        <link rel="canonical" href="https://digitalpolygon.github.io/polymer/latest/latest/developing/command_invoker/">
       
       
+        <link rel="prev" href="../configuration/">
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+        <link rel="next" href="../../commands/all/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.18">
     
     
       
-        <title>Extending and Overriding Polymer WebOps Tooling - Polymer</title>
+        <title>Command invoker service - Polymer</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,7 +52,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#extending-and-overriding-polymer-webops-tooling" class="md-skip">
+        <a href="#command-invoker-service" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Polymer" class="md-header__button md-logo" aria-label="Polymer" data-md-component="logo">
+    <a href="../.." title="Polymer" class="md-header__button md-logo" aria-label="Polymer" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -116,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Extending and Overriding Polymer WebOps Tooling
+              Command invoker service
             
           </span>
         </div>
@@ -217,7 +221,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
     
@@ -232,17 +236,20 @@
         
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../development/" class="md-tabs__link">
-        
   
     
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../extending_polymer/" class="md-tabs__link">
+          
   
   Development
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -259,7 +266,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../commands/all/" class="md-tabs__link">
+        <a href="../../commands/all/" class="md-tabs__link">
           
   
   Commands
@@ -303,7 +310,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Polymer" class="md-nav__button md-logo" aria-label="Polymer" data-md-component="logo">
+    <a href="../.." title="Polymer" class="md-nav__button md-logo" aria-label="Polymer" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -333,7 +340,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -350,18 +357,178 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../development/" class="md-nav__link">
+  
+    
+    
+    
+      
         
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
   
   <span class="md-ellipsis">
     Development
   </span>
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extending_polymer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Extending Polymer
+  </span>
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Command invoker service
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Command invoker service
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-invoke-a-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to invoke a command
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pinning-global-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pinning global options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interaction-with-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interaction with configuration
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -449,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/all/" class="md-nav__link">
+      <a href="../../commands/all/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -470,7 +637,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/completion/" class="md-nav__link">
+      <a href="../../commands/completion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -491,7 +658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/composer_validate_security/" class="md-nav__link">
+      <a href="../../commands/composer_validate_security/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -512,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/help/" class="md-nav__link">
+      <a href="../../commands/help/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -533,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/list/" class="md-nav__link">
+      <a href="../../commands/list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -554,7 +721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/mk_docs/" class="md-nav__link">
+      <a href="../../commands/mk_docs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -575,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/polymer_init/" class="md-nav__link">
+      <a href="../../commands/polymer_init/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -596,7 +763,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/source_build_copy/" class="md-nav__link">
+      <a href="../../commands/source_build_copy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -663,7 +830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/artifact_build_prepare/" class="md-nav__link">
+      <a href="../../commands/artifact_build_prepare/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -684,7 +851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/artifact_build_sanitize/" class="md-nav__link">
+      <a href="../../commands/artifact_build_sanitize/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -705,7 +872,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/artifact_compile/" class="md-nav__link">
+      <a href="../../commands/artifact_compile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -726,7 +893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/artifact_composer_install/" class="md-nav__link">
+      <a href="../../commands/artifact_composer_install/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -747,7 +914,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/artifact_deploy/" class="md-nav__link">
+      <a href="../../commands/artifact_deploy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -814,7 +981,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/build/" class="md-nav__link">
+      <a href="../../commands/build/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -835,7 +1002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/build_assets/" class="md-nav__link">
+      <a href="../../commands/build_assets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -856,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commands/build_reqs/" class="md-nav__link">
+      <a href="../../commands/build_reqs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -923,7 +1090,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 4, 2025</span>
   </span>
 
     
@@ -932,39 +1099,37 @@
     
   </aside>
 
-<h1 id="extending-and-overriding-polymer-webops-tooling">Extending and Overriding Polymer WebOps Tooling<a class="headerlink" href="#extending-and-overriding-polymer-webops-tooling" title="Permanent link">&para;</a></h1>
-<p>Polymer provides a comprehensive plugin and configuration system to support extensive customization.</p>
-<h2 id="adding-a-custom-robo-hook-or-command">Adding a Custom Robo Hook or Command<a class="headerlink" href="#adding-a-custom-robo-hook-or-command" title="Permanent link">&para;</a></h2>
-<p>Polymer utilizes <a href="https://github.com/consolidation/Robo">Robo</a> and the <a href="https://github.com/consolidation/annotated-command">Annotated Command</a> library for defining commands. With these tools, you can create new custom commands or hook into existing Polymer commands, allowing you to execute custom code before or after predefined commands.</p>
-<p>You can place custom commands in a directory within your project or in a separate Composer package, as long as the command files are exposed using PSR-4 autoloading.</p>
-<h3 id="steps-to-create-a-custom-robo-php-command-or-hook">Steps to Create a Custom Robo PHP Command or Hook:<a class="headerlink" href="#steps-to-create-a-custom-robo-php-command-or-hook" title="Permanent link">&para;</a></h3>
-<ol>
-<li>
-<p><strong>Create the Command File</strong>:</p>
-<ul>
-<li>Name the file using the <code>*Commands.php</code> pattern. For example, <code>ExampleCommands.php</code>.</li>
-</ul>
-</li>
-<li>
-<p><strong>Define Namespace and Autoloading</strong>:</p>
-<ul>
-<li>Use a namespace that ends in <code>\Polymer\Plugin\Commands</code>, and ensure it's exposed using PSR-4 in your <code>composer.json</code> file. For example, <code>Example\Polymer\Plugin\Commands</code>.</li>
-</ul>
-</li>
-<li>
-<p><strong>Write Your Command</strong>:</p>
-<ul>
-<li>Follow the <a href="https://robo.li/getting-started.html">Robo PHP Getting Started Guide</a> to create your custom command.</li>
-<li>Refer to <a href="https://github.com/consolidation/annotated-command#hooks">Annotated Command’s Hook Types</a> for a list of available hook types.</li>
-</ul>
-</li>
-</ol>
-<h3 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<p>For a practical example of custom commands implementation, see the <a href="https://github.com/digitalpolygon/polymer-drupal">Drupal Integration for Polymer WebOps Tooling</a>.</p>
-<h2 id="replacing-or-overriding-a-robo-command">Replacing or Overriding a Robo Command<a class="headerlink" href="#replacing-or-overriding-a-robo-command" title="Permanent link">&para;</a></h2>
-<p>To replace an existing Polymer command with your custom version, use the <a href="https://github.com/consolidation/annotated-command#replace-command-hook">replace command annotation</a> in your custom command.</p>
-<hr />
-<p>This guide provides the essential steps to extend and customize Polymer WebOps Tooling according to your project’s requirements.</p>
+<h1 id="command-invoker-service">Command invoker service<a class="headerlink" href="#command-invoker-service" title="Permanent link">&para;</a></h1>
+<h2 id="how-to-invoke-a-command">How to invoke a command<a class="headerlink" href="#how-to-invoke-a-command" title="Permanent link">&para;</a></h2>
+<p>The <code>commandInvoker</code> service can be used to invoke other named commands.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$commandInvoker</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getContainer</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;commandInvoker&#39;</span><span class="p">);</span>
+<span class="nv">$commandInvoker</span><span class="o">-&gt;</span><span class="na">invokeCommand</span><span class="p">(</span><span class="nv">$input</span><span class="p">,</span> <span class="s1">&#39;my:command&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;--option&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;value&#39;</span><span class="p">]);</span>
+</code></pre></div>
+<p>The above example will invoke the <code>my:command</code> command with the specified option.</p>
+</div>
+<h2 id="pinning-global-options">Pinning global options<a class="headerlink" href="#pinning-global-options" title="Permanent link">&para;</a></h2>
+<p>You can pin parameters by using the
+<code>$commandInvoker-&gt;pinGlobalOption($option, $value)</code> method. This will ensure
+that subsequent usage of the <code>commandInvoker</code> service will pass the pinned
+option as a parameter to the command being invoked.</p>
+<p>You can unpin an option by calling <code>$commandInvoker-&gt;unpinGlobalOption($option)</code>.
+This will prevent the option from being passed along to future command invocations.</p>
+<h2 id="interaction-with-configuration">Interaction with configuration<a class="headerlink" href="#interaction-with-configuration" title="Permanent link">&para;</a></h2>
+<p>Configuration is loaded fresh for every command invocation. This means that
+config set during runtime will not be available to future command invocations.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$this</span><span class="o">-</span><span class="nx">getConfig</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;my.foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">);</span>
+<span class="nv">$commandInvoker</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getContainer</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;commandInvoker&#39;</span><span class="p">);</span>
+<span class="nv">$commandInvoker</span><span class="o">-&gt;</span><span class="na">invokeCommand</span><span class="p">(</span><span class="nv">$input</span><span class="p">,</span> <span class="s1">&#39;my:command&#39;</span><span class="p">);</span>
+</code></pre></div>
+<p>Notice that <code>my.foo</code> is set prior to invoking <code>my:command</code>. When the
+implementing method for <code>my:command</code> is executed and it tries to use
+<code>my.foo</code>, it will receive a <code>null</code> value because the configuration
+<code>my.foo</code> was set during runtime.</p>
+</div>
 
 
 
@@ -1003,10 +1168,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "toc.integrate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "toc.integrate"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.3220b9d7.min.js"></script>
+      <script src="../../assets/javascripts/bundle.3220b9d7.min.js"></script>
       
     
   </body>

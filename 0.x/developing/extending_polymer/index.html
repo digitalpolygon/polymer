@@ -12,13 +12,13 @@
         <meta name="author" content="Les Peabody">
       
       
-        <link rel="canonical" href="https://digitalpolygon.github.io/polymer/latest/latest/commands/help/">
+        <link rel="canonical" href="https://digitalpolygon.github.io/polymer/latest/latest/developing/extending_polymer/">
       
       
-        <link rel="prev" href="../composer_validate_security/">
+        <link rel="prev" href="../..">
       
       
-        <link rel="next" href="../list/">
+        <link rel="next" href="../configuration/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>help - Polymer</title>
+        <title>Extending Polymer - Polymer</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#help" class="md-skip">
+        <a href="#extending-polymer" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              help
+              Extending Polymer
             
           </span>
         </div>
@@ -236,11 +236,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../developing/extending_polymer/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   Development
@@ -254,21 +256,17 @@
         
   
   
-    
-  
   
     
     
       
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../all/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../commands/all/" class="md-tabs__link">
           
   
   Commands
@@ -359,23 +357,28 @@
       
   
   
+    
   
   
+  
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -386,7 +389,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Development
@@ -397,10 +400,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../developing/extending_polymer/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Extending Polymer
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -409,6 +432,53 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#extension-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extension discovery
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service-providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service providers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-commands-and-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding commands and hooks
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -421,7 +491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developing/configuration/" class="md-nav__link">
+      <a href="../configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -442,7 +512,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developing/command_invoker/" class="md-nav__link">
+      <a href="../command_invoker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -467,28 +537,23 @@
       
   
   
-    
   
   
-  
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -499,7 +564,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Commands
@@ -510,8 +575,6 @@
                 
   
   
-    
-  
   
   
     
@@ -521,11 +584,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
         
           
           <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
@@ -539,7 +602,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_1">
             <span class="md-nav__icon md-icon"></span>
             _global
@@ -553,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../all/" class="md-nav__link">
+      <a href="../../commands/all/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -574,7 +637,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../completion/" class="md-nav__link">
+      <a href="../../commands/completion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -595,7 +658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../composer_validate_security/" class="md-nav__link">
+      <a href="../../commands/composer_validate_security/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -613,30 +676,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    help
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../commands/help/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -645,53 +688,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#arguments" class="md-nav__link">
-    <span class="md-ellipsis">
-      Arguments
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#global-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Global Options
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -704,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../list/" class="md-nav__link">
+      <a href="../../commands/list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -725,7 +721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mk_docs/" class="md-nav__link">
+      <a href="../../commands/mk_docs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -746,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../polymer_init/" class="md-nav__link">
+      <a href="../../commands/polymer_init/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -767,7 +763,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../source_build_copy/" class="md-nav__link">
+      <a href="../../commands/source_build_copy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -834,7 +830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../artifact_build_prepare/" class="md-nav__link">
+      <a href="../../commands/artifact_build_prepare/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -855,7 +851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../artifact_build_sanitize/" class="md-nav__link">
+      <a href="../../commands/artifact_build_sanitize/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -876,7 +872,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../artifact_compile/" class="md-nav__link">
+      <a href="../../commands/artifact_compile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -897,7 +893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../artifact_composer_install/" class="md-nav__link">
+      <a href="../../commands/artifact_composer_install/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -918,7 +914,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../artifact_deploy/" class="md-nav__link">
+      <a href="../../commands/artifact_deploy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -985,7 +981,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../build/" class="md-nav__link">
+      <a href="../../commands/build/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1006,7 +1002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../build_assets/" class="md-nav__link">
+      <a href="../../commands/build_assets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1027,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../build_reqs/" class="md-nav__link">
+      <a href="../../commands/build_reqs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1070,6 +1066,9 @@
                 
                   
 
+  
+  
+
 
 
 
@@ -1079,47 +1078,73 @@
 
 
   
+    
+  
   
 
 
-<h1 id="help">help<a class="headerlink" href="#help" title="Permanent link">&para;</a></h1>
-<p>Display help for a command</p>
-<p>The <em>%command.name%</em> command displays help for a given command:</p>
-<p><em>%command.full_name% list</em></p>
-<p>You can also output the help in other formats by using the <comment>--format</comment> option:</p>
-<p><em>%command.full_name% --format=xml list</em></p>
-<p>To display the list of available commands, please use the <em>list</em> command.</p>
-<h4 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h4>
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 4, 2025</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+<h1 id="extending-polymer">Extending Polymer<a class="headerlink" href="#extending-polymer" title="Permanent link">&para;</a></h1>
+<p>Polymer provides a mechanism for other packages to extend Polymer's functionality.</p>
+<h2 id="extension-discovery">Extension discovery<a class="headerlink" href="#extension-discovery" title="Permanent link">&para;</a></h2>
+<p>An extension is registered with Polymer if:</p>
 <ul>
-<li><strong>[command_name]</strong>. The command name</li>
+<li>A package contains the relative namespace <code>Polymer</code></li>
+<li>A file <code>ExtensionInfo.php</code> exists in that namespace and implements <code>DigitalPolygon\Polymer\Robo\Extension\PolymerExtensionInterface</code></li>
 </ul>
-<h4 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h4>
-<ul>
-<li><strong>--format=FORMAT</strong>. The output format (txt, xml, json, or md) [default: <em>txt</em>]</li>
-<li><strong>--raw</strong>. To output raw command help</li>
-</ul>
-<h4 id="global-options">Global Options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h4>
-<ul>
-<li><strong>-h, --help</strong>. Display help for the given command. When no command is given display help for the <em>list</em> command</li>
-<li><strong>--silent</strong>. Do not output any message</li>
-<li><strong>-q, --quiet</strong>. Only errors are displayed. All other output is suppressed</li>
-<li><strong>-v|vv|vvv, --verbose</strong>. Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug</li>
-<li><strong>-V, --version</strong>. Display this application version</li>
-<li><strong>--ansi</strong>. Force (or disable --no-ansi) ANSI output</li>
-<li><strong>-n, --no-interaction</strong>. Do not ask any interactive question</li>
-<li><strong>--simulate</strong>. Run in simulated mode (show what would have happened).</li>
-<li><strong>--progress-delay=PROGRESS-DELAY</strong>. Number of seconds before progress bar is displayed in long-running task collections. Default: 2s.</li>
-<li><strong>-D, --define=DEFINE</strong>. Define a configuration item value.</li>
-<li><strong>--environment=ENVIRONMENT</strong>. Set the environment to load config from polymer/[env].polymer.yml file.</li>
-</ul>
-<div class="admonition hint">
-<p class="admonition-title">Legend</p>
-<ul>
-<li>An argument or option with square brackets is optional.</li>
-<li>Any default value is listed at end of arg/option description.</li>
-<li>An ellipsis indicates that an argument accepts multiple values separated by a space.</li>
-</ul>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>For example, if you have a package that has a psr-4 namespace of <code>My\Package</code>
+that points to the package's <code>src</code> directory, then you need to place
+<code>src/Polymer/ExtensionInfo.php</code> in your package.</p>
 </div>
+<h2 id="service-providers">Service providers<a class="headerlink" href="#service-providers" title="Permanent link">&para;</a></h2>
+<p>An extension can <a href="https://container.thephpleague.com/4.x/service-providers/">provide a service provider</a>
+to interact with the dependency injection (DI) container. This is useful for
+extensions that want to leverage DI for their own services or extend Polymer
+Core services (e.g. subscribing to events emitted by Polymer Core).</p>
+<p>To include a service provider with an extension, the service provider class:</p>
+<ul>
+<li>Must be located in the same directory as <code>ExtensionInfo.php</code></li>
+<li>Must be spelled using the camelCase name of your extension's ID (with the first letter capitalized)</li>
+<li>Must implement the interface <code>League\Container\ServiceProvider\ServiceProviderInterface</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you need your service provider to execute during the boot phase of the
+container, your service provider must implement
+<code>League\Container\ServiceProvider\BootableServiceProviderInterface</code>.</p>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Polymer Core at this point <strong><em>does not assume any responsibility</em></strong> for extensions
+that extend Core services outside of what is explicitly documented.
+Extensions assume complete reponsibility for  maintaining continued
+compatibility with Polymer Core services as they evolve over time during
+this early development phase.</p>
+</div>
+<h2 id="adding-commands-and-hooks">Adding commands and hooks<a class="headerlink" href="#adding-commands-and-hooks" title="Permanent link">&para;</a></h2>
+<p>Polymer's hook and command mechanism is built atop
+<a href="https://github.com/consolidation/annotated-command">Annotated Command</a>.</p>
+<p>Command file names must end with <code>Commands.php</code> and be located within the <code>Polymer\Plugin\Commands</code> relative namespace.
+Similarly, hook file names must end with <code>Hooks</code> and be located within the <code>Polymer\Plugin\Hooks</code> relative namespace.</p>
+<hr />
+<p>This guide provides the essential steps to extend and customize Polymer WebOps Tooling according to your project’s requirements.</p>
 
 
 
