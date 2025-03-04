@@ -49,6 +49,7 @@ markdown_extensions:
   - admonition: {  }
   - meta: { }
   - pymdownx.magiclink: {  }
+  - pymdownx.details: {  }
   - pymdownx.keys: { }
   - pymdownx.snippets: { }
   - pymdownx.highlight:
@@ -68,4 +69,7 @@ markdown_extensions:
       emoji_generator: '!!python/name:material.extensions.emoji.to_svg'
 nav:
   - Home: index.md
-  - Development: development.md
+  - Development:
+    - Extending Polymer: developing/extending_polymer.md
+    - Configuration management: developing/configuration.md
+    - Command invoker service: developing/command_invoker.md
