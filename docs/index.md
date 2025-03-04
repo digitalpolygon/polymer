@@ -8,6 +8,6 @@ tools and scripts that help automate the process of deploying and managing web a
 Clone the repository and run `ddev init`. This will re-create the development environment, build the documentation, and
 launch the local version of the documentation site in your browser.
 
-## Extensions
+## Useful extensions
 
 - [Drupal Integration for Polymer WebOps Tooling](https://digitalpolygon.github.io/polymer-drupal/0.x/).
