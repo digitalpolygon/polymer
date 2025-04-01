@@ -80,6 +80,7 @@ class DeployCommand extends TaskBase
     #[Option(name: 'dry-run', description: 'Show the deploy operations without pushing the artifact.')]
     public function deployArtifact(ConsoleIO $io, string $artifact, array $options = ['branch' => InputOption::VALUE_REQUIRED, 'tag' => InputOption::VALUE_REQUIRED, 'commit-msg' => InputOption::VALUE_REQUIRED, 'dry-run' => false]): void
     {
+        $this->commitMessage = $options['commit-msg'];
         if (is_string($options['tag'])) {
             // Warn if they're creating a tag, and we won't tag the source for them.
             if (!$this->tagSource && $this->logger) {
