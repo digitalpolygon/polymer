@@ -54,7 +54,7 @@ abstract class DiscoveryBase implements DiscoveryInterface
      * @return string[]
      *   An array containing paths to built-in command files.
      */
-    abstract  protected function getSearchFilePaths(): array;
+    abstract protected function getSearchFilePaths(): array;
 
     /**
      * Retrieve base namespace for all built-in commands.

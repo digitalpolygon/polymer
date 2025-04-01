@@ -2,17 +2,24 @@
 
 namespace DigitalPolygon\Polymer\Robo\Commands\Artifact;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\Attributes\Hook;
+use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use DigitalPolygon\Polymer\Robo\ConsoleApplication;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Contract\VerbosityThresholdInterface;
 use Robo\Symfony\ConsoleIO;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
+use Symfony\Component\Console\Output\OutputInterface;
+
+use function Laravel\Prompts\select;
 
 /**
  * Defines commands in the "artifact:deploy" namespace.
@@ -26,18 +33,18 @@ class DeployCommand extends TaskBase
     protected string $branchName;
     protected string $commitMessage;
     protected ConsoleApplication $application;
-    protected bool $createTag = false;
     protected string $tagName;
+
+    public const ARTIFACT_DEPLOY_COMMAND = 'artifact:deploy';
 
     /**
      * This hook will fire for all commands in this command file.
      *
      * @throws \DigitalPolygon\Polymer\Robo\Exceptions\PolymerException
      */
-    #[Hook(type: 'init')]
+    #[Hook(type: HookManager::INITIALIZE)]
     public function initialize(): void
     {
-        $this->createTag = false;
         $this->excludeFileTemp = $this->getConfigValue('deploy.exclude_file') . '.tmp';
         if (is_string($this->getConfigValue('deploy.dir'))) {
             $this->deployDir = $this->getConfigValue('deploy.dir');
@@ -64,7 +71,7 @@ class DeployCommand extends TaskBase
      *
      * @throws \Robo\Exception\TaskException|\Robo\Exception\AbortTasksException
      */
-    #[Command(name: 'artifact:deploy')]
+    #[Command(name: self::ARTIFACT_DEPLOY_COMMAND)]
     #[Usage(name: 'polymer artifact:deploy -v', description: 'Builds separate artifact and pushes to git.remotes.')]
     #[Argument(name: 'artifact', description: 'The name of the artifact to deploy.')]
     #[Option(name: 'branch', description: 'The branch name.')]
@@ -73,20 +80,70 @@ class DeployCommand extends TaskBase
     #[Option(name: 'dry-run', description: 'Show the deploy operations without pushing the artifact.')]
     public function deployArtifact(ConsoleIO $io, string $artifact, array $options = ['branch' => InputOption::VALUE_REQUIRED, 'tag' => InputOption::VALUE_REQUIRED, 'commit-msg' => InputOption::VALUE_REQUIRED, 'dry-run' => false]): void
     {
-        if (!$options['tag'] && !$options['branch']) {
-            $this->createTag = (bool) $this->confirm("Would you like to create a tag?", $this->createTag);
-        }
-        $this->commitMessage = $this->getCommitMessage($options);
-
-
-        if ($options['tag'] || $this->createTag) {
-            // Warn if they're creating a tag and we won't tag the source for them.
-            if (!$this->tagSource) {
-                $this->say("Config option deploy.tag_source if FALSE. The source repo will not be tagged.");
+        if (is_string($options['tag'])) {
+            // Warn if they're creating a tag, and we won't tag the source for them.
+            if (!$this->tagSource && $this->logger) {
+                $this->logger->warning('Config option deploy.tag_source if FALSE. The source repo will not be tagged.');
             }
             $this->deployTag($artifact, $options, $io);
         } else {
             $this->deployBranch($artifact, $options, $io);
+        }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param AnnotationData $annotationData
+     * @return void
+     * @throws PolymerException
+     */
+    #[Hook(type: HookManager::INTERACT, target: self::ARTIFACT_DEPLOY_COMMAND)]
+    public function interact(InputInterface $input, OutputInterface $output, AnnotationData $annotationData): void
+    {
+        $options = $input->getOptions();
+
+        // Get tag or branch name to use.
+        if (!is_string($options['branch']) && !is_string($options['tag'])) {
+            $pushType = select('Would you like to deploy a branch or a tag?', ['branch', 'tag'], 'branch');
+            switch ($pushType) {
+                case 'branch':
+                    $branchName = $this->askDefault('Enter branch name: ', $this->getDefaultBranchName());
+                    $input->setOption('branch', $branchName);
+                    break;
+                case 'tag':
+                    $tagName = $this->ask('What tag name to use?');
+                    $input->setOption('tag', $tagName);
+                    break;
+            }
+        }
+
+        // Get commit message if it's not set.
+        if (!is_string($options['commit-msg'])) {
+            $commitMessage = $this->getCommitMessage($options);
+            if (is_string($commitMessage)) {
+                $input->setOption('commit-msg', $commitMessage);
+            }
+        }
+    }
+
+    /**
+     * @param CommandData $commandData
+     * @return void
+     * @throws \Exception
+     */
+    #[Hook(type: HookManager::ARGUMENT_VALIDATOR, target: self::ARTIFACT_DEPLOY_COMMAND)]
+    public function validate(CommandData $commandData): void
+    {
+        $options = $commandData->input()->getOptions();
+        if (!is_string($options['branch']) && !is_string($options['tag'])) {
+            throw new \Exception("You must specify either --branch or --tag, but not both.");
+        }
+        if (is_string($options['branch']) && is_string($options['tag'])) {
+            throw new \Exception("You cannot specify both options --branch and --tag.");
+        }
+        if (!is_string($options['commit-msg'])) {
+            throw new \Exception("You must specify a commit message.");
         }
     }
 
@@ -412,10 +469,10 @@ class DeployCommand extends TaskBase
      * @param array<string, bool|string|null|int> $options
      *   CLI options for command.
      *
-     * @return string
-     *   The commit message.
+     * @return string|bool
+     *   The commit message. Or false if a commit msg could not be retrieved.
      */
-    protected function getCommitMessage(array $options): string
+    protected function getCommitMessage(array $options): string|bool
     {
         if (!$options['commit-msg']) {
             $gitLastCommitMessage = '';
@@ -428,14 +485,13 @@ class DeployCommand extends TaskBase
                     $gitLastCommitMessage = trim($log[1]);
                 }
             }
-
-
             return $this->askDefault('Enter a valid commit message', $gitLastCommitMessage);
         } elseif (is_string($options['commit-msg'])) {
             $this->say("Commit message is set to <comment>{$options['commit-msg']}</comment>.");
             return $options['commit-msg'];
         }
-        throw new PolymerException('Failed to get a valid commit message.');
+
+        return false;
     }
 
     /**
