@@ -3,7 +3,6 @@
 namespace DigitalPolygon\Polymer\Robo\Tasks;
 
 use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
-use DigitalPolygon\Polymer\Robo\ConsoleApplication;
 use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use DigitalPolygon\Polymer\Robo\Services\CommandInvokerAwareTrait;
@@ -22,7 +21,6 @@ use Psr\Log\LoggerAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * Utility base class for Polymer commands.
