@@ -94,7 +94,7 @@ class ConfigContextProvider implements EventSubscriberInterface, ContainerAwareI
         $potentialFiles['project'] = $this->repoRoot . '/polymer/polymer.yml';
         $environment = $input->getOption('environment');
         if (is_string($environment)) {
-            $potentialFiles['project_environment'] = $this->repoRoot . '/polymer/' . $environment . 'polymer.yml';
+            $potentialFiles['project_environment'] = $this->repoRoot . '/polymer/' . $environment . '.polymer.yml';
         }
         $potentialFiles = array_filter($potentialFiles, function ($file) {
             return file_exists($file);
