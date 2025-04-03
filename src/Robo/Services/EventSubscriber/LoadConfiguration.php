@@ -3,6 +3,7 @@
 namespace DigitalPolygon\Polymer\Robo\Services\EventSubscriber;
 
 use Consolidation\Config\Config;
+use Consolidation\Config\Util\EnvConfig;
 use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
 use DigitalPolygon\Polymer\Robo\Config\ConfigStack;
 use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
@@ -30,6 +31,7 @@ class LoadConfiguration implements EventSubscriberInterface, ConfigAwareInterfac
             $contextConfig = new Config($data);
             $polymerConfig->addContext($contextId, $contextConfig);
         }
+        $polymerConfig->addContext('env', new EnvConfig('POLYMER'));
         $configManager->pushConfig($polymerConfig);
     }
 

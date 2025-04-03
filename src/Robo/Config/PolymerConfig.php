@@ -61,7 +61,9 @@ class PolymerConfig extends RoboConfig
             $processedContext = $processor->export($allProcessedData);
             /** @var Config $context */
             $context = $this->getContext($contextName);
-            $context->replace($processedContext);
+            if (method_exists($context, 'replace')) {
+              $context->replace($processedContext);
+            }
         }
     }
 
