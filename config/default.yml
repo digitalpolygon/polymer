@@ -27,7 +27,7 @@ git:
   commit-msg:
     pattern: '/(^(awesome-project)-[0-9]+(: )[^ ].{15,}\.)|(Merge branch(.)+)/'
     example: "awesome-project-PWT-62: Update module configuration."
-  default_branch: main
+  default-branch: main
   remotes:
     origin: "git@awasome-repository-service/repo.git"
   user:

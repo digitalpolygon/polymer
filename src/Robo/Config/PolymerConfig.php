@@ -62,7 +62,7 @@ class PolymerConfig extends RoboConfig
             /** @var Config $context */
             $context = $this->getContext($contextName);
             if (method_exists($context, 'replace')) {
-              $context->replace($processedContext);
+                $context->replace($processedContext);
             }
         }
     }

@@ -4,7 +4,7 @@ namespace DigitalPolygon\Polymer\Robo;
 
 use Composer\Autoload\ClassLoader;
 use Composer\InstalledVersions;
-use Consolidation\Config\Loader\YamlConfigLoader;
+use DigitalPolygon\Polymer\Robo\Services\TaskableServiceInterface;
 use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
 use DigitalPolygon\Polymer\Robo\Config\ConfigStack;
 use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
@@ -13,28 +13,24 @@ use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
 use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
 use DigitalPolygon\Polymer\Robo\Discovery\ExtensionDiscovery;
 use DigitalPolygon\Polymer\Robo\Extension\ExtensionData;
-use DigitalPolygon\Polymer\Robo\Event\CollectConfigContextsEvent;
-use DigitalPolygon\Polymer\Robo\Event\ExtensionConfigPriorityOverrideEvent;
-use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
 use DigitalPolygon\Polymer\Robo\Services\CommandInfoAlterer;
 use DigitalPolygon\Polymer\Robo\Services\CommandInvoker;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigContextProvider;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\LoadConfiguration;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\SetGlobalOptionsPostInvoke;
+use DigitalPolygon\Polymer\Robo\Services\Template\Generator;
 use League\Container\Argument\LiteralArgument;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use League\Container\ServiceProvider\ServiceProviderInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Consolidation\Config\Config as ConsolidationConfig;
 
 /**
  * The Polymer Robo application.
@@ -202,9 +198,13 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             ->addMethodCall('addSubscriber', [new ResolvableArgument('configLoader')])
             ->addMethodCall('addSubscriber', [new ResolvableArgument('polymerConfigContextProvider')]);
 
+        $container->addShared('templateGenerator', Generator::class);
+
         // Inflectors.
         $container->inflector(CommandInvokerAwareInterface::class)
             ->invokeMethod('setCommandInvoker', [new ResolvableArgument('commandInvoker')]);
+        $container->inflector(TaskableServiceInterface::class)
+            ->invokeMethod('createCollectionBuilder', []);
 
         // Service providers.
         $serviceProviders = $this->collectServiceProviders();
