@@ -2,15 +2,13 @@
 
 namespace DigitalPolygon\Polymer\Robo\Services\Template;
 
-use DigitalPolygon\Polymer\Robo\Services\TaskableServiceInterface;
-use DigitalPolygon\Polymer\Robo\Services\TaskableServiceTrait;
+use DigitalPolygon\Polymer\Robo\Services\TaskableServiceBase;
 use DigitalPolygon\Polymer\Robo\Template\TemplateInterface;
 
-class Generator implements TaskableServiceInterface {
-
-    use TaskableServiceTrait;
-
-    public function generate(TemplateInterface $templateFile): void {
+class Generator extends TaskableServiceBase
+{
+    public function generate(TemplateInterface $templateFile): void
+    {
         $source = $templateFile->source();
         $destination = $templateFile->destination();
         $tokens = $templateFile->tokens();

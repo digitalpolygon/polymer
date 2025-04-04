@@ -2,8 +2,8 @@
 
 namespace DigitalPolygon\Polymer\Robo\Template;
 
-interface TemplateInterface {
-
+interface TemplateInterface
+{
     public const SERVICE_PREFIX = 'plugin.template.';
 
     /**

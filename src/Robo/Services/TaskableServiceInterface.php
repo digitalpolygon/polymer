@@ -15,6 +15,7 @@ use League\Container\ContainerAwareInterface;
  *
  * @see \DigitalPolygon\Polymer\Robo\Services\TaskableServiceTrait
  */
-interface TaskableServiceInterface extends ContainerAwareInterface {
+interface TaskableServiceInterface extends ContainerAwareInterface
+{
     public function createCollectionBuilder(): void;
 }

@@ -7,8 +7,8 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
-abstract class Template implements TemplateInterface, ContainerAwareInterface, ConfigAwareInterface {
-
+abstract class Template implements TemplateInterface, ContainerAwareInterface, ConfigAwareInterface
+{
     use ContainerAwareTrait;
     use ConfigAwareTrait;
 
@@ -23,8 +23,8 @@ abstract class Template implements TemplateInterface, ContainerAwareInterface, C
     /**
      * {@inheritdoc}
      */
-    public static function collections(): array {
+    public static function collections(): array
+    {
         return ['all'];
     }
-
 }

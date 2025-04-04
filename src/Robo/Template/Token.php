@@ -2,14 +2,15 @@
 
 namespace DigitalPolygon\Polymer\Robo\Template;
 
-final class Token {
-
+final class Token
+{
     public function __construct(
         protected string $name,
         protected ?string $defaultValue = null,
         protected bool $isRequired = false,
         protected ?string $value = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Create token from array.
@@ -17,7 +18,8 @@ final class Token {
      * @param array $data
      * @return self
      */
-    public static function tokenFromArray(array $data): self {
+    public static function tokenFromArray(array $data): self
+    {
         $token = new self($data['name']);
         if ($data['value']) {
             $token->setValue($data['value']);
@@ -37,7 +39,8 @@ final class Token {
      * @param array $data
      * @return self[]
      */
-    public static function tokensFromArray(array $data): array {
+    public static function tokensFromArray(array $data): array
+    {
         $tokens = [];
         foreach ($data as $tokenData) {
             $tokens[] = self::tokenFromArray($tokenData);
@@ -65,19 +68,23 @@ final class Token {
         $this->value = $value;
     }
 
-    public function getIsRequired(): bool|null {
+    public function getIsRequired(): bool|null
+    {
         return $this->isRequired;
     }
 
-    public function getValue(): string|null {
+    public function getValue(): string|null
+    {
         return $this->value ?? $this->defaultValue;
     }
 
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function getDefaultValue(): string|null {
+    public function getDefaultValue(): string|null
+    {
         return $this->defaultValue;
     }
 }
