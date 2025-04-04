@@ -5,24 +5,26 @@ namespace DigitalPolygon\Polymer\Robo\Commands\Template;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
+use Consolidation\AnnotatedCommand\Attributes\DefaultFields;
+use Consolidation\AnnotatedCommand\Attributes\FieldLabels;
+use Consolidation\AnnotatedCommand\Attributes\FilterDefaultField;
 use Consolidation\AnnotatedCommand\Attributes\Hook;
+use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use DigitalPolygon\Polymer\Robo\Services\Template\Generator;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use DigitalPolygon\Polymer\Robo\Template\TemplateInterface;
 use Robo\Symfony\ConsoleIO;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
 class TemplateCommand extends TaskBase
 {
     public const TEMPLATE_GENERATE_FILE_COMMAND = 'template:generate:file';
-    public const TEMPLATE_LIST_COMMAND          = 'template:list:all';
+    public const TEMPLATE_LIST_COMMAND          = 'template:list';
 
     #[Command(name: self::TEMPLATE_GENERATE_FILE_COMMAND)]
     #[Argument(name: 'template_id', description: 'Template ID to generate.')]
@@ -58,13 +60,29 @@ class TemplateCommand extends TaskBase
     }
 
     #[Command(name: self::TEMPLATE_LIST_COMMAND)]
-    public function listTemplates(ConsoleIO $io): int
+    #[DefaultFields(fields: ['id', 'description', 'tokens', 'collections'])] // Default fields for the table output
+    #[FieldLabels(labels: ['id' => 'ID', 'description' => 'Description', 'tokens' => 'Tokens', 'collections' => 'Collections'])] // Field labels for the table output
+    #[Option(name: 'collection', description: 'List templates in this collection.')]
+    public function listTemplates(ConsoleIO $io, string $collection = 'all', array $options = []): RowsOfFields
     {
         /** @var TemplateInterface[] $templates */
-        $templates = $this->getContainer()->get('plugin.templates.collections.all');
+        $templates = $this->getContainer()->get('plugin.templates.collections.' . $collection);
+        $data = [];
         foreach ($templates as $template) {
-            $io->writeln($template->id());
+            $tokenMap = array_combine(
+                array_map(fn($token) => $token->getName(), $template->tokens()),
+                array_map(fn($token) => (string) $token->getValue(), $template->tokens())
+            );
+            $tokenMapImploded = implode("\n", array_map(function (string $key, string $val) {
+                return "$key: $val";
+            }, array_keys($tokenMap), $tokenMap));
+            $data[$template->id()] = [
+                'id' => $template->id(),
+                'description' => $template->description(),
+                'tokens' => in_array($options['format'], ['json']) ? $tokenMap : $tokenMapImploded,
+                'collections' => implode(', ', $template->collections()),
+            ];
         }
-        return 0;
+        return new RowsOfFields($data);
     }
 }

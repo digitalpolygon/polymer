@@ -14,6 +14,13 @@ interface TemplateInterface
     public static function id(): string;
 
     /**
+     * Provide a description for this template.
+     *
+     * @return string
+     */
+    public function description(): string;
+
+    /**
      * Get where the template file lives on the filesystem.
      *
      * @return string

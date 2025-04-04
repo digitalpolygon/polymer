@@ -13,6 +13,12 @@ abstract class GitHubWorkflowTemplateBase extends Template
             ->get('repo.root') . '/.github/workflows';
     }
 
+    public function description(): string
+    {
+        return 'A GitHub workflow template.';
+    }
+
+
     public static function collections(): array
     {
         $collections = parent::collections();
