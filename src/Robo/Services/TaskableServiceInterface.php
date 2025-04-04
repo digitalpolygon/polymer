@@ -13,7 +13,7 @@ use League\Container\ContainerAwareInterface;
  * service architecture, so Polymer has to handle
  * builder creation for non-Robo command services.
  *
- * @see \DigitalPolygon\Polymer\Robo\Services\TaskableServiceTrait
+ * @see \DigitalPolygon\Polymer\Robo\Services\TaskableServiceBase
  */
 interface TaskableServiceInterface extends ContainerAwareInterface
 {
