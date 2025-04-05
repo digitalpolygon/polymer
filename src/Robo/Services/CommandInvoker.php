@@ -56,8 +56,9 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): void
+    public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): int
     {
+        $exit_code = 128;
         if (!$this->isCommandDisabled($commandName)) {
             $this->invokeDepth++;
             $command = $this->application->find($commandName);
@@ -107,11 +108,12 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
             // The application will catch any exceptions thrown in the executed
             // command. We must check the exit code and throw our own exception. This
             // obviates the need to check the exit code of every invoked command.
-            if ($exit_code) {
+            if ($exit_code !== 0) {
                 $this->output->writeln("The command failed. This often indicates a problem with your configuration. Review the command output above for more detailed errors, and consider re-running with verbose output for more information.");
                 throw new PolymerException("Command `$commandName {$input->__toString()}` exited with code $exit_code.");
             }
         }
+        return $exit_code;
     }
 
     /**

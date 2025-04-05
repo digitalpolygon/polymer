@@ -7,7 +7,7 @@ use DigitalPolygon\Polymer\Robo\Template\TemplateInterface;
 
 class Generator extends TaskableServiceBase
 {
-    public function generate(TemplateInterface $templateFile): void
+    public function generate(TemplateInterface $templateFile, bool $force = true): void
     {
         $source = $templateFile->source();
         $destination = $templateFile->destination();
@@ -15,12 +15,9 @@ class Generator extends TaskableServiceBase
         if (!file_exists($source)) {
             throw new \RuntimeException('Source file does not exist: ' . $source);
         }
-        if (!is_dir(dirname($destination))) {
-            throw new \RuntimeException('Destination directory does not exist: ' . dirname($destination));
-        }
         $this->taskFilesystemStack()
             ->mkdir(dirname($destination))
-            ->copy($source, $destination, true)
+            ->copy($source, $destination, $force)
             ->run();
         $content = file_get_contents($destination);
         foreach ($tokens as $token) {

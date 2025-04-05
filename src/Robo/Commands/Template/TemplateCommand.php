@@ -39,13 +39,14 @@ final class TemplateCommand extends TaskBase
      */
     #[Command(name: self::TEMPLATE_GENERATE_FILE_COMMAND)]
     #[Argument(name: 'template', description: 'Template ID to generate.')]
+    #[Option(name: 'force', description: 'Overwrite destination file if it already exists.')]
     #[HookSelector(name: 'validateTemplateExistence')]
-    public function generateTemplate(ConsoleIO $io, string $template): int
+    public function generateTemplate(ConsoleIO $io, string $template, bool $force = true): int
     {
         /** @var Generator $generator */
         $generator = $this->getContainer()->get('templateGenerator');
         $templateInstance = $this->getContainer()->get(TemplateInterface::SERVICE_PREFIX . $template);
-        $generator->generate($templateInstance);
+        $generator->generate($templateInstance, $force);
         return 0;
     }
 

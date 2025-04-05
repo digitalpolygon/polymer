@@ -12,9 +12,9 @@ interface CommandInvokerInterface
      * @param InputInterface $parentInput
      * @param string $commandName
      * @param array<string, mixed> $args
-     * @return void
+     * @return int
      */
-    public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): void;
+    public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): int;
 
     /**
      * Pin options to the current invocation level.
