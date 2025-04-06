@@ -23,7 +23,7 @@
   "autoload": {
     "psr-4": {
       "DigitalPolygon\\Polymer\\": "src/",
-      "DigitalPolygon\\PolymerTest\\": "test/src/"
+      "DigitalPolygon\\PolymerTest\\": "tests/"
     }
   },
   "config": {
@@ -45,10 +45,19 @@
     "phpro/grumphp-shim": "^2.5",
     "phpstan/extension-installer": "^1.4",
     "phpstan/phpstan": "^1.11",
+    "phpunit/phpunit": "^9 || ^10",
+    "spatie/phpunit-watcher": "^1.24",
     "squizlabs/php_codesniffer": "^3",
     "symfony/stopwatch": ">=6"
   },
   "scripts": {
+    "nuke": [
+      "rm -rf vendor composer.lock"
+    ],
+    "nuke-install": [
+      "@nuke",
+      "@composer install"
+    ],
     "lint": "find src test/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
     "cs": "phpcs",
     "sa": "phpstan analyse -v -c phpstan.neon",

@@ -1,0 +1,13 @@
+# Run from the tests/phpunit directory with `../../vendor/bin/phpunit-watcher watch`
+watch:
+    directories:
+        - ../../src
+        - ./
+    fileMask: '*.php'
+notifications:
+    passingTests: false
+    failingTests: false
+phpunit:
+    binaryPath: ../../vendor/bin/phpunit
+    arguments: '--stop-on-failure'
+    timeout: false
