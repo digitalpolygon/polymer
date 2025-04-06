@@ -10,11 +10,8 @@
 -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" colors="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd">
     <testsuites>
-        <testsuite name="integration">
-            <directory suffix="Test.php">integration</directory>
-        </testsuite>
-        <testsuite name="functional">
-            <directory>functional</directory>
+        <testsuite name="unit">
+            <directory suffix="Test.php">unit</directory>
         </testsuite>
     </testsuites>
     <php>
