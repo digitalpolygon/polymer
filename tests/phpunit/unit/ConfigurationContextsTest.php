@@ -8,6 +8,18 @@ use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
 
 class ConfigurationContextsTest extends TestCase
 {
+    /**
+     * Adds an extra context to the configuration.
+     *
+     * @param PolymerConfig $config
+     * @return void
+     */
+    protected function addExtraContext(PolymerConfig $config): void
+    {
+        $config->addContext('extra', new Config([
+            'extra-key' => 'extra-value',
+        ]));
+    }
     public function testConfigurationPlaceholdersResolve(): void
     {
         // Create the configuration contexts from YAML
@@ -20,6 +32,7 @@ class ConfigurationContextsTest extends TestCase
 
         $config = new PolymerConfig();
         $config->addContext('polymer', $polymerContext);
+        $this->addExtraContext($config);
 
         $this->assertEquals($config->get('polymer.my-value-2'), 'value');
     }
@@ -46,6 +59,7 @@ class ConfigurationContextsTest extends TestCase
         // Add the contexts in the specified order
         $config->addContext('polymer', $polymerContext);
         $config->addContext('project', $projectContext);
+        $this->addExtraContext($config);
 
         $this->assertEquals($config->get('polymer.my-value-1'), 'value-1');
         $this->assertEquals($config->get('polymer.my-value-2'), 'value-1');
@@ -74,6 +88,7 @@ class ConfigurationContextsTest extends TestCase
         // Add the contexts in the specified order
         $config->addContext('polymer', $polymerContext);
         $config->addContext('project', $projectContext);
+        $this->addExtraContext($config);
 
         $this->assertEquals($config->get('polymer.my-value-1'), 'value-1');
         $this->assertEquals($config->get('polymer.my-value-2'), 'value-1');
@@ -99,6 +114,7 @@ class ConfigurationContextsTest extends TestCase
         // Add the contexts in the specified order
         $config->addContext('polymer', $polymerContext);
         $config->addContext('project', $projectContext);
+        $this->addExtraContext($config);
 
         $this->assertEquals($config->get('polymer.my-value-1'), 'value-1');
         $this->assertEquals($config->get('polymer.my-value-2'), 'value-1');
@@ -124,6 +140,7 @@ class ConfigurationContextsTest extends TestCase
         // Add the contexts in the specified order
         $config->addContext('polymer', $polymerContext);
         $config->addContext('project', $projectContext);
+        $this->addExtraContext($config);
 
         $this->assertEquals($config->get('polymer.my-value-1'), '${polymer.my-value-2}');
         $this->assertEquals($config->get('polymer.my-value-2'), '${polymer.my-value-2}');
@@ -148,6 +165,7 @@ class ConfigurationContextsTest extends TestCase
         // Add the contexts in the specified order
         $config->addContext('polymer', $polymerContext);
         $config->addContext('project', $projectContext);
+        $this->addExtraContext($config);
 
         $config->set('polymer.my-value-3', '${polymer.my-value-2}');
 
@@ -167,6 +185,7 @@ class ConfigurationContextsTest extends TestCase
 
         // Add the contexts in the specified order
         $config->addContext('polymer', $polymerContext);
+        $this->addExtraContext($config);
 
         $this->assertEquals($config->get('polymer.my-value-1'), '${process.key}');
 
