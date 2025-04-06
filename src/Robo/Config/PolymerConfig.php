@@ -90,6 +90,7 @@ final class PolymerConfig extends RoboConfig
                 continue;
             }
             $context->replace($updatedContextData[$name]);
+            $this->originalContexts[$name]->replace($updatedContextData[$name]);
         }
     }
 
