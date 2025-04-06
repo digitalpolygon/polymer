@@ -32,6 +32,7 @@ class LoadConfiguration implements EventSubscriberInterface, ConfigAwareInterfac
             $polymerConfig->addContext($contextId, $contextConfig);
         }
         $polymerConfig->addContext('env', new EnvConfig('POLYMER'));
+        $polymerConfig->freezeContexts();
         $configManager->pushConfig($polymerConfig);
     }
 

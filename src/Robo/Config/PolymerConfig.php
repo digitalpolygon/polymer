@@ -99,4 +99,9 @@ final class PolymerConfig extends RoboConfig
         $this->reprocess();
         return $self;
     }
+
+    public function freezeContexts(): void
+    {
+        $this->contextsFrozen = true;
+    }
 }
