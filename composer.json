@@ -23,7 +23,7 @@
   "autoload": {
     "psr-4": {
       "DigitalPolygon\\Polymer\\": "src/",
-      "DigitalPolygon\\PolymerTest\\": "test/src/"
+      "DigitalPolygon\\PolymerTest\\": "tests/"
     }
   },
   "config": {
