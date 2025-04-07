@@ -8,5 +8,6 @@ RUN pip install --break-system-packages \
         mkdocs-git-authors-plugin \
         mkdocs-redirects \
         mkdocs-git-revision-date-localized-plugin \
+        mkdocs-markdownextradata-plugin \
         pymdown-extensions \
         git+https://gitlab.com/blacs30/mkdocs-edit-url.git;

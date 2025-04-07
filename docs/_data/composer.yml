@@ -1,0 +1,3 @@
+composer:
+  default-branch: 0.x
+  default-constraint: dev-0.x
