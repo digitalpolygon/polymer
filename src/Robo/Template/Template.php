@@ -2,27 +2,14 @@
 
 namespace DigitalPolygon\Polymer\Robo\Template;
 
-use Consolidation\Config\ConfigInterface;
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
 use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginBase;
-use League\Container\Container;
-use Robo\Contract\ConfigAwareInterface;
+use League\Container\ContainerAwareTrait;
 
-abstract class Template extends PluginBase implements TemplateInterface, ConfigAwareInterface
+abstract class Template extends PluginBase implements TemplateInterface
 {
     use ConfigAwareTrait;
-
-    public function __construct(ConfigInterface $config = null)
-    {
-        if ($config) {
-            $this->setConfig($config);
-        }
-    }
-
-    public static function create(Container $container): self
-    {
-        return new static($container->get('config'));
-    }
+    use ContainerAwareTrait;
 
     /**
      * {@inheritdoc}

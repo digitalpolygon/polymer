@@ -213,7 +213,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             ->invokeMethod('setClassLoader', [new ResolvableArgument('classLoader')]);
         $container->inflector(PluginManagerInterface::class)
             ->invokeMethods([
-                'setDiscoveryData' => [],
                 'configureDiscovery' => [],
                 'getDefinitions' => [],
             ]);

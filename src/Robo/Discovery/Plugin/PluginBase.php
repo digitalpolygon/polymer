@@ -2,12 +2,9 @@
 
 namespace DigitalPolygon\Polymer\Robo\Discovery\Plugin;
 
-use League\Container\Container;
+use League\Container\ContainerAwareInterface;
+use Robo\Contract\ConfigAwareInterface;
 
-abstract class PluginBase implements PluginInterface
+abstract class PluginBase implements PluginInterface, ConfigAwareInterface, ContainerAwareInterface
 {
-    public static function create(Container $container): self
-    {
-        return new static();
-    }
 }

@@ -12,8 +12,6 @@ parameters:
             message: "#^Parameter \\#2 \\$default of method Consolidation\\\\Config\\\\Util\\\\ConfigOverlay\\:\\:get\\(\\) expects string\\|null, array given\\.$#"
         -
             identifier: missingType.iterableValue
-        -
-            identifier: new.static
 #services:
 #    -
 #        class: DigitalPolygon\PolymerTest\PHPStan\CollectionBuilderReflectionExtension

@@ -10,7 +10,6 @@ class TemplatePluginManager extends PluginManagerBase
     {
         $this->relativeNamespace = 'Polymer/Plugin/Template';
         $this->pluginInterface = TemplateInterface::class;
-        $this->pluginPrefix = 'template';
     }
 
     public function getCollections(): array
