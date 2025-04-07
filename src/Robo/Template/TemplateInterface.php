@@ -2,7 +2,10 @@
 
 namespace DigitalPolygon\Polymer\Robo\Template;
 
-interface TemplateInterface
+use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginInterface;
+use League\Container\Container;
+
+interface TemplateInterface extends PluginInterface
 {
     public const SERVICE_PREFIX = 'plugin.template.';
 
