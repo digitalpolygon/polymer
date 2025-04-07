@@ -3,14 +3,13 @@
 namespace DigitalPolygon\Polymer\Robo\Template;
 
 use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use League\Container\ContainerAwareInterface;
+use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginBase;
 use League\Container\ContainerAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 
-abstract class Template implements TemplateInterface, ContainerAwareInterface, ConfigAwareInterface
+abstract class Template extends PluginBase implements TemplateInterface
 {
-    use ContainerAwareTrait;
     use ConfigAwareTrait;
+    use ContainerAwareTrait;
 
     /**
      * {@inheritdoc}

@@ -16,6 +16,7 @@ use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
 use DigitalPolygon\Polymer\Robo\Services\Template\Generator;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use DigitalPolygon\Polymer\Robo\Template\TemplateInterface;
+use DigitalPolygon\Polymer\Robo\Template\TemplatePluginManager;
 use DigitalPolygon\Polymer\Robo\Utility\CommandHelper;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -43,9 +44,12 @@ final class TemplateCommand extends TaskBase
     #[HookSelector(name: 'validateTemplateExistence')]
     public function generateTemplate(ConsoleIO $io, string $template, bool $force = true): int
     {
+        /** @var TemplatePluginManager $templatePluginManager */
+        $templatePluginManager = $this->getContainer()->get('templatePluginManager');
         /** @var Generator $generator */
         $generator = $this->getContainer()->get('templateGenerator');
-        $templateInstance = $this->getContainer()->get(TemplateInterface::SERVICE_PREFIX . $template);
+        /** @var TemplateInterface $templateInstance */
+        $templateInstance = $templatePluginManager->getDefinition($template);
         $generator->generate($templateInstance, $force);
         return 0;
     }
@@ -64,7 +68,9 @@ final class TemplateCommand extends TaskBase
     #[HookSelector(name: 'validateTemplateExistence')]
     public function generateCollection(ConsoleIO $io, string $collection): int
     {
-        $templates = $this->getContainer()->get('plugin.templates.collections.' . $collection);
+        /** @var TemplatePluginManager $templatePluginManager */
+        $templatePluginManager = $this->getContainer()->get('templatePluginManager');
+        $templates = $templatePluginManager->getTemplatesFromCollection($collection);
         /** @var Generator $generator */
         $generator = $this->getContainer()->get('templateGenerator');
         foreach ($templates as $template) {
@@ -106,8 +112,10 @@ final class TemplateCommand extends TaskBase
     #[HookSelector(name: 'validateTemplateExistence')]
     public function listTemplates(ConsoleIO $io, string $collection = 'all', array $options = []): RowsOfFields
     {
+        /** @var TemplatePluginManager $templatePluginManager */
+        $templatePluginManager = $this->getContainer()->get('templatePluginManager');
         /** @var TemplateInterface[] $templates */
-        $templates = $this->getContainer()->get('plugin.templates.collections.' . $collection);
+        $templates = $templatePluginManager->getTemplatesFromCollection($collection);
         $data = [];
         foreach ($templates as $template) {
             $tokenMap = array_combine(
@@ -137,14 +145,16 @@ final class TemplateCommand extends TaskBase
     #[Hook(type: HookManager::ARGUMENT_VALIDATOR, selector: 'validateTemplateExistence')]
     public function validateTemplateOrCollectionExistence(CommandData $commandData): void
     {
+        /** @var TemplatePluginManager $pluginManager */
+        $pluginManager = $this->getContainer()->get('templatePluginManager');
         // If an option or argument named template or collection exists, validate that they
         // exist before proceeding to command execution.
         $template = CommandHelper::getArgumentOrOptionValue($commandData->input(), 'template');
         $collection = CommandHelper::getArgumentOrOptionValue($commandData->input(), 'collection');
-        if (!empty($template) && !$this->getContainer()->has(TemplateInterface::SERVICE_PREFIX . $template)) {
+        if (!empty($template) && !$pluginManager->hasDefinition($template)) {
             throw new PolymerException('Template not found: ' . $template);
         }
-        if (!empty($collection) && !$this->getContainer()->has('plugin.templates.collections.' . $collection)) {
+        if (!empty($collection) && !$pluginManager->hasCollection($collection)) {
             throw new PolymerException('Collection not found: ' . $collection);
         }
     }
@@ -160,8 +170,10 @@ final class TemplateCommand extends TaskBase
     {
         $data = [];
         $collections = [];
+        /** @var TemplatePluginManager $templateManager */
+        $templateManager = $this->getContainer()->get('templatePluginManager');
         /** @var TemplateInterface[] $allTemplates */
-        $allTemplates = $this->getContainer()->get('plugin.templates.collections.all');
+        $allTemplates = $templateManager->getTemplatesFromCollection('all');
         foreach ($allTemplates as $template) {
             $collections = array_merge($collections, $template->collections());
         }

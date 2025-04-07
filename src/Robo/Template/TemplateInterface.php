@@ -2,10 +2,10 @@
 
 namespace DigitalPolygon\Polymer\Robo\Template;
 
-interface TemplateInterface
-{
-    public const SERVICE_PREFIX = 'plugin.template.';
+use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginInterface;
 
+interface TemplateInterface extends PluginInterface
+{
     /**
      * Unique ID of the template.
      *

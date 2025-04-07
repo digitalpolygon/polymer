@@ -4,6 +4,8 @@ namespace DigitalPolygon\Polymer\Robo;
 
 use Composer\Autoload\ClassLoader;
 use Composer\InstalledVersions;
+use DigitalPolygon\Polymer\Robo\Contract\ClassLoaderAwareInterface;
+use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginManagerInterface;
 use DigitalPolygon\Polymer\Robo\Services\TaskableServiceInterface;
 use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
 use DigitalPolygon\Polymer\Robo\Config\ConfigStack;
@@ -20,6 +22,7 @@ use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\LoadConfiguration;
 use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\SetGlobalOptionsPostInvoke;
 use DigitalPolygon\Polymer\Robo\Services\Template\Generator;
+use DigitalPolygon\Polymer\Robo\Template\TemplatePluginManager;
 use League\Container\Argument\LiteralArgument;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
@@ -199,12 +202,20 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             ->addMethodCall('addSubscriber', [new ResolvableArgument('polymerConfigContextProvider')]);
 
         $container->addShared('templateGenerator', Generator::class);
+        $container->addShared('templatePluginManager', TemplatePluginManager::class);
 
         // Inflectors.
         $container->inflector(CommandInvokerAwareInterface::class)
             ->invokeMethod('setCommandInvoker', [new ResolvableArgument('commandInvoker')]);
         $container->inflector(TaskableServiceInterface::class)
             ->invokeMethod('createCollectionBuilder', []);
+        $container->inflector(ClassLoaderAwareInterface::class)
+            ->invokeMethod('setClassLoader', [new ResolvableArgument('classLoader')]);
+        $container->inflector(PluginManagerInterface::class)
+            ->invokeMethods([
+                'configureDiscovery' => [],
+                'getDefinitions' => [],
+            ]);
 
         // Service providers.
         $serviceProviders = $this->collectServiceProviders();
