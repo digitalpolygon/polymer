@@ -19,8 +19,7 @@ class TemplatePluginManager extends PluginManagerBase
         /** @var TemplateInterface[] $templates */
         $templates = $this->getDefinitions();
         foreach ($templates as $plugin) {
-            $collections = $plugin->collections();
-            $collections = array_merge($collections, $collections);
+            $collections = array_merge($collections, $plugin->collections());
         }
         $collections = array_unique($collections);
         ksort($collections);

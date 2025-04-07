@@ -3,7 +3,6 @@
 namespace DigitalPolygon\Polymer\Robo\Template;
 
 use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginInterface;
-use League\Container\Container;
 
 interface TemplateInterface extends PluginInterface
 {

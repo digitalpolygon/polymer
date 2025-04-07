@@ -26,7 +26,7 @@ abstract class PluginManagerBase implements PluginManagerInterface, ContainerAwa
     {
         $this->discovery = new RelativeNamespaceDiscovery($this->classLoader);
         $this->discovery->setRelativeNamespace($this->relativeNamespace);
-        if (is_subclass_of($this->pluginInterface, PluginInterface::class)) {
+        if (!is_subclass_of($this->pluginInterface, PluginInterface::class)) {
             throw new \RuntimeException(sprintf("Plugin interface %s must implement %s", $this->pluginInterface, PluginInterface::class));
         }
     }
