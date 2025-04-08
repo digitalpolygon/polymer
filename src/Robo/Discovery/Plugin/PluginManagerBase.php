@@ -64,6 +64,8 @@ abstract class PluginManagerBase implements PluginManagerInterface, ContainerAwa
             ->invokeMethod('setConfig', [new ResolvableArgument('config')]);
         $this->definitionContainer->inflector(ContainerAwareInterface::class)
             ->invokeMethod('setContainer', [new ResolvableArgument('container')]);
+        $this->definitionContainer->inflector(PluginInterface::class)
+            ->invokeMethod('configurePlugin', []);
     }
 
     public function getDefinitions(): array
