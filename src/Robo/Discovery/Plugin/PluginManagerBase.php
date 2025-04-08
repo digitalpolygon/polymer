@@ -38,9 +38,10 @@ abstract class PluginManagerBase implements PluginManagerInterface, ContainerAwa
 
         $this->discovery = new RelativeNamespaceDiscovery($this->classLoader);
         $this->discovery->setRelativeNamespace($this->relativeNamespace);
+        $classes = $this->discovery->getClasses();
 
-        $classes = array_filter($this->discovery->getClasses(), fn ($class) => is_subclass_of($class, $this->pluginInterface));
-        foreach ($classes as $class) {
+        $pluginClasses = array_filter($classes, fn ($class) => is_subclass_of($class, $this->pluginInterface));
+        foreach ($pluginClasses as $class) {
             $id = $class::id();
             $this->definitionContainer->add($id, $class)
                ->addTag('plugin');

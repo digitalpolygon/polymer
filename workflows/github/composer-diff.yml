@@ -1,0 +1,29 @@
+name: Composer Versions Diff
+on:
+  pull_request:
+    paths:
+      - 'composer.lock'
+jobs:
+  composer-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate Composer diff
+        id: composer_diff
+        uses: IonBazan/composer-diff-action@v1
+        with:
+          with-links: true
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ steps.composer_diff.outputs.composer_diff_exit_code != 0 }}
+        with:
+          header: composer-diff
+          message: |
+            <details>
+            <summary>Composer package changes</summary>
+
+            ${{ steps.composer_diff.outputs.composer_diff }}
+
+            </details>
