@@ -6,7 +6,9 @@ use Consolidation\Config\ConfigInterface;
 use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
 use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
 use DigitalPolygon\Polymer\Robo\ConsoleApplication;
+use DigitalPolygon\Polymer\Robo\Debug\CommandTracerTrait;
 use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Robo\Polymer;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -20,6 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
+    use CommandTracerTrait;
 
     protected int $invokeDepth = 0;
 
@@ -31,6 +34,8 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
 
     /** @var array<string, mixed> */
     protected array $pinnedGlobalOptions = [];
+
+    protected array $commandInvokerTracer = [];
 
     public function __construct(
         protected EventDispatcherInterface $eventDispatcher,
@@ -59,6 +64,9 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
     public function invokeCommand(InputInterface $parentInput, string $commandName, array $args = []): int
     {
         $exit_code = 128;
+        if (Polymer::tracingEnabled()) {
+            $this->traceInvocation($commandName, debug_backtrace());
+        }
         if (!$this->isCommandDisabled($commandName)) {
             $this->invokeDepth++;
             $command = $this->application->find($commandName);
@@ -223,5 +231,16 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
         if (empty($this->pinnedGlobalOptions[$option])) {
             unset($this->pinnedGlobalOptions[$option]);
         }
+    }
+
+    protected function traceInvocation(string $commandName, array $backtrace): void
+    {
+        $commands = $this->getInvokedCommands($backtrace);
+        $this->commandInvokerTracer[$commandName][] = $commands;
+    }
+
+    public function getTracedInvocations(): array
+    {
+        return $this->commandInvokerTracer;
     }
 }

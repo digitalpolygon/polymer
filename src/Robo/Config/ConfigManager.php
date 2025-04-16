@@ -13,7 +13,7 @@ class ConfigManager
 {
     public function __construct(
         protected EventDispatcherInterface $dispatcher,
-        protected ConfigStack $config,
+        protected ConfigStackInterface $config,
     ) {
     }
 
@@ -31,7 +31,7 @@ class ConfigManager
         return $event->getContexts();
     }
 
-    public function pushConfig(PolymerConfig $config): void
+    public function pushConfig(ConfigInterface $config): void
     {
         $this->config->pushConfig($config);
     }

@@ -4,6 +4,7 @@ namespace DigitalPolygon\Polymer\Robo;
 
 use Composer\Autoload\ClassLoader;
 use Composer\InstalledVersions;
+use DigitalPolygon\Polymer\Robo\Config\TraceableConfig;
 use DigitalPolygon\Polymer\Robo\Contract\ClassLoaderAwareInterface;
 use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginManagerInterface;
 use DigitalPolygon\Polymer\Robo\Services\TaskableServiceInterface;
@@ -34,6 +35,7 @@ use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * The Polymer Robo application.
@@ -102,7 +104,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             ->createApplication()
             ->discoverExtensions()
             ->setupContainer()
-            ->configureRunner();
+            ->configureRunner()
+            ->registerShutdown();
     }
 
     /**
@@ -149,6 +152,9 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         // Create boot config.
         $config = new ConfigStack();
         $config->pushConfig(new PolymerConfig());
+        if (static::tracingEnabled()) {
+            $config = new TraceableConfig($config);
+        }
         $this->setConfig($config);
 
         $container = new Container();
@@ -268,7 +274,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         /** @var ExtensionDiscovery $extensionDiscovery */
         $extensionDiscovery = $this->getContainer()->get('extensionDiscovery');
         $mergedCommandsAndHooks = array_merge($this->commands, $this->hooks);
-        return $this->runner->run($input, $output, $application, $mergedCommandsAndHooks);
+        $result = $this->runner->run($input, $output, $application, $mergedCommandsAndHooks);
+        return  $result;
     }
 
     /**
@@ -281,5 +288,36 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $serviceProviders[$extension] = $info->getServiceProvider();
         }
         return array_filter($serviceProviders);
+    }
+
+    protected function registerShutdown(): self
+    {
+        if (static::tracingEnabled()) {
+            register_shutdown_function(function () {
+                $this->dumpTraceData();
+            });
+        }
+        return $this;
+    }
+
+    public static function tracingEnabled(): bool
+    {
+        return getenv('POLYMER_ENABLE_TRACER') === '1';
+    }
+
+    public function dumpTraceData(): void
+    {
+        if (static::tracingEnabled()) {
+            $config = $this->getConfig();
+            if ($config instanceof TraceableConfig) {
+                $trace = $config->getTrace();
+                $configUsedYaml = Yaml::dump($trace);
+            }
+            /** @var \DigitalPolygon\Polymer\Robo\Services\CommandInvoker $commandInvoker */
+            $commandInvoker = $this->getContainer()->get('commandInvoker');
+            $invocations = $commandInvoker->getTracedInvocations();
+            $commandsInvokedYaml = Yaml::dump($invocations);
+            $x = 5;
+        }
     }
 }
