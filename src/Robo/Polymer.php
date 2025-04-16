@@ -308,16 +308,28 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     public function dumpTraceData(): void
     {
         if (static::tracingEnabled()) {
+            $dumps = [];
             $config = $this->getConfig();
             if ($config instanceof TraceableConfig) {
-                $trace = $config->getTrace();
-                $configUsedYaml = Yaml::dump($trace);
+                $dumps['config'] = $config->getTrace();
             }
             /** @var \DigitalPolygon\Polymer\Robo\Services\CommandInvoker $commandInvoker */
             $commandInvoker = $this->getContainer()->get('commandInvoker');
-            $invocations = $commandInvoker->getTracedInvocations();
-            $commandsInvokedYaml = Yaml::dump($invocations);
+            $dumps['command_invocations'] = $commandInvoker->getTracedInvocations();
+            $this->removeEmptyArraysRecursively($dumps);
             $x = 5;
+        }
+    }
+
+    protected function removeEmptyArraysRecursively(array &$inputArray): void
+    {
+        foreach ($inputArray as $key => &$value) {
+            if (is_array($value)) {
+                $this->removeEmptyArraysRecursively($value);
+                if (empty($value)) {
+                    unset($inputArray[$key]);
+                }
+            }
         }
     }
 }
