@@ -12,28 +12,28 @@
         <meta name="author" content="Les Peabody">
       
       
-        <link rel="canonical" href="https://digitalpolygon.github.io/polymer/latest/latest/developing/extending_polymer/">
+        <link rel="canonical" href="https://digitalpolygon.github.io/polymer/latest/latest/artifacts/">
       
       
-        <link rel="prev" href="../..">
+        <link rel="prev" href="../developing/command_invoker/">
       
       
-        <link rel="next" href="../configuration/">
+        <link rel="next" href="../commands/all/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.18">
     
     
       
-        <title>Extending Polymer - Polymer</title>
+        <title>Artifacts and Builds - Polymer</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -52,7 +52,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#extending-polymer" class="md-skip">
+        <a href="#artifact-and-build-management" class="md-skip">
           Skip to content
         </a>
       
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Polymer" class="md-header__button md-logo" aria-label="Polymer" data-md-component="logo">
+    <a href=".." title="Polymer" class="md-header__button md-logo" aria-label="Polymer" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Extending Polymer
+              Artifacts and Builds
             
           </span>
         </div>
@@ -221,7 +221,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href=".." class="md-tabs__link">
         
   
     
@@ -236,13 +236,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../developing/extending_polymer/" class="md-tabs__link">
           
   
   Development
@@ -256,11 +254,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../artifacts/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   Use
@@ -284,7 +284,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../commands/all/" class="md-tabs__link">
+        <a href="../commands/all/" class="md-tabs__link">
           
   
   Commands
@@ -328,7 +328,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Polymer" class="md-nav__button md-logo" aria-label="Polymer" data-md-component="logo">
+    <a href=".." title="Polymer" class="md-nav__button md-logo" aria-label="Polymer" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -358,7 +358,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -367,6 +367,114 @@
   
 
       </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developing/extending_polymer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Extending Polymer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developing/configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developing/command_invoker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Command invoker service
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -393,24 +501,24 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   <span class="md-ellipsis">
-    Development
+    Use
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Development
+            Use
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -434,7 +542,7 @@
           
   
   <span class="md-ellipsis">
-    Extending Polymer
+    Artifacts and Builds
   </span>
   
 
@@ -445,7 +553,7 @@
         
   
   <span class="md-ellipsis">
-    Extending Polymer
+    Artifacts and Builds
   </span>
   
 
@@ -467,29 +575,68 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#extension-discovery" class="md-nav__link">
+  <a href="#builds" class="md-nav__link">
     <span class="md-ellipsis">
-      Extension discovery
+      Builds
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#service-providers" class="md-nav__link">
+  <a href="#artifacts" class="md-nav__link">
     <span class="md-ellipsis">
-      Service providers
+      Artifacts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Artifacts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-commands-and-hooks" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#deploying" class="md-nav__link">
     <span class="md-ellipsis">
-      Adding commands and hooks
+      Deploying
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Deploying">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deployment-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-remote-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Git remote configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -497,114 +644,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../configuration/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Configuration management
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../command_invoker/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Command invoker service
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Use
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            Use
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../artifacts/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Artifacts and Builds
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -700,7 +739,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/all/" class="md-nav__link">
+      <a href="../commands/all/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -721,7 +760,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/completion/" class="md-nav__link">
+      <a href="../commands/completion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -742,7 +781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/composer_validate_security/" class="md-nav__link">
+      <a href="../commands/composer_validate_security/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -763,7 +802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/help/" class="md-nav__link">
+      <a href="../commands/help/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -784,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/list/" class="md-nav__link">
+      <a href="../commands/list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -805,7 +844,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/mk_docs/" class="md-nav__link">
+      <a href="../commands/mk_docs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -826,7 +865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/polymer_init/" class="md-nav__link">
+      <a href="../commands/polymer_init/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -847,7 +886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/source_build_copy/" class="md-nav__link">
+      <a href="../commands/source_build_copy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -914,7 +953,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/artifact_build_prepare/" class="md-nav__link">
+      <a href="../commands/artifact_build_prepare/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -935,7 +974,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/artifact_build_sanitize/" class="md-nav__link">
+      <a href="../commands/artifact_build_sanitize/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -956,7 +995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/artifact_compile/" class="md-nav__link">
+      <a href="../commands/artifact_compile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -977,7 +1016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/artifact_composer_install/" class="md-nav__link">
+      <a href="../commands/artifact_composer_install/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -998,7 +1037,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/artifact_deploy/" class="md-nav__link">
+      <a href="../commands/artifact_deploy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1065,7 +1104,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/build/" class="md-nav__link">
+      <a href="../commands/build/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1086,7 +1125,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/build_assets/" class="md-nav__link">
+      <a href="../commands/build_assets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1107,7 +1146,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/build_reqs/" class="md-nav__link">
+      <a href="../commands/build_reqs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1174,7 +1213,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/template_generate_collection/" class="md-nav__link">
+      <a href="../commands/template_generate_collection/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1195,7 +1234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/template_generate_file/" class="md-nav__link">
+      <a href="../commands/template_generate_file/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1216,7 +1255,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/template_list_collections/" class="md-nav__link">
+      <a href="../commands/template_list_collections/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1237,7 +1276,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands/template_list_templates/" class="md-nav__link">
+      <a href="../commands/template_list_templates/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1304,7 +1343,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 4, 2025 19:56:35">March 4, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="April 25, 2025 23:44:10">April 25, 2025</span>
   </span>
 
     
@@ -1313,52 +1352,107 @@
     
   </aside>
 
-<h1 id="extending-polymer">Extending Polymer<a class="headerlink" href="#extending-polymer" title="Permanent link">&para;</a></h1>
-<p>Polymer provides a mechanism for other packages to extend Polymer's functionality.</p>
-<h2 id="extension-discovery">Extension discovery<a class="headerlink" href="#extension-discovery" title="Permanent link">&para;</a></h2>
-<p>An extension is registered with Polymer if:</p>
-<ul>
-<li>A package contains the relative namespace <code>Polymer</code></li>
-<li>A file <code>ExtensionInfo.php</code> exists in that namespace and implements <code>DigitalPolygon\Polymer\Robo\Extension\PolymerExtensionInterface</code></li>
-</ul>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<p>For example, if you have a package that has a psr-4 namespace of <code>My\Package</code>
-that points to the package's <code>src</code> directory, then you need to place
-<code>src/Polymer/ExtensionInfo.php</code> in your package.</p>
-</div>
-<h2 id="service-providers">Service providers<a class="headerlink" href="#service-providers" title="Permanent link">&para;</a></h2>
-<p>An extension can <a href="https://container.thephpleague.com/4.x/service-providers/">provide a service provider</a>
-to interact with the dependency injection (DI) container. This is useful for
-extensions that want to leverage DI for their own services or extend Polymer
-Core services (e.g. subscribing to events emitted by Polymer Core).</p>
-<p>To include a service provider with an extension, the service provider class:</p>
-<ul>
-<li>Must be located in the same directory as <code>ExtensionInfo.php</code></li>
-<li>Must be spelled using the camelCase name of your extension's ID (with the first letter capitalized)</li>
-<li>Must implement the interface <code>League\Container\ServiceProvider\ServiceProviderInterface</code></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you need your service provider to execute during the boot phase of the
-container, your service provider must implement
-<code>League\Container\ServiceProvider\BootableServiceProviderInterface</code>.</p>
-</div>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>Polymer Core at this point <strong><em>does not assume any responsibility</em></strong> for extensions
-that extend Core services outside of what is explicitly documented.
-Extensions assume complete reponsibility for  maintaining continued
-compatibility with Polymer Core services as they evolve over time during
-this early development phase.</p>
-</div>
-<h2 id="adding-commands-and-hooks">Adding commands and hooks<a class="headerlink" href="#adding-commands-and-hooks" title="Permanent link">&para;</a></h2>
-<p>Polymer's hook and command mechanism is built atop
-<a href="https://github.com/consolidation/annotated-command">Annotated Command</a>.</p>
-<p>Command file names must end with <code>Commands.php</code> and be located within the <code>Polymer\Plugin\Commands</code> relative namespace.
-Similarly, hook file names must end with <code>Hooks</code> and be located within the <code>Polymer\Plugin\Hooks</code> relative namespace.</p>
-<hr />
-<p>This guide provides the essential steps to extend and customize Polymer WebOps Tooling according to your project’s requirements.</p>
+<h1 id="artifact-and-build-management">Artifact and Build Management<a class="headerlink" href="#artifact-and-build-management" title="Permanent link">&para;</a></h1>
+<p>An artifact is a byproduct of software development that represents the code, libraries, or packages used in building and
+deploying applications. With Polymer, you can configure artifacts and its dependent builds that can then be compiled and
+deployed to a Git repository.</p>
+<h2 id="builds">Builds<a class="headerlink" href="#builds" title="Permanent link">&para;</a></h2>
+<p>Builds are definitions of operations needed to generate a specific asset. A given build may specify a setup procedure
+and an asset generation procedure. The setup procedure should be used to install dependencies needed to build the assets. The
+assets procedure should then be used to execute the compilation of the asset.</p>
+<p>Example build, identified as <code>my-theme</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">builds</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my-theme</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;${repo.root}&#39;</span>
+<span class="w">    </span><span class="nt">setup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npm ci</span>
+<span class="w">    </span><span class="nt">assets</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npm run build</span>
+</code></pre></div>
+<p>To execute the complete build:</p>
+<div class="highlight"><pre><span></span><code>polymer<span class="w"> </span>build<span class="w"> </span>my-theme
+</code></pre></div>
+<p>To just run the setup procedure:</p>
+<div class="highlight"><pre><span></span><code>polymer<span class="w"> </span>build:reqs<span class="w"> </span>my-theme
+</code></pre></div>
+<p>To just run the assets generation procedure:</p>
+<div class="highlight"><pre><span></span><code>polymer<span class="w"> </span>build:assets<span class="w"> </span>my-theme
+</code></pre></div>
+<h2 id="artifacts">Artifacts<a class="headerlink" href="#artifacts" title="Permanent link">&para;</a></h2>
+<h3 id="configuring">Configuring<a class="headerlink" href="#configuring" title="Permanent link">&para;</a></h3>
+<p>Artifacts are defined in the <code>artifacts</code> section of the configuration file. Declared artifacts may specify builds they
+are dependent on.</p>
+<p>Below is an example of a configured artifact, identified by <code>artifact-id</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">artifacts</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">artifact-id</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dependent-builds</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-theme</span>
+</code></pre></div>
+<p>To generate that artifact, run:</p>
+<div class="highlight"><pre><span></span><code>polymer<span class="w"> </span>artifact:compile<span class="w"> </span>artifact-id
+</code></pre></div>
+<p>The above will:</p>
+<ol>
+<li>Execute all dependent builds.</li>
+<li>Rsync the codebase to the artifact assembly workspace.</li>
+<li>Install Composer without dev dependencies.</li>
+</ol>
+<h3 id="deploying">Deploying<a class="headerlink" href="#deploying" title="Permanent link">&para;</a></h3>
+<p>Artifacts are compiled and then deployed via Git. You may deploy the artifact as a branch or as a tag.</p>
+<p>Example deployment command:</p>
+<div class="highlight"><pre><span></span><code>polymer<span class="w"> </span>artifact:deploy<span class="w"> </span>artifact-id<span class="w"> </span>--branch<span class="w"> </span>destination-branch
+</code></pre></div>
+<p>The above will result in the artifact being compiled and then deployed via the named branch to <strong><em>all configured</em></strong> Git
+remotes.</p>
+<p>You can further configure the deployment by overriding the default deployment configuration.</p>
+<h4 id="deployment-configuration">Deployment configuration<a class="headerlink" href="#deployment-configuration" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">deploy</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build-dependencies</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${tmp.dir}/polymer-deploy</span>
+<span class="w">  </span><span class="nt">docroot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${deploy.dir}/docroot</span>
+<span class="w">  </span><span class="nt">exclude_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${polymer.root}/config/deploy-exclude.txt</span>
+<span class="w">  </span><span class="nt">exclude_additions_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${repo.root}/polymer/deploy-exclude-additions.txt</span>
+<span class="w">  </span><span class="nt">gitignore_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${polymer.root}/config/.gitignore</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>deploy.build-dependencies</code></td>
+<td>If set to <code>true</code>, dependent builds will be executed before the artifact is deployed.</td>
+</tr>
+<tr>
+<td><code>deploy.dir</code></td>
+<td>The directory where the artifact is built.</td>
+</tr>
+<tr>
+<td><code>deploy.docroot</code></td>
+<td>The location of the docroot directory in the artifact.</td>
+</tr>
+<tr>
+<td><code>deploy.exclude_file</code></td>
+<td>The file that contains the list of files and directories to exclude from the deployment. Used by rsync.</td>
+</tr>
+<tr>
+<td><code>deploy.exclude_additions_file</code></td>
+<td>The file that contains an additional list of files and directories to exclude from the deployment. Used by rsync.</td>
+</tr>
+<tr>
+<td><code>deploy.gitignore_file</code></td>
+<td>The file that contains the list of files and directories to exclude from the deployment. Used by git when committing the artifact.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="git-remote-configuration">Git remote configuration<a class="headerlink" href="#git-remote-configuration" title="Permanent link">&para;</a></h4>
+<p>Git remotes can be configured as key value pairs in the <code>git.remotes</code> section of the configuration file. The key is
+remote ID and the value is the remote URL. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">git</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">remotes</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">origin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git@github.com:repo-org/repo.git</span>
+</code></pre></div>
 
 
 
@@ -1397,10 +1491,10 @@ Similarly, hook file names must end with <code>Hooks</code> and be located withi
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "toc.integrate"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "toc.integrate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.3220b9d7.min.js"></script>
+      <script src="../assets/javascripts/bundle.3220b9d7.min.js"></script>
       
     
   </body>
