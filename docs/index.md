@@ -11,3 +11,4 @@ launch the local version of the documentation site in your browser.
 ## Useful extensions
 
 - [Drupal Integration for Polymer WebOps Tooling](https://digitalpolygon.github.io/polymer-drupal/0.x/).
+- [Polymer for Pantheon Drupal Applications](https://github.com/digitalpolygon/polymer-pantheon-drupal)

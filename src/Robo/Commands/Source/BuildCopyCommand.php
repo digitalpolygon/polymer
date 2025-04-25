@@ -66,7 +66,9 @@ class BuildCopyCommand extends TaskBase
         $clean_task->remove($this->excludeFileTemp);
         /** @var string $gitignore_file */
         $gitignore_file = $this->getConfigValue('deploy.gitignore_file');
-        $clean_task->copy($gitignore_file, $this->deployDir . '/.gitignore', true);
+        if (is_string($gitignore_file)) {
+            $clean_task->copy($gitignore_file, $this->deployDir . '/.gitignore', true);
+        }
         $clean_task->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE);
         $clean_task->run();
     }

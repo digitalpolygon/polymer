@@ -3,9 +3,9 @@
 namespace DigitalPolygon\Polymer\Robo\Services\EventSubscriber;
 
 use Consolidation\Config\Config;
+use Robo\Config\Config as RoboConfig;
 use Consolidation\Config\Util\EnvConfig;
 use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
-use DigitalPolygon\Polymer\Robo\Config\ConfigStack;
 use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -40,8 +40,8 @@ class LoadConfiguration implements EventSubscriberInterface, ConfigAwareInterfac
     {
         // Carry forward values expected to be there, see Robo::configureContainer around line 294.
         $freshConfig = new PolymerConfig();
-        $freshConfig->set(\Robo\Config::DECORATED, $this->getConfig()->get(\Robo\Config::DECORATED));
-        $freshConfig->set(\Robo\Config::INTERACTIVE, $this->getConfig()->get(\Robo\Config::INTERACTIVE));
+        $freshConfig->set(RoboConfig::DECORATED, $this->getConfig()->get(RoboConfig::DECORATED));
+        $freshConfig->set(RoboConfig::INTERACTIVE, $this->getConfig()->get(RoboConfig::INTERACTIVE));
         return $freshConfig;
     }
 

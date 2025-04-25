@@ -5,7 +5,6 @@ namespace DigitalPolygon\Polymer\Robo\Commands\Artifact;
 use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
-use DigitalPolygon\Polymer\Robo\Recipes\RecipeInterface;
 use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
 use Robo\Exception\TaskException;
 use Robo\Symfony\ConsoleIO;
@@ -55,8 +54,8 @@ class CompileCommand extends TaskBase
         $io->say("Generating build artifact '{$artifact}'...");
 
         // Execute the build process.
-//        $this->invokeHook("pre-deploy-build");
-//
+        $this->invokeHook("pre-deploy-build");
+
         /** @var array<int,string> $dependent_builds */
         $dependent_builds = $this->getDependentBuilds($artifact);
         foreach ($dependent_builds as $build) {
@@ -66,7 +65,7 @@ class CompileCommand extends TaskBase
         $this->commandInvoker->invokeCommand($io->input(), 'artifact:composer:install');
         $this->commandInvoker->invokeCommand($io->input(), 'artifact:build:sanitize');
         $this->invokeHook("post-deploy-build");
-        $this->say("<info>The deployment artifact was generated at {$deployDir}.</info>");
+        $io->say("<info>The deployment artifact was generated at {$deployDir}.</info>");
     }
 
     /**

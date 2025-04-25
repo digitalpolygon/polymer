@@ -168,7 +168,7 @@ class DeployCommand extends TaskBase
 
         $this->commandInvoker->invokeCommand($io->input(), 'artifact:compile', ['artifact' => $artifact]);
 
-        $this->commit();
+        $this->commit($io);
 
         $this->push($this->branchName, $options);
     }
@@ -196,7 +196,7 @@ class DeployCommand extends TaskBase
 
         $this->commandInvoker->invokeCommand($io->input(), 'artifact:compile', ['artifact' => $artifact]);
 
-        $this->commit();
+        $this->commit($io);
         $this->cutTag('build');
 
         // Check the deploy.tag_source config value and also tag the source repo if
@@ -269,20 +269,31 @@ class DeployCommand extends TaskBase
         }
     }
 
-    protected function commit(): void
+    protected function commit(ConsoleIO $io = null): void
     {
         $this->say("Committing artifact to <comment>{$this->branchName}</comment>...");
+        $gitUser = $this->getConfigValue('git.user.name');
+        $gitEmail = $this->getConfigValue('git.user.email');
 
-        $result = $this->taskGitStack()
-            ->dir($this->deployDir)
+        $task = $this->taskGitStack()
+            ->dir($this->deployDir);
+        if (!empty($gitUser) && !empty($gitEmail) && is_string($gitUser) && is_string($gitEmail)) {
+            $task
+                ->exec("git config user.name '$gitUser'")
+                ->exec("git config user.email '$gitEmail'");
+        } else {
+            $io?->warning('git.user.name and git.user.email may not be configured. Commit may not succeed without them being set.');
+        }
+        $task
             ->exec("git rm -r --cached --ignore-unmatch --quiet .")
             ->add('-A')
             ->commit($this->commitMessage, '--quiet')
-            ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
-            ->run();
+            ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE);
+        $result = $task->run();
         if (!$result->wasSuccessful()) {
             throw new PolymerException("Failed to commit deployment artifact!");
         }
+        $io?->success("Committed artifact.");
     }
 
 

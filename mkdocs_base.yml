@@ -33,6 +33,7 @@ site_url: https://digitalpolygon.github.io/polymer/latest/
 plugins:
   - edit_url
   - search
+  - markdownextradata
   - git-revision-date-localized:
       exclude:
         - commands/*
@@ -40,6 +41,9 @@ plugins:
       canonical_version: latest
       alias_type: redirect
 extra:
+  composer:
+    default_branch: 0.x
+    default_constraint: dev-0.x
   version:
     provider: mike
     alias: true
@@ -73,3 +77,5 @@ nav:
     - Extending Polymer: developing/extending_polymer.md
     - Configuration management: developing/configuration.md
     - Command invoker service: developing/command_invoker.md
+  - Use:
+    - Artifacts and Builds: artifacts.md

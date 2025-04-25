@@ -24,14 +24,10 @@ deploy:
   gitignore_file: ${polymer.root}/config/.gitignore
 
 git:
-  commit-msg:
-    pattern: '/(^(awesome-project)-[0-9]+(: )[^ ].{15,}\.)|(Merge branch(.)+)/'
-    example: "awesome-project-PWT-62: Update module configuration."
-  default-branch: main
-  remotes:
-    origin: "git@awasome-repository-service/repo.git"
+  default-branch: ${git.default_branch}
+  default_branch: main
   user:
     # Name and email to use for the purposes of Git commits if you don't want to
     # use global Git configuration.
-    name: "John Doe"
-    email: "john-doe@awasome-email.com"
+    name: Polymer Bot
+    email: nobody@example.com
