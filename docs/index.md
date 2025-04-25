@@ -1,7 +1,7 @@
 # Polymer: WebOps Tooling
 
 Polymer is a tool to help enable developers facilitate their responsibilities in the WebOps space. It is a collection of
-tools and scripts that help automate the process of deploying and managing web applications.
+tools and scripts that help automate the process of deploying and managing (mainly PHP) web applications.
 
 ## Quick start
 
@@ -10,5 +10,5 @@ launch the local version of the documentation site in your browser.
 
 ## Useful extensions
 
-- [Drupal Integration for Polymer WebOps Tooling](https://digitalpolygon.github.io/polymer-drupal/0.x/).
-- [Polymer for Pantheon Drupal Applications](https://github.com/digitalpolygon/polymer-pantheon-drupal)
+- [Drupal Integration for Polymer WebOps Tooling](https://digitalpolygon.github.io/polymer-drupal/0.x/)
+- [Polymer for Pantheon Drupal Applications](https://digitalpolygon.github.io/polymer-pantheon-drupal/0.x/)
