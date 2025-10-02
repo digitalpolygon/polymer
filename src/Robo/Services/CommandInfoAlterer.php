@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services;
+namespace DigitalPolygon\Polymer\Core\Robo\Services;
 
 use Consolidation\AnnotatedCommand\CommandInfoAltererInterface;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
-use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 class CommandInfoAlterer implements CommandInfoAltererInterface, ConfigAwareInterface

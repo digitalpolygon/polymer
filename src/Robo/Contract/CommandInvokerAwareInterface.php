@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Contract;
+namespace DigitalPolygon\Polymer\Core\Robo\Contract;
 
-use DigitalPolygon\Polymer\Robo\Services\CommandInvokerInterface;
+use DigitalPolygon\Polymer\Core\Robo\Services\CommandInvokerInterface;
 
 interface CommandInvokerAwareInterface
 {

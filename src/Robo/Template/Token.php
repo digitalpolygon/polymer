@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Template;
+namespace DigitalPolygon\Polymer\Core\Robo\Template;
 
 final class Token
 {

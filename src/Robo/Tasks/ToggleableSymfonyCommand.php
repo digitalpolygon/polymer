@@ -1,9 +1,9 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Tasks;
+namespace DigitalPolygon\Polymer\Core\Robo\Tasks;
 
-use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
-use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
+use DigitalPolygon\Polymer\Core\Robo\Common\ArrayManipulator;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigAwareTrait;
 use Robo\Result;
 use Robo\Task\Base\SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;

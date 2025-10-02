@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Utility;
+namespace DigitalPolygon\Polymer\Core\Robo\Utility;
 
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;

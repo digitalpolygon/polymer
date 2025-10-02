@@ -1,14 +1,14 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Commands\Artifact;
+namespace DigitalPolygon\Polymer\Core\Robo\Commands\Artifact;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\Attributes\Hook;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
-use DigitalPolygon\Polymer\Robo\ConsoleApplication;
-use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
-use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use DigitalPolygon\Polymer\Core\Robo\ConsoleApplication;
+use DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Core\Robo\Tasks\TaskBase;
 use Robo\Contract\VerbosityThresholdInterface;
 use Robo\Symfony\ConsoleIO;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,7 +40,7 @@ class DeployCommand extends TaskBase
     /**
      * This hook will fire for all commands in this command file.
      *
-     * @throws \DigitalPolygon\Polymer\Robo\Exceptions\PolymerException
+     * @throws \DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException
      */
     #[Hook(type: HookManager::INITIALIZE)]
     public function initialize(): void

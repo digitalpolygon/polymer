@@ -1,34 +1,36 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo;
+namespace DigitalPolygon\Polymer\Core\Robo;
 
 use Composer\Autoload\ClassLoader;
 use Composer\InstalledVersions;
-use DigitalPolygon\Polymer\Robo\Contract\ClassLoaderAwareInterface;
-use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginManagerInterface;
-use DigitalPolygon\Polymer\Robo\Services\TaskableServiceInterface;
-use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
-use DigitalPolygon\Polymer\Robo\Config\ConfigStack;
-use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
-use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
-use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
-use DigitalPolygon\Polymer\Robo\Discovery\CommandsDiscovery;
-use DigitalPolygon\Polymer\Robo\Discovery\ExtensionDiscovery;
-use DigitalPolygon\Polymer\Robo\Extension\ExtensionData;
-use DigitalPolygon\Polymer\Robo\Services\CommandInfoAlterer;
-use DigitalPolygon\Polymer\Robo\Services\CommandInvoker;
-use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigContextProvider;
-use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\ConfigInjector;
-use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\LoadConfiguration;
-use DigitalPolygon\Polymer\Robo\Services\EventSubscriber\SetGlobalOptionsPostInvoke;
-use DigitalPolygon\Polymer\Robo\Services\Template\Generator;
-use DigitalPolygon\Polymer\Robo\Template\TemplatePluginManager;
+use DigitalPolygon\Polymer\Core\Robo\Contract\ClassLoaderAwareInterface;
+use DigitalPolygon\Polymer\Core\Robo\Discovery\CoreClassDiscovery;
+use DigitalPolygon\Polymer\Core\Robo\Discovery\Plugin\PluginManagerInterface;
+use DigitalPolygon\Polymer\Core\Robo\Services\TaskableServiceInterface;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigManager;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigStack;
+use DigitalPolygon\Polymer\Core\Robo\Config\PolymerConfig;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigAwareTrait;
+use DigitalPolygon\Polymer\Core\Robo\Contract\CommandInvokerAwareInterface;
+use DigitalPolygon\Polymer\Core\Robo\Discovery\CommandsDiscovery;
+use DigitalPolygon\Polymer\Core\Robo\Discovery\ExtensionDiscovery;
+use DigitalPolygon\Polymer\Core\Robo\Extension\ExtensionData;
+use DigitalPolygon\Polymer\Core\Robo\Services\CommandInfoAlterer;
+use DigitalPolygon\Polymer\Core\Robo\Services\CommandInvoker;
+use DigitalPolygon\Polymer\Core\Robo\Services\EventSubscriber\ConfigContextProvider;
+use DigitalPolygon\Polymer\Core\Robo\Services\EventSubscriber\ConfigInjector;
+use DigitalPolygon\Polymer\Core\Robo\Services\EventSubscriber\LoadConfiguration;
+use DigitalPolygon\Polymer\Core\Robo\Services\EventSubscriber\SetGlobalOptionsPostInvoke;
+use DigitalPolygon\Polymer\Core\Robo\Services\Template\Generator;
+use DigitalPolygon\Polymer\Core\Robo\Template\TemplatePluginManager;
 use League\Container\Argument\LiteralArgument;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use League\Container\ServiceProvider\ServiceProviderInterface;
+use Robo\ClassDiscovery\RelativeNamespaceDiscovery;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
@@ -80,6 +82,11 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     protected array $extensions;
 
     /**
+     * @var string The root directory where Polymer files are stored (core, extensions, boot configuration).
+     */
+    protected string $polymerFilesRoot;
+
+    /**
      * Object constructor.
      *
      * @param string $repoRoot
@@ -97,6 +104,11 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         protected OutputInterface $output,
         protected ClassLoader $classLoader
     ) {
+        $this->polymerFilesRoot = $this->repoRoot . '/.polymer';
+    }
+
+    public function boot(): void
+    {
         $this
             ->setupBootContainer()
             ->createApplication()
@@ -127,10 +139,10 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     {
         /** @var ExtensionDiscovery $extensionDiscovery */
         $extensionDiscovery = $this->bootContainer->get('extensionDiscovery');
+        $extensionDiscovery->registerExtensionNamespaces();
         $this->extensions = $extensionDiscovery->getExtensions();
-        $this->hooks = $extensionDiscovery->getExtensionHooks();
-        $commandsDiscovery = new CommandsDiscovery();
-        $this->commands = $commandsDiscovery->getDefinitions();
+        $this->hooks = $this->getCoreHooks() + $extensionDiscovery->getExtensionHooks();
+        $this->commands = $this->getCoreCommands() + $extensionDiscovery->getExtensionCommands();
 
         return $this;
     }
@@ -139,7 +151,9 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
     {
         $this->bootContainer = new Container();
         $this->bootContainer->addShared('extensionDiscovery', ExtensionDiscovery::class)
-            ->addArgument($this->classLoader);
+            ->addArgument($this->classLoader)
+            ->addArgument($this->repoRoot)
+            ->addArgument($this->polymerFilesRoot);
 
         return $this;
     }
@@ -240,7 +254,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         $this->runner = new RoboRunner();
         $this->runner->setClassLoader($this->classLoader);
         $this->runner->setContainer($this->getContainer());
-        $this->runner->setRelativePluginNamespace('Polymer\Plugin');
         $this->runner->setSelfUpdateRepository(self::REPOSITORY);
 
         return $this;
@@ -265,8 +278,6 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         // Compile the configuration.
         /** @var \Robo\Application $application */
         $application = $this->getContainer()->get('application');
-        /** @var ExtensionDiscovery $extensionDiscovery */
-        $extensionDiscovery = $this->getContainer()->get('extensionDiscovery');
         $mergedCommandsAndHooks = array_merge($this->commands, $this->hooks);
         return $this->runner->run($input, $output, $application, $mergedCommandsAndHooks);
     }
@@ -281,5 +292,21 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
             $serviceProviders[$extension] = $info->getServiceProvider();
         }
         return array_filter($serviceProviders);
+    }
+
+    protected function getCoreHooks(): array
+    {
+        $coreClassDiscovery = new CoreClassDiscovery($this->classLoader, $this->polymerFilesRoot);
+        $coreClassDiscovery->setSearchPattern('*Hook.php');
+        $coreClassDiscovery->setRelativeNamespace('Robo\\Hooks');
+        return $coreClassDiscovery->getClasses();
+    }
+
+    protected function getCoreCommands(): array
+    {
+        $coreClassDiscovery = new CoreClassDiscovery($this->classLoader, $this->polymerFilesRoot);
+        $coreClassDiscovery->setSearchPattern('*Command.php');
+        $coreClassDiscovery->setRelativeNamespace('Robo\\Commands');
+        return $coreClassDiscovery->getClasses();
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services\Template;
+namespace DigitalPolygon\Polymer\Core\Robo\Services\Template;
 
-use DigitalPolygon\Polymer\Robo\Services\TaskableServiceBase;
-use DigitalPolygon\Polymer\Robo\Template\TemplateInterface;
+use DigitalPolygon\Polymer\Core\Robo\Services\TaskableServiceBase;
+use DigitalPolygon\Polymer\Core\Robo\Template\TemplateInterface;
 
 class Generator extends TaskableServiceBase
 {

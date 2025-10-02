@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Composer;
+namespace DigitalPolygon\Polymer\Core\Composer;
 
 use Composer\Composer;
 use Composer\IO\IOInterface;

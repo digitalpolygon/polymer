@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Config;
+namespace DigitalPolygon\Polymer\Core\Robo\Config;
 
 use Robo\Common\ConfigAwareTrait as RoboConfigAwareTrait;
 

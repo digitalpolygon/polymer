@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Discovery\Plugin;
+namespace DigitalPolygon\Polymer\Core\Robo\Discovery\Plugin;
 
-use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigAwareTrait;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;

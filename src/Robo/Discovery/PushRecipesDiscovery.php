@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Discovery;
+namespace DigitalPolygon\Polymer\Core\Robo\Discovery;
 
 /**
  * Defines a discovery mechanism to find Polymer Push Recipes in PSR-4 namespaces.
@@ -30,6 +30,6 @@ class PushRecipesDiscovery extends CommandsDiscovery
      */
     protected function getSearchNamespace(): string
     {
-        return 'DigitalPolygon\Polymer\Robo\Recipes\Push';
+        return 'DigitalPolygon\Polymer\Core\Robo\Recipes\Push';
     }
 }

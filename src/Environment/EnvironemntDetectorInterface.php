@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Environment;
+namespace DigitalPolygon\Polymer\Core\Environment;
 
-use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException;
 
 interface EnvironemntDetectorInterface
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Config;
+namespace DigitalPolygon\Polymer\Core\Robo\Config;
 
 use Consolidation\Config\ConfigInterface;
-use DigitalPolygon\Polymer\Robo\Event\AlterConfigContextsEvent;
-use DigitalPolygon\Polymer\Robo\Event\CollectConfigContextsEvent;
+use DigitalPolygon\Polymer\Core\Robo\Event\AlterConfigContextsEvent;
+use DigitalPolygon\Polymer\Core\Robo\Event\CollectConfigContextsEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

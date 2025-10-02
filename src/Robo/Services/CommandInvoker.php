@@ -1,12 +1,12 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services;
+namespace DigitalPolygon\Polymer\Core\Robo\Services;
 
 use Consolidation\Config\ConfigInterface;
-use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
-use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
-use DigitalPolygon\Polymer\Robo\ConsoleApplication;
-use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Core\Robo\Common\ArrayManipulator;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigManager;
+use DigitalPolygon\Polymer\Core\Robo\ConsoleApplication;
+use DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;

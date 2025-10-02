@@ -1,9 +1,9 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Discovery\Plugin;
+namespace DigitalPolygon\Polymer\Core\Robo\Discovery\Plugin;
 
-use DigitalPolygon\Polymer\Robo\Contract\ClassLoaderAwareInterface;
-use DigitalPolygon\Polymer\Robo\Services\ClassLoaderAwareTrait;
+use DigitalPolygon\Polymer\Core\Robo\Contract\ClassLoaderAwareInterface;
+use DigitalPolygon\Polymer\Core\Robo\Services\ClassLoaderAwareTrait;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;

@@ -1,12 +1,12 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Commands\Polymer;
+namespace DigitalPolygon\Polymer\Core\Robo\Commands\Polymer;
 
 use Robo\Contract\VerbosityThresholdInterface;
-use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use DigitalPolygon\Polymer\Core\Robo\Tasks\TaskBase;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
 use Consolidation\AnnotatedCommand\Attributes\Command;
-use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException;
 
 /**
  * Defines commands in the "polymer:init" namespace.

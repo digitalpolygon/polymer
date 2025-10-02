@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services;
+namespace DigitalPolygon\Polymer\Core\Robo\Services;
 
 use Robo\Collection\CollectionBuilder;
 use Robo\Tasks;

@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services\EventSubscriber;
+namespace DigitalPolygon\Polymer\Core\Robo\Services\EventSubscriber;
 
-use DigitalPolygon\Polymer\Robo\ConsoleApplication;
-use DigitalPolygon\Polymer\Robo\Event\PolymerEvents;
-use DigitalPolygon\Polymer\Robo\Event\PostInvokeCommandEvent;
+use DigitalPolygon\Polymer\Core\Robo\ConsoleApplication;
+use DigitalPolygon\Polymer\Core\Robo\Event\PolymerEvents;
+use DigitalPolygon\Polymer\Core\Robo\Event\PostInvokeCommandEvent;
 use Robo\GlobalOptionsEventListener;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Output\NullOutput;

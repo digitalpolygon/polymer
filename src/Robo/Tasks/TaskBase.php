@@ -1,11 +1,11 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Tasks;
+namespace DigitalPolygon\Polymer\Core\Robo\Tasks;
 
-use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
-use DigitalPolygon\Polymer\Robo\Contract\CommandInvokerAwareInterface;
-use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
-use DigitalPolygon\Polymer\Robo\Services\CommandInvokerAwareTrait;
+use DigitalPolygon\Polymer\Core\Robo\Common\ArrayManipulator;
+use DigitalPolygon\Polymer\Core\Robo\Contract\CommandInvokerAwareInterface;
+use DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Core\Robo\Services\CommandInvokerAwareTrait;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Psr\Container\ContainerExceptionInterface;
@@ -20,7 +20,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Exception\AbortTasksException;
-use DigitalPolygon\Polymer\Robo\Config\ConfigAwareTrait;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigAwareTrait;
 
 /**
  * Utility base class for Polymer commands.
@@ -234,7 +234,7 @@ abstract class TaskBase implements ConfigAwareInterface, LoggerAwareInterface, B
     /**
      * @param \Symfony\Component\Console\Command\Command $command
      *
-     * @return \Robo\Collection\CollectionBuilder|\DigitalPolygon\Polymer\Robo\Tasks\ToggleableSymfonyCommand
+     * @return \Robo\Collection\CollectionBuilder|\DigitalPolygon\Polymer\Core\Robo\Tasks\ToggleableSymfonyCommand
      */
     public function taskToggleableSymfonyCommand($command): CollectionBuilder|ToggleableSymfonyCommand
     {

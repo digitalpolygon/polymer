@@ -1,13 +1,13 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Commands\Docs;
+namespace DigitalPolygon\Polymer\Core\Robo\Commands\Docs;
 
 use Consolidation\AnnotatedCommand\AnnotatedCommand;
 use Robo\Symfony\ConsoleIO;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use DigitalPolygon\Polymer\Robo\ConsoleApplication;
-use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use DigitalPolygon\Polymer\Core\Robo\ConsoleApplication;
+use DigitalPolygon\Polymer\Core\Robo\Tasks\TaskBase;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Filesystem\Path;

@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services;
+namespace DigitalPolygon\Polymer\Core\Robo\Services;
 
 trait CommandInvokerAwareTrait
 {

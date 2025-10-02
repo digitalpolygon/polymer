@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Exceptions;
+namespace DigitalPolygon\Polymer\Core\Robo\Exceptions;
 
 /**
  * Custom reporting and error handling for exceptions.

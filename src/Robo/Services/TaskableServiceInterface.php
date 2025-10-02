@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services;
+namespace DigitalPolygon\Polymer\Core\Robo\Services;
 
 use League\Container\ContainerAwareInterface;
 
@@ -13,7 +13,7 @@ use League\Container\ContainerAwareInterface;
  * service architecture, so Polymer has to handle
  * builder creation for non-Robo command services.
  *
- * @see \DigitalPolygon\Polymer\Robo\Services\TaskableServiceBase
+ * @see \DigitalPolygon\Polymer\Core\Robo\Services\TaskableServiceBase
  */
 interface TaskableServiceInterface extends ContainerAwareInterface
 {

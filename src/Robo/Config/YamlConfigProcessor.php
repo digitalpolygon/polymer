@@ -1,9 +1,9 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Config;
+namespace DigitalPolygon\Polymer\Core\Robo\Config;
 
 use Consolidation\Config\Loader\ConfigProcessor;
-use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
+use DigitalPolygon\Polymer\Core\Robo\Common\ArrayManipulator;
 
 /**
  * Custom processor for YAML based configuration.

@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Discovery\Plugin;
+namespace DigitalPolygon\Polymer\Core\Robo\Discovery\Plugin;
 
 interface PluginInterface
 {

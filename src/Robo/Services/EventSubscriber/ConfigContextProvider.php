@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services\EventSubscriber;
+namespace DigitalPolygon\Polymer\Core\Robo\Services\EventSubscriber;
 
 use Consolidation\Config\Loader\YamlConfigLoader;
-use DigitalPolygon\Polymer\Robo\Discovery\ExtensionDiscovery;
-use DigitalPolygon\Polymer\Robo\Event\CollectConfigContextsEvent;
+use DigitalPolygon\Polymer\Core\Robo\Discovery\ExtensionDiscovery;
+use DigitalPolygon\Polymer\Core\Robo\Event\CollectConfigContextsEvent;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Symfony\Component\Console\Input\InputInterface;

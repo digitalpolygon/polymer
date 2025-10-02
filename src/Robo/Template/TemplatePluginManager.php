@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Template;
+namespace DigitalPolygon\Polymer\Core\Robo\Template;
 
-use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginManagerBase;
+use DigitalPolygon\Polymer\Core\Robo\Discovery\Plugin\PluginManagerBase;
 
 class TemplatePluginManager extends PluginManagerBase
 {
