@@ -65,8 +65,13 @@ class ExtensionDiscovery
         }
 
         if (!empty($enabledExtensions)) {
+            $enabledExtensions = array_flip($enabledExtensions);
             $allExtensions = $this->findExtensions();
-            $enabledExtensions = array_diff_key($allExtensions, $enabledExtensions);
+            foreach ($enabledExtensions as $extension => $delta) {
+                if (isset($allExtensions[$extension])) {
+                    $enabledExtensions[$extension] = $allExtensions[$extension];
+                }
+            }
         }
 
         return $enabledExtensions;

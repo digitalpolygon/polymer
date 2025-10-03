@@ -12,7 +12,6 @@ use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use DigitalPolygon\Polymer\Core\Plugin\Template\GitHubWorkflows\ComposerDiff;
 use DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException;
 use DigitalPolygon\Polymer\Core\Robo\Services\Template\Generator;
 use DigitalPolygon\Polymer\Core\Robo\Tasks\TaskBase;

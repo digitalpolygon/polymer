@@ -8,11 +8,14 @@ use Symfony\Component\Finder\Finder;
 
 class ExtensionClassDiscovery extends AbstractClassDiscovery
 {
+    use ClassDiscoveryTrait;
+
     public function __construct(
-        protected ClassLoader $classLoader,
-        protected array $namespaceInfo,
+        ClassLoader $classLoader,
+        protected array $extensionNamespaceInfo,
         protected string $relativeNamespace,
     ) {
+        $this->classLoader = $classLoader;
     }
 
     /**
@@ -21,45 +24,9 @@ class ExtensionClassDiscovery extends AbstractClassDiscovery
     public function getClasses()
     {
         $classes = [];
-        $psr4Prefixes = $this->classLoader->getPrefixesPsr4();
-        $relativeSearchNamespacePath = DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $this->relativeNamespace);
-        foreach ($this->namespaceInfo as $namespaceInfo) {
-            $extensionNamespacePrefix = $namespaceInfo['namespace'] . '\\';
-            if (isset($psr4Prefixes[$extensionNamespacePrefix])) {
-                $directories = array_map(function ($directory) use ($relativeSearchNamespacePath) {
-                    return $directory . $relativeSearchNamespacePath;
-                }, $psr4Prefixes[$extensionNamespacePrefix]);
-                $directories = array_filter($directories, 'is_dir');
-                if ($directories) {
-                    $fileIterator = $this->search($directories, $this->searchPattern);
-                    foreach ($fileIterator as $file) {
-                        $relativePath = DIRECTORY_SEPARATOR . $file->getRelativePathname();
-                        $relativePathNamespace = str_replace([DIRECTORY_SEPARATOR, '.php'], ['\\', ''], trim($relativePath, DIRECTORY_SEPARATOR));
-                        $class = $extensionNamespacePrefix . $this->relativeNamespace . '\\' . $relativePathNamespace;
-                        $classPath = $namespaceInfo['path'] . $relativeSearchNamespacePath . $relativePath;
-                        $classes[$classPath] = $class;
-                    }
-                }
-            }
+        foreach ($this->extensionNamespaceInfo as $namespaceInfo) {
+            $classes = array_merge($classes, $this->getNamespaceClasses($namespaceInfo['namespace'] . '\\', $this->relativeNamespace, $this->searchPattern));
         }
         return $classes;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFile($class)
-    {
-        return $this->classLoader->findFile($class);
-    }
-
-    protected function search(array $directories, string $pattern): Finder
-    {
-        $finder = new Finder();
-        $finder->files()
-          ->name($pattern)
-          ->in($directories);
-
-        return $finder;
     }
 }

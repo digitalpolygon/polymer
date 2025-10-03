@@ -8,7 +8,7 @@ class TemplatePluginManager extends PluginManagerBase
 {
     public function setDiscoveryData(): void
     {
-        $this->relativeNamespace = 'Polymer/Plugin/Template';
+        $this->relativeNamespace = 'Template';
         $this->pluginInterface = TemplateInterface::class;
     }
 
