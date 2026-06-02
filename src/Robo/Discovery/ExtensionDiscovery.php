@@ -21,6 +21,76 @@ class ExtensionDiscovery
     ) {
     }
 
+    /**
+     * Get all extensions installed on disk, regardless of enabled state.
+     *
+     * @return array<string, string>
+     *   Extension id keyed to its installed directory.
+     */
+    public function getInstalledExtensions(): array
+    {
+        return $this->findExtensions();
+    }
+
+    /**
+     * Determine whether an extension is enabled in configuration.
+     */
+    public function isExtensionEnabled(string $extensionName): bool
+    {
+        return in_array($extensionName, $this->getEnabledExtensionNames(), true);
+    }
+
+    /**
+     * Enable an extension by adding it to enabled_extensions.
+     *
+     * @return bool
+     *   TRUE if configuration changed, FALSE if it was already enabled.
+     */
+    public function enableExtension(string $extensionName): bool
+    {
+        $enabled = $this->getEnabledExtensionNames();
+        if (in_array($extensionName, $enabled, true)) {
+            return false;
+        }
+        $enabled[] = $extensionName;
+        $this->writeEnabledExtensions($enabled);
+        return true;
+    }
+
+    /**
+     * Disable an extension by removing it from enabled_extensions.
+     *
+     * @return bool
+     *   TRUE if configuration changed, FALSE if it was not enabled.
+     */
+    public function disableExtension(string $extensionName): bool
+    {
+        $enabled = $this->getEnabledExtensionNames();
+        $key = array_search($extensionName, $enabled, true);
+        if ($key === false) {
+            return false;
+        }
+        unset($enabled[$key]);
+        $this->writeEnabledExtensions(array_values($enabled));
+        return true;
+    }
+
+    /**
+     * Persist the enabled_extensions list back to config.yml.
+     *
+     * @param array<int, string> $enabled
+     */
+    protected function writeEnabledExtensions(array $enabled): void
+    {
+        $configFile = $this->polymerFilesRoot . '/config.yml';
+        $config = [];
+        if (file_exists($configFile)) {
+            $config = Yaml::parseFile($configFile) ?: [];
+        }
+        $config['enabled_extensions'] = array_values($enabled);
+        file_put_contents($configFile, Yaml::dump($config, 4, 2));
+    }
+
     protected function findExtensions(): array
     {
         $extensions = [];
@@ -28,19 +98,24 @@ class ExtensionDiscovery
             $this->polymerFilesRoot . '/plugins',
         ];
 
+        // A plugin's .poly_info.yml marker lives at the plugin root, one or two
+        // levels below plugins/ (e.g. plugins/<name>/ or plugins/contrib/<name>/).
+        // Globbing at these fixed depths discovers plugins whether Composer
+        // installed them as symlinks (path repositories) or as real directories
+        // (dist/committed), while never descending into a plugin's own vendor/
+        // tree — which would otherwise surface vendored copies of other plugins.
+        $markerPatterns = [
+            '/*/*.poly_info.yml',
+            '/*/*/*.poly_info.yml',
+        ];
         foreach ($pluginDirectories as $pluginDirectory) {
-            $recursiveIterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($pluginDirectory, \FilesystemIterator::SKIP_DOTS)
-            );
-            foreach ($recursiveIterator as $dir) {
-                if ($dir->isDir()) {
-                    $dirFiles = scandir($dir->getPathname());
-                    foreach ($dirFiles as $dirFile) {
-                        if (str_ends_with($dirFile, '.poly_info.yml')) {
-                            $extensionName = str_replace('.poly_info.yml', '', $dirFile);
-                            $extensions[$extensionName] = $dir->getPathname();
-                        }
-                    }
+            if (!is_dir($pluginDirectory)) {
+                continue;
+            }
+            foreach ($markerPatterns as $pattern) {
+                foreach (glob($pluginDirectory . $pattern) ?: [] as $markerFile) {
+                    $extensionName = str_replace('.poly_info.yml', '', basename($markerFile));
+                    $extensions[$extensionName] = dirname($markerFile);
                 }
             }
         }
@@ -49,28 +124,47 @@ class ExtensionDiscovery
     }
 
     /**
-     * Get enabled extensions.
+     * Get the names of extensions enabled in configuration.
      *
-     * @return array
+     * This reflects the raw `enabled_extensions` list and does not guarantee
+     * that the named extensions are actually installed on disk.
+     *
+     * @return array<int, string>
      */
-    protected function getEnabledExtensions(): array
+    public function getEnabledExtensionNames(): array
     {
-        $enabledExtensions = [];
         $configFile = $this->polymerFilesRoot . '/config.yml';
         if (file_exists($configFile)) {
             $config = Yaml::parseFile($configFile);
             if (isset($config['enabled_extensions']) && is_array($config['enabled_extensions'])) {
-                $enabledExtensions = $config['enabled_extensions'];
+                return array_values($config['enabled_extensions']);
             }
         }
 
-        if (!empty($enabledExtensions)) {
-            $enabledExtensions = array_flip($enabledExtensions);
-            $allExtensions = $this->findExtensions();
-            foreach ($enabledExtensions as $extension => $delta) {
-                if (isset($allExtensions[$extension])) {
-                    $enabledExtensions[$extension] = $allExtensions[$extension];
-                }
+        return [];
+    }
+
+    /**
+     * Get enabled extensions that are installed on disk.
+     *
+     * Extensions enabled in configuration but not installed are dropped, so
+     * the result only ever contains extensions that can actually be loaded.
+     *
+     * @return array<string, string>
+     *   Extension id keyed to its installed directory.
+     */
+    protected function getEnabledExtensions(): array
+    {
+        $enabledNames = $this->getEnabledExtensionNames();
+        if (empty($enabledNames)) {
+            return [];
+        }
+
+        $installed = $this->findExtensions();
+        $enabledExtensions = [];
+        foreach ($enabledNames as $extensionName) {
+            if (isset($installed[$extensionName])) {
+                $enabledExtensions[$extensionName] = $installed[$extensionName];
             }
         }
 
