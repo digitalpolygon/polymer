@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Extension;
+namespace DigitalPolygon\Polymer\Core\Robo\Extension;
 
 use League\Container\ServiceProvider\ServiceProviderInterface;
 

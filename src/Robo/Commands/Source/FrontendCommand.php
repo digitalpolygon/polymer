@@ -1,11 +1,11 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Commands\Source;
+namespace DigitalPolygon\Polymer\Core\Robo\Commands\Source;
 
 use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
-use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use DigitalPolygon\Polymer\Core\Robo\Tasks\TaskBase;
 use Robo\Exception\AbortTasksException;
 use Robo\Symfony\ConsoleIO;
 use Symfony\Component\Console\Output\OutputInterface;

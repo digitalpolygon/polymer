@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Polymer\Plugin\Template\GitHubWorkflows;
+namespace DigitalPolygon\Polymer\Core\Plugin\Template\GitHubWorkflows;
 
-use DigitalPolygon\Polymer\Robo\Template\GitHub\GitHubWorkflowTemplateBase;
+use DigitalPolygon\Polymer\Core\Robo\Template\GitHub\GitHubWorkflowTemplateBase;
 
 class ComposerDiff extends GitHubWorkflowTemplateBase
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Template\GitHub;
+namespace DigitalPolygon\Polymer\Core\Robo\Template\GitHub;
 
-use DigitalPolygon\Polymer\Robo\Template\Template;
+use DigitalPolygon\Polymer\Core\Robo\Template\Template;
 
 abstract class GitHubWorkflowTemplateBase extends Template
 {

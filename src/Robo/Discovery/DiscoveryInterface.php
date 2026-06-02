@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Discovery;
+namespace DigitalPolygon\Polymer\Core\Robo\Discovery;
 
 /**
  * Defines the minimum requirements for a plugin discovery component.

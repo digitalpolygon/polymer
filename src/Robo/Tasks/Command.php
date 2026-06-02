@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Tasks;
+namespace DigitalPolygon\Polymer\Core\Robo\Tasks;
 
 /**
  * Utility base class for Polymer commands.

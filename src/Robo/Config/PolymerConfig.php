@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Config;
+namespace DigitalPolygon\Polymer\Core\Robo\Config;
 
 use Consolidation\Config\Config;
 use Consolidation\Config\ConfigInterface;
-use DigitalPolygon\Polymer\Robo\Common\ArrayManipulator;
+use DigitalPolygon\Polymer\Core\Robo\Common\ArrayManipulator;
 use Robo\Config\Config as RoboConfig;
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Contract;
+namespace DigitalPolygon\Polymer\Core\Robo\Contract;
 
 use Composer\Autoload\ClassLoader;
 

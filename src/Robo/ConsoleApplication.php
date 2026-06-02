@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo;
+namespace DigitalPolygon\Polymer\Core\Robo;
 
 use Robo\Application;
 use Symfony\Component\Console\Command\Command;

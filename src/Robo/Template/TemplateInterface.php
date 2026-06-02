@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Template;
+namespace DigitalPolygon\Polymer\Core\Robo\Template;
 
-use DigitalPolygon\Polymer\Robo\Discovery\Plugin\PluginInterface;
+use DigitalPolygon\Polymer\Core\Robo\Discovery\Plugin\PluginInterface;
 
 interface TemplateInterface extends PluginInterface
 {

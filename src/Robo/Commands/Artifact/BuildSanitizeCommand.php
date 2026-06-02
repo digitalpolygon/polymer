@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Commands\Artifact;
+namespace DigitalPolygon\Polymer\Core\Robo\Commands\Artifact;
 
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
-use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use DigitalPolygon\Polymer\Core\Robo\Tasks\TaskBase;
 use Robo\Exception\TaskException;
 
 /**

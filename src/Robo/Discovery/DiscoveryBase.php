@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Discovery;
+namespace DigitalPolygon\Polymer\Core\Robo\Discovery;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 

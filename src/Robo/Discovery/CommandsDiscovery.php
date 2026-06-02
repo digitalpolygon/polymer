@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Discovery;
+namespace DigitalPolygon\Polymer\Core\Robo\Discovery;
 
 /**
  * Defines a discovery mechanism to find Polymer Commands in PSR-4 namespaces.
@@ -30,6 +30,6 @@ class CommandsDiscovery extends DiscoveryBase
      */
     protected function getSearchNamespace(): string
     {
-        return 'DigitalPolygon\Polymer\Robo\Commands';
+        return 'DigitalPolygon\Polymer\Core\Robo\Commands';
     }
 }

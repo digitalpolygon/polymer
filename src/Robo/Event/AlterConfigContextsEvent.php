@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Event;
+namespace DigitalPolygon\Polymer\Core\Robo\Event;
 
 use Consolidation\Config\ConfigInterface;
 use Symfony\Component\Console\Command\Command;

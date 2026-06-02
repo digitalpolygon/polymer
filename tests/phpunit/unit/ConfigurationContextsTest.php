@@ -4,7 +4,7 @@ namespace DigitalPolygon\PolymerTests\phpunit\unit;
 
 use PHPUnit\Framework\TestCase;
 use Consolidation\Config\Config;
-use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
+use DigitalPolygon\Polymer\Core\Robo\Config\PolymerConfig;
 
 class ConfigurationContextsTest extends TestCase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Commands\Template;
+namespace DigitalPolygon\Polymer\Core\Robo\Commands\Template;
 
 use Consolidation\AnnotatedCommand\Attributes\Argument;
 use Consolidation\AnnotatedCommand\Attributes\Command;
@@ -12,13 +12,12 @@ use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use DigitalPolygon\Polymer\Plugin\Template\GitHubWorkflows\ComposerDiff;
-use DigitalPolygon\Polymer\Robo\Exceptions\PolymerException;
-use DigitalPolygon\Polymer\Robo\Services\Template\Generator;
-use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
-use DigitalPolygon\Polymer\Robo\Template\TemplateInterface;
-use DigitalPolygon\Polymer\Robo\Template\TemplatePluginManager;
-use DigitalPolygon\Polymer\Robo\Utility\CommandHelper;
+use DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException;
+use DigitalPolygon\Polymer\Core\Robo\Services\Template\Generator;
+use DigitalPolygon\Polymer\Core\Robo\Tasks\TaskBase;
+use DigitalPolygon\Polymer\Core\Robo\Template\TemplateInterface;
+use DigitalPolygon\Polymer\Core\Robo\Template\TemplatePluginManager;
+use DigitalPolygon\Polymer\Core\Robo\Utility\CommandHelper;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Robo\Symfony\ConsoleIO;

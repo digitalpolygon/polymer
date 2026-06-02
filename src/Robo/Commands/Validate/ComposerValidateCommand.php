@@ -1,11 +1,11 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Commands\Validate;
+namespace DigitalPolygon\Polymer\Core\Robo\Commands\Validate;
 
 use Consolidation\AnnotatedCommand\Attributes\Command;
 use Consolidation\AnnotatedCommand\Attributes\Option;
 use Consolidation\AnnotatedCommand\Attributes\Usage;
-use DigitalPolygon\Polymer\Robo\Tasks\TaskBase;
+use DigitalPolygon\Polymer\Core\Robo\Tasks\TaskBase;
 use Robo\Symfony\ConsoleIO;
 
 /**

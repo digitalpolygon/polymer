@@ -1,12 +1,12 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services\EventSubscriber;
+namespace DigitalPolygon\Polymer\Core\Robo\Services\EventSubscriber;
 
 use Consolidation\Config\Config;
 use Robo\Config\Config as RoboConfig;
 use Consolidation\Config\Util\EnvConfig;
-use DigitalPolygon\Polymer\Robo\Config\ConfigManager;
-use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
+use DigitalPolygon\Polymer\Core\Robo\Config\ConfigManager;
+use DigitalPolygon\Polymer\Core\Robo\Config\PolymerConfig;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

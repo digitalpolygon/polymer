@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Common;
+namespace DigitalPolygon\Polymer\Core\Robo\Common;
 
 use Dflydev\DotAccessData\Data;
 

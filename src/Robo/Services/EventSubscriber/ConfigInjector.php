@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Services\EventSubscriber;
+namespace DigitalPolygon\Polymer\Core\Robo\Services\EventSubscriber;
 
 use Consolidation\Config\Config;
 use Consolidation\Config\Loader\YamlConfigLoader;
-use DigitalPolygon\Polymer\Robo\Config\PolymerConfig;
+use DigitalPolygon\Polymer\Core\Robo\Config\PolymerConfig;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;

@@ -40,3 +40,6 @@ local.site.yml
 node_modules
 /vendor
 local.polymer.yml
+/scratch
+/.polymer/core
+/.polymer/plugins/contrib

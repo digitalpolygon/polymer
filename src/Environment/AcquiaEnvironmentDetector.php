@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Environment;
+namespace DigitalPolygon\Polymer\Core\Environment;
 
-use DigitalPolygon\Polymer\Environment\EnvironmentDetectorBase;
+use DigitalPolygon\Polymer\Core\Environment\EnvironmentDetectorBase;
 
 /**
  * Class AcquiaEnvironmentDetector

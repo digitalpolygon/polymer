@@ -1,9 +1,10 @@
 <?php
 
-namespace DigitalPolygon\Polymer\Robo\Discovery\Plugin;
+namespace DigitalPolygon\Polymer\Core\Robo\Discovery\Plugin;
 
-use DigitalPolygon\Polymer\Robo\Contract\ClassLoaderAwareInterface;
-use DigitalPolygon\Polymer\Robo\Services\ClassLoaderAwareTrait;
+use DigitalPolygon\Polymer\Core\Robo\Contract\ClassLoaderAwareInterface;
+use DigitalPolygon\Polymer\Core\Robo\Discovery\PluginClassDiscovery;
+use DigitalPolygon\Polymer\Core\Robo\Services\ClassLoaderAwareTrait;
 use League\Container\Argument\ResolvableArgument;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
@@ -18,7 +19,7 @@ abstract class PluginManagerBase implements PluginManagerInterface, ContainerAwa
     use ContainerAwareTrait;
     use ClassLoaderAwareTrait;
 
-    protected RelativeNamespaceDiscovery $discovery;
+    protected PluginClassDiscovery $discovery;
 
     protected string $relativeNamespace;
     protected string $pluginInterface;
@@ -36,8 +37,11 @@ abstract class PluginManagerBase implements PluginManagerInterface, ContainerAwa
 
         $this->configureContainer();
 
-        $this->discovery = new RelativeNamespaceDiscovery($this->classLoader);
-        $this->discovery->setRelativeNamespace($this->relativeNamespace);
+        $this->discovery = new PluginClassDiscovery(
+            $this->getContainer()->get('classLoader'),
+            $this->getContainer()->get('extensionDiscovery')->getExtensionNamespaceInfo(),
+            $this->relativeNamespace
+        );
         $classes = $this->discovery->getClasses();
 
         $pluginClasses = array_filter($classes, fn ($class) => is_subclass_of($class, $this->pluginInterface));
