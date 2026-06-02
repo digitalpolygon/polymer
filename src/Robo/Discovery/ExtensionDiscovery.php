@@ -98,10 +98,9 @@ class ExtensionDiscovery
         // Contrib plugins are installed by Composer (type "polymer-plugin") and
         // live wherever Composer puts them — vendor/ by default. Project-local
         // custom plugins live under .polymer/plugins and take precedence by id.
-        return array_merge(
-            $this->findComposerInstalledExtensions(),
-            $this->findLocalExtensions()
-        );
+        // The union operator keeps local entries on collision and preserves
+        // extension ids verbatim (array_merge would reindex numeric-looking ids).
+        return $this->findLocalExtensions() + $this->findComposerInstalledExtensions();
     }
 
     /**
@@ -120,6 +119,7 @@ class ExtensionDiscovery
         if (
             !class_exists(InstalledVersions::class)
             || !method_exists(InstalledVersions::class, 'getInstalledPackagesByType')
+            || !method_exists(InstalledVersions::class, 'getInstallPath')
         ) {
             return $extensions;
         }
@@ -130,7 +130,7 @@ class ExtensionDiscovery
                 continue;
             }
             foreach (glob($path . '/*.poly_info.yml') ?: [] as $markerFile) {
-                $extensionName = str_replace('.poly_info.yml', '', basename($markerFile));
+                $extensionName = basename($markerFile, '.poly_info.yml');
                 $extensions[$extensionName] = dirname($markerFile);
             }
         }
@@ -158,7 +158,7 @@ class ExtensionDiscovery
 
         foreach (['/*/*.poly_info.yml', '/*/*/*.poly_info.yml'] as $pattern) {
             foreach (glob($pluginDirectory . $pattern) ?: [] as $markerFile) {
-                $extensionName = str_replace('.poly_info.yml', '', basename($markerFile));
+                $extensionName = basename($markerFile, '.poly_info.yml');
                 $extensions[$extensionName] = dirname($markerFile);
             }
         }
