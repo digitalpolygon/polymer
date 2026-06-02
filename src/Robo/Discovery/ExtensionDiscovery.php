@@ -3,6 +3,7 @@
 namespace DigitalPolygon\Polymer\Core\Robo\Discovery;
 
 use Composer\Autoload\ClassLoader;
+use Composer\InstalledVersions;
 use DigitalPolygon\Polymer\Core\Robo\Extension\PolymerExtensionInterface;
 use Robo\ClassDiscovery\RelativeNamespaceDiscovery;
 use DigitalPolygon\Polymer\Core\Robo\Extension\ExtensionData;
@@ -94,30 +95,71 @@ class ExtensionDiscovery
 
     protected function findExtensions(): array
     {
-        $extensions = [];
-        $pluginDirectories = [
-            $this->polymerFilesRoot . '/plugins',
-        ];
+        // Contrib plugins are installed by Composer (type "polymer-plugin") and
+        // live wherever Composer puts them — vendor/ by default. Project-local
+        // custom plugins live under .polymer/plugins and take precedence by id.
+        // The union operator keeps local entries on collision and preserves
+        // extension ids verbatim (array_merge would reindex numeric-looking ids).
+        return $this->findLocalExtensions() + $this->findComposerInstalledExtensions();
+    }
 
-        // A plugin's .poly_info.yml marker lives at the plugin root, one or two
-        // levels below plugins/ (e.g. plugins/<name>/ or plugins/contrib/<name>/).
-        // Globbing at these fixed depths discovers plugins whether Composer
-        // installed them as symlinks (path repositories) or as real directories
-        // (dist/committed), while never descending into a plugin's own vendor/
-        // tree — which would otherwise surface vendored copies of other plugins.
-        $markerPatterns = [
-            '/*/*.poly_info.yml',
-            '/*/*/*.poly_info.yml',
-        ];
-        foreach ($pluginDirectories as $pluginDirectory) {
-            if (!is_dir($pluginDirectory)) {
+    /**
+     * Find contrib plugins installed by Composer, at whatever location.
+     *
+     * Uses the Composer runtime metadata to locate every package of type
+     * "polymer-plugin", so contrib plugins are discovered from the normal
+     * vendor install location without any installer-path configuration.
+     *
+     * @return array<string, string>
+     *   Extension id keyed to its installed directory.
+     */
+    protected function findComposerInstalledExtensions(): array
+    {
+        $extensions = [];
+        if (
+            !class_exists(InstalledVersions::class)
+            || !method_exists(InstalledVersions::class, 'getInstalledPackagesByType')
+            || !method_exists(InstalledVersions::class, 'getInstallPath')
+        ) {
+            return $extensions;
+        }
+
+        foreach (InstalledVersions::getInstalledPackagesByType('polymer-plugin') as $package) {
+            $path = InstalledVersions::getInstallPath($package);
+            if ($path === null || !is_dir($path)) {
                 continue;
             }
-            foreach ($markerPatterns as $pattern) {
-                foreach (glob($pluginDirectory . $pattern) ?: [] as $markerFile) {
-                    $extensionName = str_replace('.poly_info.yml', '', basename($markerFile));
-                    $extensions[$extensionName] = dirname($markerFile);
-                }
+            foreach (glob($path . '/*.poly_info.yml') ?: [] as $markerFile) {
+                $extensionName = basename($markerFile, '.poly_info.yml');
+                $extensions[$extensionName] = dirname($markerFile);
+            }
+        }
+
+        return $extensions;
+    }
+
+    /**
+     * Find project-local custom plugins under .polymer/plugins.
+     *
+     * The .poly_info.yml marker lives at the plugin root, one or two levels
+     * below plugins/ (e.g. plugins/<name>/ or plugins/custom/<name>/). Globbing
+     * at these fixed depths avoids descending into any nested vendor/ tree.
+     *
+     * @return array<string, string>
+     *   Extension id keyed to its installed directory.
+     */
+    protected function findLocalExtensions(): array
+    {
+        $extensions = [];
+        $pluginDirectory = $this->polymerFilesRoot . '/plugins';
+        if (!is_dir($pluginDirectory)) {
+            return $extensions;
+        }
+
+        foreach (['/*/*.poly_info.yml', '/*/*/*.poly_info.yml'] as $pattern) {
+            foreach (glob($pluginDirectory . $pattern) ?: [] as $markerFile) {
+                $extensionName = basename($markerFile, '.poly_info.yml');
+                $extensions[$extensionName] = dirname($markerFile);
             }
         }
 

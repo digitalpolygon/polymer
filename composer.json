@@ -13,8 +13,6 @@
   },
   "require": {
     "php": ">=8.1",
-    "oomphinc/composer-installers-extender": "*",
-    "mnsami/composer-custom-directory-installer": "*",
     "composer-plugin-api": "^2.0",
     "composer-runtime-api": "^2.0",
     "consolidation/robo": "^4 || ^5",
@@ -32,8 +30,6 @@
     "sort-packages": true,
     "allow-plugins": {
       "composer/installers": true,
-      "mnsami/composer-custom-directory-installer": true,
-      "oomphinc/composer-installers-extender": true,
       "phpro/grumphp-shim": true,
       "phpstan/extension-installer": true
     }
