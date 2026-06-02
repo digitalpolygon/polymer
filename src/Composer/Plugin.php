@@ -192,20 +192,25 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Executes `polymer polymer:update` and `polymer-console polymer:update` commands.
-     *
-     * @throws \Exception
+     * Scaffolds Polymer's project template files on initial install.
      */
     protected function executePolymerUpdate(): void
     {
         if ($this->isInitialInstall()) {
+            // Only initialize within an actual Polymer project, which has a
+            // .polymer directory at its root. When Polymer is pulled in as a
+            // transitive dependency (e.g. an extension package's own CI) there is
+            // nothing to initialize, so skip silently rather than emitting noise
+            // or aborting the composer install.
+            if (!is_dir($this->getRepoRoot() . '/.polymer')) {
+                return;
+            }
             $this->io->write('<info>Creating Polymer template files...</info>');
             /** @var string $command */
             $command = $this->getVendorPath() . '/bin/polymer polymer:init';
             $success = $this->executeCommand($command, [], true);
             if (!$success) {
-                $this->io->writeError("<error>Polymer installation failed! Please execute <comment>$command --verbose</comment> to debug the issue.</error>");
-                throw new \Exception('Installation aborted due to error');
+                $this->io->writeError("<warning>Polymer could not initialize project files; skipping. If this is a Polymer project, run <comment>$command --verbose</comment> to debug.</warning>");
             }
         }
     }
