@@ -141,8 +141,8 @@ class Polymer implements ContainerAwareInterface, ConfigAwareInterface
         $extensionDiscovery = $this->bootContainer->get('extensionDiscovery');
         $extensionDiscovery->registerExtensionNamespaces();
         $this->extensions = $extensionDiscovery->getExtensions();
-        $this->hooks = $this->getCoreHooks() + $extensionDiscovery->getExtensionHooks();
-        $this->commands = $this->getCoreCommands() + $extensionDiscovery->getExtensionCommands();
+        $this->hooks = array_merge($this->getCoreHooks(), $extensionDiscovery->getExtensionHooks());
+        $this->commands = array_merge($this->getCoreCommands(), $extensionDiscovery->getExtensionCommands());
 
         return $this;
     }

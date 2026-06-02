@@ -11,6 +11,9 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 $cwd = isset($_SERVER['PWD']) && is_dir($_SERVER['PWD']) ? $_SERVER['PWD'] : getcwd();
+if ($cwd === false) {
+    throw new \RuntimeException("Could not determine the current working directory.");
+}
 
 $autoloadFile = false;
 // Set up autoloader
@@ -48,7 +51,8 @@ if ($output->isVerbose()) {
 // Initialize configuration.
 /** @var string|null $repoRoot */
 $repoRoot = null;
-for ($i = 0; $i < 10; $i++) {
+// Walk up the directory tree until we find .polymer or reach the filesystem root.
+while (true) {
     if (file_exists($cwd . '/.polymer')) {
         $repoRoot = $cwd;
         break;

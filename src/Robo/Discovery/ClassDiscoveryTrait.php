@@ -51,7 +51,13 @@ trait ClassDiscoveryTrait
 
     protected function convertPathToRelativeNamespace(string $path): string
     {
-        return str_replace([DIRECTORY_SEPARATOR, '.php'], ['\\', ''], trim($path, DIRECTORY_SEPARATOR));
+        $path = trim($path, DIRECTORY_SEPARATOR);
+        // Strip only a trailing .php extension; str_replace would also corrupt
+        // any directory name that happens to contain ".php" mid-string.
+        if (str_ends_with($path, '.php')) {
+            $path = substr($path, 0, -4);
+        }
+        return str_replace(DIRECTORY_SEPARATOR, '\\', $path);
     }
 
     protected static function search(array $directories, string $pattern): Finder

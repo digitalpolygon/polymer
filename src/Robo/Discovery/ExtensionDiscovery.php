@@ -4,7 +4,6 @@ namespace DigitalPolygon\Polymer\Core\Robo\Discovery;
 
 use Composer\Autoload\ClassLoader;
 use DigitalPolygon\Polymer\Core\Robo\Extension\PolymerExtensionInterface;
-use Drupal\Tests\Component\Annotation\Doctrine\Fixtures\Attribute\Relative;
 use Robo\ClassDiscovery\RelativeNamespaceDiscovery;
 use DigitalPolygon\Polymer\Core\Robo\Extension\ExtensionData;
 use Symfony\Component\Finder\Finder;
@@ -88,7 +87,9 @@ class ExtensionDiscovery
             $config = Yaml::parseFile($configFile) ?: [];
         }
         $config['enabled_extensions'] = array_values($enabled);
-        file_put_contents($configFile, Yaml::dump($config, 4, 2));
+        if (file_put_contents($configFile, Yaml::dump($config, 4, 2)) === false) {
+            throw new \RuntimeException("Failed to write Polymer configuration to $configFile");
+        }
     }
 
     protected function findExtensions(): array
@@ -209,6 +210,11 @@ class ExtensionDiscovery
         }
 
         foreach ($namespaceInfos as $extensionId => $namespaceInfo) {
+            if (!class_exists($namespaceInfo['extension_class'])) {
+                // An enabled extension that ships no ExtensionInfo class is skipped
+                // rather than crashing the CLI with a ReflectionException.
+                continue;
+            }
             $extensionReflection = new \ReflectionClass($namespaceInfo['extension_class']);
             if ($extensionReflection->implementsInterface(PolymerExtensionInterface::class)) {
                 /** @var PolymerExtensionInterface $extensionInstance */
