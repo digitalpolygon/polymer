@@ -197,15 +197,19 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected function executePolymerUpdate(): void
     {
         if ($this->isInitialInstall()) {
+            // Only initialize within an actual Polymer project, which has a
+            // .polymer directory at its root. When Polymer is pulled in as a
+            // transitive dependency (e.g. an extension package's own CI) there is
+            // nothing to initialize, so skip silently rather than emitting noise
+            // or aborting the composer install.
+            if (!is_dir($this->getRepoRoot() . '/.polymer')) {
+                return;
+            }
             $this->io->write('<info>Creating Polymer template files...</info>');
             /** @var string $command */
             $command = $this->getVendorPath() . '/bin/polymer polymer:init';
             $success = $this->executeCommand($command, [], true);
             if (!$success) {
-                // Scaffolding is a convenience for projects adopting Polymer. When
-                // Polymer is pulled in as a transitive dependency (e.g. an extension
-                // package's own CI) there is no project to initialize, so warn and
-                // continue rather than aborting the entire composer install.
                 $this->io->writeError("<warning>Polymer could not initialize project files; skipping. If this is a Polymer project, run <comment>$command --verbose</comment> to debug.</warning>");
             }
         }
