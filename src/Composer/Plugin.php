@@ -192,9 +192,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Executes `polymer polymer:update` and `polymer-console polymer:update` commands.
-     *
-     * @throws \Exception
+     * Scaffolds Polymer's project template files on initial install.
      */
     protected function executePolymerUpdate(): void
     {
@@ -204,8 +202,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $command = $this->getVendorPath() . '/bin/polymer polymer:init';
             $success = $this->executeCommand($command, [], true);
             if (!$success) {
-                $this->io->writeError("<error>Polymer installation failed! Please execute <comment>$command --verbose</comment> to debug the issue.</error>");
-                throw new \Exception('Installation aborted due to error');
+                // Scaffolding is a convenience for projects adopting Polymer. When
+                // Polymer is pulled in as a transitive dependency (e.g. an extension
+                // package's own CI) there is no project to initialize, so warn and
+                // continue rather than aborting the entire composer install.
+                $this->io->writeError("<warning>Polymer could not initialize project files; skipping. If this is a Polymer project, run <comment>$command --verbose</comment> to debug.</warning>");
             }
         }
     }
