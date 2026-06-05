@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPolygon\PolymerTests\phpunit\unit;
+namespace DigitalPolygon\PolymerTest\phpunit\unit;
 
 use PHPUnit\Framework\TestCase;
 use Consolidation\Config\Config;
