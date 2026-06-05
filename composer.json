@@ -22,7 +22,11 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "DigitalPolygon\\Polymer\\Core\\": "src/",
+      "DigitalPolygon\\Polymer\\Core\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
       "DigitalPolygon\\PolymerTest\\": "tests/"
     }
   },
