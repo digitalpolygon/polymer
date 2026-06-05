@@ -13,6 +13,9 @@
         <testsuite name="unit">
             <directory suffix="Test.php">unit</directory>
         </testsuite>
+        <testsuite name="kernel">
+            <directory suffix="Test.php">kernel</directory>
+        </testsuite>
     </testsuites>
     <php>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
