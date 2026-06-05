@@ -1,77 +1,80 @@
 {
-  "name": "digitalpolygon/polymer",
-  "description": "Polymer",
-  "license": "GPL-2.0-only",
-  "type": "composer-plugin",
-  "authors": [
-    {
-      "name": "Les Peabody"
-    }
-  ],
-  "support": {
-    "issues": "https://github.com/digitalpolygon/polymer/issues"
-  },
-  "require": {
-    "php": ">=8.1",
-    "composer-plugin-api": "^2.0",
-    "composer-runtime-api": "^2.0",
-    "consolidation/robo": "^4 || ^5",
-    "laravel/prompts": ">=0.3.5"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
-  "autoload": {
-    "psr-4": {
-      "DigitalPolygon\\Polymer\\Core\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "DigitalPolygon\\PolymerTest\\": "tests/"
-    }
-  },
-  "config": {
-    "sort-packages": true,
-    "allow-plugins": {
-      "composer/installers": true,
-      "phpro/grumphp-shim": true,
-      "phpstan/extension-installer": true
-    }
-  },
-  "extra": {
-    "class": "DigitalPolygon\\Polymer\\Core\\Composer\\Plugin"
-  },
-  "bin": [
-    "bin/polymer"
-  ],
-  "require-dev": {
-    "composer/composer": "^2.7",
-    "php-parallel-lint/php-parallel-lint": "^1.4",
-    "phpro/grumphp-shim": "^2.5",
-    "phpstan/extension-installer": "^1.4",
-    "phpstan/phpstan": "^1.11",
-    "phpunit/phpunit": "^9 || ^10",
-    "spatie/phpunit-watcher": "^1.24",
-    "squizlabs/php_codesniffer": "^3",
-    "symfony/stopwatch": ">=6"
-  },
-  "scripts": {
-    "nuke": [
-      "rm -rf vendor composer.lock"
+    "name": "digitalpolygon/polymer",
+    "description": "Polymer",
+    "license": "GPL-2.0-only",
+    "type": "composer-plugin",
+    "authors": [
+        {
+            "name": "Les Peabody"
+        }
     ],
-    "nuke-install": [
-      "@nuke",
-      "@composer install"
+    "support": {
+        "issues": "https://github.com/digitalpolygon/polymer/issues"
+    },
+    "require": {
+        "php": ">=8.1",
+        "composer-plugin-api": "^2.0",
+        "composer-runtime-api": "^2.0",
+        "consolidation/robo": "^4 || ^5",
+        "laravel/prompts": ">=0.3.5"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "DigitalPolygon\\Polymer\\Core\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DigitalPolygon\\PolymerTest\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "phpro/grumphp-shim": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "class": "DigitalPolygon\\Polymer\\Core\\Composer\\Plugin",
+        "branch-alias": {
+            "dev-0.x": "0.2.x-dev"
+        }
+    },
+    "bin": [
+        "bin/polymer"
     ],
-    "lint": "find src test/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
-    "cs": "phpcs",
-    "sa": "phpstan analyse -v -c phpstan.neon",
-    "test": "phpunit -c tests/phpunit/phpunit.xml.dist --no-coverage",
-    "validations": [
-      "@lint",
-      "@cs",
-      "@sa",
-      "@test"
-    ]
-  }
+    "require-dev": {
+        "composer/composer": "^2.7",
+        "php-parallel-lint/php-parallel-lint": "^1.4",
+        "phpro/grumphp-shim": "^2.5",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^1.11",
+        "phpunit/phpunit": "^9 || ^10",
+        "spatie/phpunit-watcher": "^1.24",
+        "squizlabs/php_codesniffer": "^3",
+        "symfony/stopwatch": ">=6"
+    },
+    "scripts": {
+        "nuke": [
+            "rm -rf vendor composer.lock"
+        ],
+        "nuke-install": [
+            "@nuke",
+            "@composer install"
+        ],
+        "lint": "find src test/src -name '*.php' -print0 | xargs -0 -n1 -P4 -- php -l",
+        "cs": "phpcs",
+        "sa": "phpstan analyse -v -c phpstan.neon",
+        "test": "phpunit -c tests/phpunit/phpunit.xml.dist --no-coverage",
+        "validations": [
+            "@lint",
+            "@cs",
+            "@sa",
+            "@test"
+        ]
+    }
 }
