@@ -269,7 +269,7 @@ class DeployCommand extends TaskBase
         }
     }
 
-    protected function commit(ConsoleIO $io = null): void
+    protected function commit(?ConsoleIO $io = null): void
     {
         $this->say("Committing artifact to <comment>{$this->branchName}</comment>...");
         $gitUser = $this->getConfigValue('git.user.name');

@@ -4,8 +4,6 @@ parameters:
         - src
         - bin
     excludePaths:
-        - 'test_package'
-        - 'test_drupal10'
         - 'src/Robo/Common/ArrayManipulator.php'
     ignoreErrors:
         -

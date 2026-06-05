@@ -28,7 +28,7 @@ class FrontendCommand extends TaskBase
     #[Argument(name: 'target', description: 'The name of the build target to build.')]
     #[Usage(name: 'polymer build theme_build_admin', description: 'Runs and builds the "theme_build_admin" target.')]
     #[Usage(name: 'polymer build -v', description: 'Runs and builds all frontend targets.')]
-    public function build(ConsoleIO $io, string $target = null): void
+    public function build(ConsoleIO $io, ?string $target = null): void
     {
         if ($target) {
             $this->buildTarget($io, $target);

@@ -15,7 +15,7 @@ class PolymerException extends \Exception
     public function __construct(
         string $message = "",
         int $code = 0,
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
 
         $message .= "\nFor troubleshooting guidance and support, see https://digitalpolygon.github.io/polymer";

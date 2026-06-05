@@ -4,7 +4,7 @@ namespace DigitalPolygon\Polymer\Core\Robo\Exceptions;
 
 class BadConfigurationValueException extends \Exception
 {
-    public function __construct(string $configKey, string $configValue, string $substitutionValue = null)
+    public function __construct(string $configKey, string $configValue, ?string $substitutionValue = null)
     {
         $message = sprintf('Bad configuration value for key \'%s\': %s', $configKey, $configValue);
         if ($substitutionValue) {
