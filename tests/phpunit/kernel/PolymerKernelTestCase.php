@@ -135,6 +135,44 @@ abstract class PolymerKernelTestCase extends TestCase
         return $output;
     }
 
+    /**
+     * Run a command under Robo's simulate mode and return the simulator log.
+     *
+     * Appends `--simulate`, which GlobalOptionsEventListener maps to the
+     * `options.simulated` config; the collection builder then wraps every
+     * task built via $this->task() in \Robo\Task\Simulator, which logs the
+     * task class and fluent call chain instead of executing. Nothing shells
+     * out — assertions run against what the command *would* execute.
+     */
+    protected function runSimulated(Polymer $polymer, string $commandLine): string
+    {
+        [$status, $output] = $this->runCommand($polymer, $commandLine . ' --simulate');
+        $this->assertSame(0, $status, "Simulated command `$commandLine` failed:\n$output");
+        return $output;
+    }
+
+    /**
+     * Assert the simulator log records a task invocation containing $needle.
+     *
+     * Tolerant of simulator formatting: console style tags are stripped
+     * before matching, so assert on command substrings ("sql-sync") rather
+     * than exact rendered lines.
+     */
+    protected function assertSimulatedTask(string $log, string $needle, string $message = ''): void
+    {
+        $plain = (string) preg_replace('/<[^>]+>/', '', $log);
+        $this->assertStringContainsString(
+            'Simulating',
+            $plain,
+            "No simulated tasks appear in the log:\n$log"
+        );
+        $this->assertStringContainsString(
+            $needle,
+            $plain,
+            $message !== '' ? $message : "Simulator log does not record `$needle`:\n$plain"
+        );
+    }
+
     protected function packagesDir(): string
     {
         // tests/phpunit/kernel → packages/core → packages.

@@ -77,6 +77,15 @@ class CommandInvoker implements CommandInvokerInterface, ContainerAwareInterface
             // Always pin the define option, which will carry through config overrides
             // through all invoked commands.
             $args['--define'] = $parentInput->getOption('define');
+
+            // Like --define, simulate mode must survive into invoked commands.
+            // GlobalOptionsEventListener recomputes `options.simulated` from each
+            // command's own input on every console.command event, so unless the
+            // flag is forwarded, a simulated parent executes its chained
+            // commands for real.
+            if ($parentInput->hasOption('simulate') && $parentInput->getOption('simulate')) {
+                $args['--simulate'] = true;
+            }
             $input = new ArrayInput($args);
             $input->setInteractive($parentInput->isInteractive());
 
