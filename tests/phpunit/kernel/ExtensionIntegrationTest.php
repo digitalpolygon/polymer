@@ -69,6 +69,7 @@ class ExtensionIntegrationTest extends PolymerKernelTestCase
         $this->assertTrue($container->has('DigitalPolygon\\Polymer\\Drupal\\Contracts\\Event\\CollectSettingsFilesEvent'));
         $this->assertTrue($container->has('DigitalPolygon\\Polymer\\Drupal\\Contracts\\Event\\AlterSettingsFilesEvent'));
         $this->assertTrue($container->has('drupalFileSystem'));
+        $this->assertTrue($container->has('configSyncDirectory'));
     }
 
     public function testGlobalSiteOptionIsAddedByTheDrupalExtension(): void
