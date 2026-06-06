@@ -31,6 +31,12 @@ abstract class PolymerKernelTestCase extends TestCase
      */
     protected BufferedOutput $output;
 
+    /**
+     * Pre-shim PATH, restored in tearDown(). Non-null only once a shim
+     * has been installed.
+     */
+    private ?string $originalPath = null;
+
     protected function setUp(): void
     {
         // Symfony renders tables against the terminal width; keep ids on one
@@ -43,6 +49,12 @@ abstract class PolymerKernelTestCase extends TestCase
 
     protected function tearDown(): void
     {
+        if ($this->originalPath !== null) {
+            putenv('PATH=' . $this->originalPath);
+            $_ENV['PATH'] = $this->originalPath;
+            $_SERVER['PATH'] = $this->originalPath;
+            $this->originalPath = null;
+        }
         $this->removeTree($this->projectRoot);
     }
 
@@ -170,6 +182,107 @@ abstract class PolymerKernelTestCase extends TestCase
             $needle,
             $plain,
             $message !== '' ? $message : "Simulator log does not record `$needle`:\n$plain"
+        );
+    }
+
+    /**
+     * Install a fake executable (binary shim) into the fixture.
+     *
+     * The Tier-3 seam: commands execute their real pipelines, but every
+     * subprocess hits a bash shim that appends its argv to an invocation
+     * log and replays a canned response. The shim directory is prepended
+     * to PATH (for PATH-resolved tools like terminus/composer); for tools
+     * addressed by config (e.g. drupal.drush.bin) point the config value
+     * at shimBinDir() . '/<binary>'.
+     *
+     * Each $responses entry is consumed by one invocation, in order; the
+     * last entry answers all further invocations.
+     *
+     * @param array<int, array{stdout?: string, exit?: int}> $responses
+     */
+    protected function installShim(string $binary, array $responses = []): void
+    {
+        if ($responses === []) {
+            $responses = [['stdout' => '', 'exit' => 0]];
+        }
+
+        $shimRoot = $this->projectRoot . '/.shim';
+        $responseDir = "$shimRoot/responses/$binary";
+        if (!is_dir($responseDir)) {
+            mkdir($responseDir, 0777, true);
+        }
+        foreach (array_values($responses) as $i => $response) {
+            file_put_contents("$responseDir/$i.out", $response['stdout'] ?? '');
+            file_put_contents("$responseDir/$i.exit", (string) ($response['exit'] ?? 0));
+        }
+
+        $binDir = $this->shimBinDir();
+        if (!is_dir($binDir)) {
+            mkdir($binDir, 0777, true);
+        }
+        $script = <<<SH
+            #!/usr/bin/env bash
+            SHIM_ROOT='$shimRoot'
+            BIN='$binary'
+            echo "\$BIN \$*" >> "\$SHIM_ROOT/invocations.log"
+            N=\$(cat "\$SHIM_ROOT/\$BIN.count" 2>/dev/null || echo 0)
+            echo \$((N + 1)) > "\$SHIM_ROOT/\$BIN.count"
+            RESP_DIR="\$SHIM_ROOT/responses/\$BIN"
+            if [ ! -f "\$RESP_DIR/\$N.out" ]; then
+              N=\$((\$(ls "\$RESP_DIR" | grep -c '\\.out\$') - 1))
+            fi
+            cat "\$RESP_DIR/\$N.out"
+            exit "\$(cat "\$RESP_DIR/\$N.exit")"
+            SH;
+        file_put_contents("$binDir/$binary", $script);
+        chmod("$binDir/$binary", 0755);
+
+        if ($this->originalPath === null) {
+            $this->originalPath = (string) getenv('PATH');
+            // Symfony Process composes the child env from $_ENV/$_SERVER as
+            // well as the real environment, so all three must agree.
+            $shimPath = $binDir . ':' . $this->originalPath;
+            putenv('PATH=' . $shimPath);
+            $_ENV['PATH'] = $shimPath;
+            $_SERVER['PATH'] = $shimPath;
+        }
+    }
+
+    /**
+     * The fixture directory shims are installed into.
+     */
+    protected function shimBinDir(): string
+    {
+        return $this->projectRoot . '/bin';
+    }
+
+    /**
+     * Every shim invocation so far, one "<binary> <argv>" line per call,
+     * in execution order across all shimmed binaries.
+     *
+     * @return array<int, string>
+     */
+    protected function shimInvocations(): array
+    {
+        $log = $this->projectRoot . '/.shim/invocations.log';
+        if (!is_file($log)) {
+            return [];
+        }
+        return array_values(array_filter(array_map('trim', (array) file($log))));
+    }
+
+    /**
+     * Assert some shim invocation contains $needle.
+     */
+    protected function assertShimInvoked(string $needle, string $message = ''): void
+    {
+        $invocations = $this->shimInvocations();
+        $matched = array_filter($invocations, static fn (string $line) => str_contains($line, $needle));
+        $this->assertNotEmpty(
+            $matched,
+            $message !== ''
+                ? $message
+                : "No shim invocation contains `$needle`. Invocations:\n" . implode("\n", $invocations)
         );
     }
 
