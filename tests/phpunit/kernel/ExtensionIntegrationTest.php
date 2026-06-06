@@ -72,6 +72,32 @@ class ExtensionIntegrationTest extends PolymerKernelTestCase
         $this->assertTrue($container->has('configSyncDirectory'));
     }
 
+    public function testPantheonCommandNamesSurviveTheSeamSplit(): void
+    {
+        $this->installPackageAsPlugin('drupal');
+        $this->installPackageAsPlugin('pantheon-drupal');
+        $this->enableExtensions(['polymer_drupal', 'polymer_pantheon_drupal']);
+
+        $polymer = $this->bootPolymer();
+        $list = $this->runOk($polymer, 'list --raw');
+
+        // PWT-130 split Plugin\Commands into Hosting/ and Drupal/ — the
+        // public command names must not change.
+        foreach (
+            [
+            'pantheon:files:copy-pantheon-yml',
+            'pantheon:files:generate-drush-site-yaml',
+            'pantheon:quicksilver:install-configuration',
+            'pantheon:quicksilver:install-profile',
+            'pantheon:terminus:plugins:install',
+            'pantheon:setup:drupal',
+            'pantheon:new-relic:setup',
+            ] as $name
+        ) {
+            $this->assertStringContainsString($name, $list);
+        }
+    }
+
     public function testGlobalSiteOptionIsAddedByTheDrupalExtension(): void
     {
         $this->installPackageAsPlugin('drupal');
