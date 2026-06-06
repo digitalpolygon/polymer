@@ -2,9 +2,7 @@
 
 namespace DigitalPolygon\Polymer\Core\Environment;
 
-use DigitalPolygon\Polymer\Core\Robo\Exceptions\PolymerException;
-
-interface EnvironemntDetectorInterface
+interface EnvironmentDetectorInterface
 {
     /**
      * Is this a ci environment.
@@ -55,12 +53,12 @@ interface EnvironemntDetectorInterface
      */
     public static function isLandoEnv(): bool;
 
-  /**
-   * Returns a string identifier for the current environment.
-   *
-   * If the environment cannot be identified, throw PolymerException.
-   *
-   * @throws PolymerException;
-   */
+    /**
+     * Returns the platform's identifier for the current environment.
+     *
+     * Returns an empty string when the platform cannot identify the
+     * environment (e.g. this detector's platform variables are absent
+     * because the code is running elsewhere).
+     */
     public static function getEnvironmentId(): string;
 }

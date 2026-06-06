@@ -2,8 +2,6 @@
 
 namespace DigitalPolygon\Polymer\Core\Environment;
 
-use DigitalPolygon\Polymer\Core\Environment\EnvironmentDetectorBase;
-
 /**
  * Class PantheonEnvironmentDetector
  */
@@ -39,13 +37,5 @@ class PantheonEnvironmentDetector extends EnvironmentDetectorBase
     public static function isProdEnv(): bool
     {
         return self::getEnvironmentId() === 'live';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public static function isLocalEnv(): bool
-    {
-        return !self::getEnvironmentId() && !self::isCiEnv();
     }
 }

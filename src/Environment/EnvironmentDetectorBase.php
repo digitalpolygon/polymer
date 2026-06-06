@@ -5,8 +5,22 @@ namespace DigitalPolygon\Polymer\Core\Environment;
 /**
  * Class EnvironmentDetectorBase
  */
-abstract class EnvironmentDetectorBase implements EnvironemntDetectorInterface
+abstract class EnvironmentDetectorBase implements EnvironmentDetectorInterface
 {
+    /**
+     * @inheritDoc
+     *
+     * "Local" from a single platform's point of view: this platform does not
+     * identify the environment and we are not in CI. Note a detector whose
+     * platform variables are absent reports local even when the code runs on
+     * a *different* platform — callers combining platforms must AND the
+     * per-platform results (see polymer.settings.php).
+     */
+    public static function isLocalEnv(): bool
+    {
+        return !static::getEnvironmentId() && !static::isCiEnv();
+    }
+
     /**
      * @inheritDoc
      */

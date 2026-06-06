@@ -2,14 +2,12 @@
 
 namespace DigitalPolygon\Polymer\Core\Environment;
 
-use DigitalPolygon\Polymer\Core\Environment\EnvironmentDetectorBase;
-
 /**
  * Class AcquiaEnvironmentDetector
  */
 class AcquiaEnvironmentDetector extends EnvironmentDetectorBase
 {
-  /**
+    /**
      * @inheritDoc
      */
     public static function getEnvironmentId(): string
@@ -43,13 +41,5 @@ class AcquiaEnvironmentDetector extends EnvironmentDetectorBase
         $acquia_env = self::getEnvironmentId();
         // ACE prod is 'prod'; ACSF can be '01live', '02live', ...
         return $acquia_env === 'prod' || preg_match('/^\d*live$/', $acquia_env);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public static function isLocalEnv(): bool
-    {
-        return !self::getEnvironmentId() && !self::isCiEnv();
     }
 }
